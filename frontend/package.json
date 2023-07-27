@@ -10,12 +10,14 @@
         "lint": "eslint src --ext .js"
     },
     "dependencies": {
+        "@expo-google-fonts/inter": "^0.2.3",
         "expo": "~49.0.5",
+        "expo-font": "~11.4.0",
         "expo-status-bar": "~1.6.0",
         "react": "18.2.0",
         "react-native": "0.72.3",
         "react-native-paper": "^5.9.1",
-        "react-native-safe-area-context": "^4.7.1",
+        "react-native-safe-area-context": "4.6.3",
         "react-native-vector-icons": "^10.0.0",
         "styled-components": "^6.0.5"
     },

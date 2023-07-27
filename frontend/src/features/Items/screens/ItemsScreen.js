@@ -6,17 +6,17 @@ import { ItemCard } from '../components/ItemCard';
 
 const SafeArea = styled(SafeAreaView)`
     flex: 1;
-    margin-top: 20px;
+    margin-top: ${props => props.theme.space[3]};
     margin-top: ${StatusBar.currentHeight ? `${StatusBar.currentHeight}px` : '20px'};
 `;
 
 const SearchContainer = styled.View`
-    padding: ${props => props.padding || '16px'};
+    padding: ${props => props.theme.space[3]};
 `;
 
 const ItemListContainer = styled.View`
     flex: 1;
-    padding: ${props => props.padding || '16px'};
+    padding: ${props => props.theme.space[3]};
 `;
 export const ItemsScreen = () => {
     const items = {
@@ -43,7 +43,7 @@ export const ItemsScreen = () => {
     return (
         <SafeArea>
             <SearchContainer>
-                <Searchbar placeholder='Search' />
+                <Searchbar />
             </SearchContainer>
             <ItemListContainer>
                 <ItemCard item={items} />
