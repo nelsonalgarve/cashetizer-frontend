@@ -1,29 +1,32 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { Card } from 'react-native-paper';
+import { Card, CardCover } from 'react-native-paper';
+import { styled } from 'styled-components/native';
 
 // const LeftContent = (props) => <Avatar.Icon {...props} icon="folder" />;
+const Title = styled.Text`
+    padding: 16px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    color: black;
+`;
 
-export const ItemCard = (props) => {
-	console.log(props.items.name);
-	return (
-		<Card>
-			<Card.Title title="Card Title" subtitle="Card Subtitle" />
-			<Card.Content>
-				<Text variant="titleLarge">props.items.name</Text>
-				<Text variant="bodyMedium">props.items.description.details</Text>
-			</Card.Content>
-			<Card.Cover source={{ uri: props.items.description.details }} />
-			<Card.Actions>
-				<Button title="ok">Cancel</Button>
-				<Button title="ok">Ok</Button>
-			</Card.Actions>
-		</Card>
-	);
+const ItemCards = styled(Card)`
+    background-color: white;
+`;
+
+const ItemCardCover = styled(Card.Cover)`
+    padding: 20px;
+    background-color: white;
+`;
+
+export const ItemCard = props => {
+    console.log(props.item.description.details);
+    return (
+        <ItemCards>
+            <ItemCardCover source={{ uri: props.item.description.photos[0] }} />
+            <Title>{props.item.title}</Title>
+        </ItemCards>
+    );
 };
-
-const styles = StyleSheet.create({
-	card: { backgroundColor: 'white' },
-	cover: { padding: 20, backgroundColor: 'white' },
-	title: { fontWeight: 'bold', fontSize: 20, padding: 16, color: 'black' },
-});
