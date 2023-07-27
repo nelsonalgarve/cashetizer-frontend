@@ -5,7 +5,9 @@ import { SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
 export default App = () => {
     return (
         <>
-            <ItemScreen />
+            <View>
+                <Text>Welcom to Cashetizer</Text>
+            </View>
             <ExpoStatusBar style='auto' />
         </>
     );
