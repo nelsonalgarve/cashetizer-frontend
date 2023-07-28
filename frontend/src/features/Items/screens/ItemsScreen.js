@@ -39,16 +39,16 @@ export const ItemsScreen = () => {
 		cautions: 450,
 		isAvailable: true,
 		positionRange: [100],
-		rating: 4.5,
+		rating: 5,
 	};
 	return (
 		<SafeArea>
-			<SearchContainer>
-				<Searchbar />
-			</SearchContainer>
 			<ItemListContainer>
 				<ItemCard item={items} />
 			</ItemListContainer>
+			<SearchContainer>
+				<Searchbar />
+			</SearchContainer>
 		</SafeArea>
 	);
 };
