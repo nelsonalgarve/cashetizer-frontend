@@ -2,9 +2,11 @@ import { Lato_400Regular, useFonts as useLato } from '@expo-google-fonts/lato';
 import { Oswald_400Regular, useFonts as useOswald } from '@expo-google-fonts/oswald';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import React from 'react';
-import { SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { ThemeProvider } from 'styled-components';
 import { ItemsScreen } from './src/features/Items/screens/ItemsScreen';
+import { ListItems } from './src/features/Items/screens/ListItems';
+import { SingleItem } from './src/features/Items/screens/SingleItem';
 import { theme } from './src/infrastructure/theme';
 
 export default App = () => {
@@ -21,7 +23,9 @@ export default App = () => {
 	return (
 		<>
 			<ThemeProvider theme={theme}>
-				<ItemsScreen />
+				{/* <ItemsScreen /> */}
+				{/* <SingleItem /> */}
+				<ListItems />
 			</ThemeProvider>
 			<ExpoStatusBar style="auto" />
 		</>

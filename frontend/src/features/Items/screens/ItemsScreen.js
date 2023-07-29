@@ -24,7 +24,8 @@ export const ItemsScreen = () => {
 		description: {
 			dimensions: { hauteur: 12, largeur: 12, poids: 1 },
 			etat: 'neuf',
-			details: 'Souris du futur, qui parle',
+			details:
+				'Souris du futur, qui parle Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur pariatur expedita sed rerum enim dignissimos, ducimus debitis cum aut fuga suscipit tenetur praesentium recusandae totam repellat aperiam? Nostrum nihil expedita voluptates at perferendis possimus?',
 			photos: ['https://www.zerker.ca/misc/forumstuff/DSC00669.JPG', 'https://www.zerker.ca/misc/forumstuff/DSC00669.JPG', 'img3.jpg'],
 			videos: ['mov1.mp4', 'mov2.mp4', 'mov3.mp4'],
 		},
@@ -36,7 +37,7 @@ export const ItemsScreen = () => {
 			perWeek: 700,
 			perMonth: 2000,
 		},
-		cautions: 450,
+		caution: 450,
 		isAvailable: true,
 		positionRange: [100],
 		rating: 5,

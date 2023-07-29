@@ -1,11 +1,12 @@
 {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "prettier.jsxSingleQuote": true,
-    "prettier.printWidth": 250,
-    "prettier.singleQuote": true,
-    "prettier.tabWidth": 4,
-    "prettier.bracketSameLine": true,
-    "prettier.arrowParens": "avoid",
-    "prettier.useTabs": false,
-    "prettier.useEditorConfig": false
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"prettier.jsxSingleQuote": true,
+	"prettier.printWidth": 250,
+	"prettier.singleQuote": true,
+	"prettier.tabWidth": 4,
+	"prettier.bracketSameLine": true,
+	"prettier.arrowParens": "avoid",
+	"prettier.useTabs": false,
+	"prettier.useEditorConfig": false,
+	"colorize.languages": ["javascript"]
 }
