@@ -83,6 +83,7 @@ export const SignUpForm = () => {
 				console.log('Error', 'An error occurred while signing up. Please try again later.');
 			});
 	};
+
 	/* const onTogglePassword = () => {
         setShowPassword(!showPassword);
     }; */
