@@ -1,12 +1,16 @@
-import React from 'react';
+import {useState} from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
+import CheckBox from 'expo-checkbox';
 
 export const SignUpForm = () => {
+	const [acceptedTerms, setAcceptedTerms] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
+
 	const {
 		handleSubmit,
 		control,
@@ -16,9 +20,17 @@ export const SignUpForm = () => {
 	} = useForm();
 
 	const onSubmit = (data) => {
-		// Handle form submission logic here
-		console.log(data);
+		if (acceptedTerms) {
+			console.log(data);
+		  } else {
+			alert("Veuillez accepter les termes d'utilisation avant de vous inscrire.");
+		  }
+		
 	};
+
+	const toggleTermsAcceptance = () => {
+		setAcceptedTerms(!acceptedTerms);
+	  };
 
 	const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -50,7 +62,7 @@ export const SignUpForm = () => {
 										{...field}
 										value={field.value}
 										maxLength={32}
-										label="Username"
+										label="Nom d'utilisateur"
 										mode="outlined"
 										error={errors.username}
 										left={<TextInput.Icon icon="account" />}
@@ -72,7 +84,7 @@ export const SignUpForm = () => {
 										{...field}
 										value={field.value}
 										maxLength={32}
-										label="First Name"
+										label="Prénom"
 										mode="outlined"
 										error={errors.firstname}
 										left={<TextInput.Icon icon="account-outline" />}
@@ -94,7 +106,7 @@ export const SignUpForm = () => {
 										{...field}
 										value={field.value}
 										maxLength={32}
-										label="Last Name"
+										label="Nom de famille"
 										mode="outlined"
 										error={errors.lastname}
 										left={<TextInput.Icon icon="account-outline" />}
@@ -233,26 +245,30 @@ export const SignUpForm = () => {
 							control={control}
 							defaultValue=""
 							rules={{
-								required: 'Password is required',
+								required: 'Entrez votre mot de passe',
 								pattern: {
 									value: passwordPattern,
 									message:
-										'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
+										'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.',
 								},
 							}}
 							render={({ field }) => (
+								<View>
 								<View>
 									<TextInput
 										style={styles.textInput}
 										{...field}
 										value={field.value}
-										label="Password"
-										secureTextEntry
+										label="Mot de passe"
+										secureTextEntry={!showPassword}
 										mode="outlined"
 										error={errors.password}
 										left={<TextInput.Icon icon="lock" />}
+										right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)}/> }
 										onChangeText={(text) => field.onChange(text)}
-									/>
+										/>
+
+									  </View>
 									{errors.password && <HelperText type="error">{errors.password.message}</HelperText>}
 								</View>
 							)}
@@ -271,7 +287,7 @@ export const SignUpForm = () => {
 										style={styles.textInput}
 										{...field}
 										value={field.value}
-										label="Confirm Password"
+										label="Confirmer mot de passe"
 										secureTextEntry
 										mode="outlined"
 										error={errors.confirmPassword}
@@ -282,13 +298,25 @@ export const SignUpForm = () => {
 								</View>
 							)}
 						/>
+						 <View style={styles.checkboxContainer}>
+        <CheckBox
+          value={acceptedTerms}
+          onValueChange={toggleTermsAcceptance}
+        />
+        <Text style={styles.checkboxLabel}>
+          J'accepte les conditions d'utilisation de Cashetizer et la politique de confidentialité de Cashetizer industry.
+        </Text>
+      </View>
 						<View style={styles.buttonsContainer}>
+						<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
+							<Text style={styles.buttonText}>Créer un compte</Text>
+							</Button>
+							
 							<Button style={styles.buttonOutlined} mode="outlined" onPress={onReset}>
 								Reset
 							</Button>
-							<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
-								Sign Up
-							</Button>
+							
+							
 						</View>
 					</ScrollView>
 				</View>
@@ -302,6 +330,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 40,
 		justifyContent: 'space-between',
+		
 	},
 	scrollContainer: {
 		flexGrow: 1,
@@ -320,6 +349,12 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 		margin: 12,
 	},
+	buttonText: {
+		color: 'white',
+		textAlign: 'center',
+		fontWeight: 'bold',
+		fontSize: 16,
+	  },
 	textInput: {
 		paddingVertical: 1,
 		paddingHorizontal: 1,
@@ -327,4 +362,37 @@ const styles = StyleSheet.create({
 		height: 35,
 		backgroundColor: '#E8E8E8',
 	},
+	checkboxContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginTop: 10,
+		marginBottom: 20,
+	  },
+	  checkboxLabel: {
+		marginLeft: 8,
+		fontSize: 14,
+	  },
+	  passwordContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		borderColor: '#ccc',
+		borderWidth: 1,
+		borderRadius: 5,
+		paddingHorizontal: 10,
+		marginBottom: 20,
+	  },
+	  passwordInput: {
+		flex: 1,
+		height: 40,
+		fontSize: 16,
+		padding: 0,
+	  },
+	  showButton: {
+		paddingHorizontal: 10,
+	  },
+	  showButtonText: {
+		fontSize: 16,
+		color: 'blue',
+	  },
 });

@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import React from 'react';
-import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, SafeAreaView, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { ThemeProvider } from 'styled-components';
 import { ItemsScreen } from './src/features/Items/screens/ItemsScreen';
@@ -16,6 +16,7 @@ import { SignUpScreen } from './src/features/welcome/screens/SignUpScreen';
 import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
 import { theme } from './src/infrastructure/theme';
 import themePaper from './src/infrastructure/theme/themePaper';
+import { Ionicons } from '@expo/vector-icons'; 
 
 const Stack = createNativeStackNavigator();
 
@@ -36,23 +37,52 @@ export default App = () => {
 				<PaperProvider theme={themePaper}>
 					<SafeAreaView style={styles.container}>
 						<NavigationContainer>
-							<Stack.Navigator>
-								<Stack.Screen name="Welcome" component={WelcomeScreen} />
+							<Stack.Navigator
+							screenOptions={{
+								headerShown: true,
+								headerTitleStyle: {
+								  fontWeight: 'bold',
+								  fontSize: 28,
+								},
+								headerStyle: {
+								  backgroundColor: '#155263',
+								},
+								headerTintColor: '#fff',
+								headerTitleAlign: 'center',
+							  }}>
+								<Stack.Screen name="Welcome" component={WelcomeScreen} options={{
+            headerShown: false, 
+          }}/>
+								<Stack.Screen name="SignUp" component={SignUpForm} options={({ navigation }) => ({
+								   title: 'Créer un compte', 
+								   headerLeft: () => (
+									 <TouchableOpacity
+									   onPress={() => navigation.navigate('WelcomeScreen')}
+									   style={styles.backButton}
+									 >
+									   <Ionicons name="close" size={30} color="white" />
+									 </TouchableOpacity>
+								   ), 
+								 })}/>
+								
 								<Stack.Screen name="SignIn" component={SignInForm} />
-								<Stack.Screen name="SignUp" component={SignUpForm} />
+								
 								{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}
-								<Stack.Screen
-									name="SignUpScreen"
-									component={SignUpScreen}
-									options={({ navigation }) => ({
-										title: 'Signup',
-										// headerLeft: () => (
-										//     <TouchableOpacity onPress={() => navigation.navigate('WelcomeScreen')} style={styles.backButton}>
-										//         <Ionicons name='close' size={30} color='white' />
-										//     </TouchableOpacity>
-										// ),
-									})}
-								/>
+								{/* <Stack.Screen
+								 name="SignUpScreen"
+								 component={SignUpScreen}
+								 options={({ navigation }) => ({
+								   title: 'Créer un compte', 
+								   headerLeft: () => (
+									 <TouchableOpacity
+									   onPress={() => navigation.navigate('WelcomeScreen')}
+									   style={styles.backButton}
+									 >
+									   <Ionicons name="close" size={30} color="white" />
+									 </TouchableOpacity>
+								   ),
+								 })}
+							   /> */}
 								{/* <ItemsScreen /> */}
 								{/* <SingleItem /> */}
 							</Stack.Navigator>
@@ -68,5 +98,6 @@ export default App = () => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: '#155263' 
 	},
 });
