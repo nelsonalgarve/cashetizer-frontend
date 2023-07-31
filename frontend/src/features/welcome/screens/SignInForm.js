@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
@@ -16,10 +16,42 @@ export const SignInForm = () => {
 	} = useForm();
 
 	const onSubmit = (data) => {
-		// Handle form submission logic here
-		console.log(data);
-	};
+		// Adresse du backend pour Fetch POST login
+		const signIn = 'http://192.168.0.15:3000/users/login';
 
+		// Objet user à envoyer au backend
+		const requestData = {
+			email: data.email,
+			password: data.password,
+		};
+		fetch(signIn, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(requestData),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				console.log('data', data);
+				// Réponse du backend { user: {...}, token: "..." }
+				if (data.user && data.token) {
+					console.log('Succes loggedIn', data);
+					dispatch(setToken(data.token));
+					dispatch(setUser(data.user));
+					// affichage du reducer user
+					console.log('userfromreducer', user);
+					console.log('tokenFormReducer', token);
+				} else {
+					console.log('Error', data.message || 'Signin failed');
+				}
+			})
+			.catch((error) => {
+				console.error('Error signing up:', error);
+				// erreur lors de la procédure d'inscription
+				console.log('Error', 'An error occurred while signing up. Please try again later.');
+			});
+	};
 	const onReset = () => {
 		reset();
 	};
@@ -42,17 +74,7 @@ export const SignInForm = () => {
 						}}
 						render={({ field }) => (
 							<View>
-								<TextInput
-									{...field}
-									style={styles.textInput}
-									value={field.value}
-									maxLength={50}
-									label="Email"
-									mode="outlined"
-									error={errors.email}
-									left={<TextInput.Icon icon="email" />}
-									onChangeText={(text) => field.onChange(text)}
-								/>
+								<TextInput {...field} style={styles.textInput} value={field.value} maxLength={50} label="Email" mode="outlined" error={errors.email} left={<TextInput.Icon icon="email" />} onChangeText={(text) => field.onChange(text)} />
 								{errors.email && <HelperText type="error">{errors.email.message}</HelperText>}
 							</View>
 						)}
@@ -89,7 +111,7 @@ export const SignInForm = () => {
 						Reset
 					</Button>
 					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
-						Sign Up
+						Connexion
 					</Button>
 				</ScrollView>
 			</View>

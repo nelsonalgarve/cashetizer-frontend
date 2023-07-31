@@ -1,12 +1,22 @@
-import React from 'react';
+import CheckBox from 'expo-checkbox';
+import React, { useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUserData, setToken, setUser } from '../../../../reducers/user';
 import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
 
 export const SignUpForm = () => {
+	const dispatch = useDispatch();
+	const user = useSelector((state) => state.user.value);
+	const token = useSelector((state) => state.user.token);
+	const userData = useSelector(selectUserData);
+	const [acceptedTerms, setAcceptedTerms] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
+
 	const {
 		handleSubmit,
 		control,
@@ -16,11 +26,15 @@ export const SignUpForm = () => {
 	} = useForm();
 
 	const onSubmit = (data) => {
-		console.log(data);
-		// Perform the fetch request to your API endpoint here
+		if (!acceptedTerms) {
+			alert("Veuillez accepter les termes d'utilisation avant de vous inscrire.");
+			return;
+		}
+
+		// Adresse du backend pour Fetch POST signup
 		const signUpEndpoint = 'http://192.168.0.15:3000/users';
 
-		// Build the request data object in the format expected by the server
+		// Objet user à envoyer au backend
 		const requestData = {
 			username: data.username,
 			firstname: data.firstname,
@@ -48,22 +62,33 @@ export const SignUpForm = () => {
 			body: JSON.stringify(requestData),
 		})
 			.then((response) => response.json())
-			.then((responseData) => {
-				console.log(responseData);
+			.then((data) => {
+				// console.log('data', userData);
 
-				// Assuming your server responds with a success message like { user: {...}, token: "..." }
-				if (responseData.user && responseData.token) {
-					console.log('Succes loggedIn', responseData.user);
-					// Dispatch to the user reducer and redirect to homepage
+				// Réponse du backend { user: {...}, token: "..." }
+				if (data.user && data.token) {
+					console.log('Succes loggedIn', data);
+					dispatch(setToken(data.token));
+					dispatch(setUser(data.user));
+					// affichage du reducer user
+					console.log('userfromreducer', user);
+					console.log('tokenFormReducer', token);
 				} else {
-					console.log('Error', responseData.message || 'Sign-up failed');
+					console.log('Error', data.message || 'Sign-up failed');
 				}
 			})
 			.catch((error) => {
 				console.error('Error signing up:', error);
-				// erreur lors de la procédure dínscription
+				// erreur lors de la procédure d'inscription
 				console.log('Error', 'An error occurred while signing up. Please try again later.');
 			});
+	};
+	/* const onTogglePassword = () => {
+        setShowPassword(!showPassword);
+    }; */
+
+	const toggleTermsAcceptance = () => {
+		setAcceptedTerms(!acceptedTerms);
 	};
 
 	const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -96,7 +121,7 @@ export const SignUpForm = () => {
 										{...field}
 										value={field.value}
 										maxLength={32}
-										label="Username"
+										label="Nom d'utilisateur"
 										mode="outlined"
 										error={errors.username}
 										left={<TextInput.Icon icon="account" />}
@@ -110,7 +135,7 @@ export const SignUpForm = () => {
 							name="firstname"
 							control={control}
 							defaultValue=""
-							rules={{ required: 'First name is required' }}
+							// rules={{ required: 'First name is required' }}
 							render={({ field }) => (
 								<View>
 									<TextInput
@@ -118,7 +143,7 @@ export const SignUpForm = () => {
 										{...field}
 										value={field.value}
 										maxLength={32}
-										label="First Name"
+										label="Prénom"
 										mode="outlined"
 										error={errors.firstname}
 										left={<TextInput.Icon icon="account-outline" />}
@@ -132,7 +157,7 @@ export const SignUpForm = () => {
 							name="lastname"
 							control={control}
 							defaultValue=""
-							rules={{ required: 'Last name is required' }}
+							// rules={{ required: 'Last name is required' }}
 							render={({ field }) => (
 								<View>
 									<TextInput
@@ -140,7 +165,7 @@ export const SignUpForm = () => {
 										{...field}
 										value={field.value}
 										maxLength={32}
-										label="Last Name"
+										label="Nom de famille"
 										mode="outlined"
 										error={errors.lastname}
 										left={<TextInput.Icon icon="account-outline" />}
@@ -155,10 +180,10 @@ export const SignUpForm = () => {
 							control={control}
 							defaultValue=""
 							rules={{
-								required: 'Email is required',
+								// required: "L'email est obligatoire",
 								pattern: {
 									value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-									message: 'Invalid email address',
+									message: 'Adresse email incorrecte',
 								},
 							}}
 							render={({ field }) => (
@@ -175,7 +200,7 @@ export const SignUpForm = () => {
 							control={control}
 							defaultValue=""
 							rules={{
-								required: 'Phone is required',
+								// required: 'Numéro de téléphone est obligatoire',
 								pattern: {
 									value: /\B(?=(\d{2})+(?!\d))(?<!\+3)|\B(?<=\+33)/g,
 									message: 'Invalid email address',
@@ -184,7 +209,7 @@ export const SignUpForm = () => {
 							render={({ field }) => (
 								<CustomTextInput
 									style={styles.textInput}
-									label="Phone"
+									label="Numéro de téléphone"
 									mode="outlined"
 									maxLength={56}
 									error={errors.phone}
@@ -203,10 +228,10 @@ export const SignUpForm = () => {
 							name="address"
 							control={control}
 							defaultValue=""
-							rules={{ required: 'Address is required' }}
+							// rules={{ required: 'Address is required' }}
 							render={({ field }) => (
 								<View>
-									<TextInput style={styles.textInput} {...field} value={field.value} label="Address" mode="outlined" error={errors.address} left={<TextInput.Icon icon="map-marker" />} onChangeText={(text) => field.onChange(text)} />
+									<TextInput style={styles.textInput} {...field} value={field.value} label="Adresse" mode="outlined" error={errors.address} left={<TextInput.Icon icon="map-marker" />} onChangeText={(text) => field.onChange(text)} />
 									{errors.address && <HelperText type="error">{errors.address.message}</HelperText>}
 								</View>
 							)}
@@ -215,10 +240,10 @@ export const SignUpForm = () => {
 							name="city"
 							control={control}
 							defaultValue=""
-							rules={{ required: 'City is required' }}
+							// rules={{ required: 'La ville est obligatoire.' }}
 							render={({ field }) => (
 								<View>
-									<TextInput style={styles.textInput} {...field} value={field.value} label="City" mode="outlined" error={errors.city} left={<TextInput.Icon icon="city" />} onChangeText={(text) => field.onChange(text)} />
+									<TextInput style={styles.textInput} {...field} value={field.value} label="Ville" mode="outlined" error={errors.city} left={<TextInput.Icon icon="city" />} onChangeText={(text) => field.onChange(text)} />
 									{errors.city && <HelperText type="error">{errors.city.message}</HelperText>}
 								</View>
 							)}
@@ -227,14 +252,14 @@ export const SignUpForm = () => {
 							name="zipCode"
 							control={control}
 							defaultValue=""
-							rules={{ required: 'Zip Code is required' }}
+							// rules={{ required: 'Zip Code is required' }}
 							render={({ field }) => (
 								<View>
 									<TextInput
 										style={styles.textInput}
 										{...field}
 										value={field.value}
-										label="Zip Code"
+										label="Code postal"
 										mode="outlined"
 										keyboardType="numeric"
 										error={errors.zipCode}
@@ -250,26 +275,31 @@ export const SignUpForm = () => {
 							name="password"
 							control={control}
 							defaultValue=""
-							rules={{
-								required: 'Password is required',
-								pattern: {
-									value: passwordPattern,
-									message: 'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
-								},
-							}}
+							rules={
+								{
+									// required: 'Entrez votre mot de passe',
+									// pattern: {
+									// 	value: passwordPattern,
+									// 	message: 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.',
+									// },
+								}
+							}
 							render={({ field }) => (
 								<View>
-									<TextInput
-										style={styles.textInput}
-										{...field}
-										value={field.value}
-										label="Password"
-										secureTextEntry
-										mode="outlined"
-										error={errors.password}
-										left={<TextInput.Icon icon="lock" />}
-										onChangeText={(text) => field.onChange(text)}
-									/>
+									<View>
+										<TextInput
+											style={styles.textInput}
+											{...field}
+											value={field.value}
+											label="Mot de passe"
+											secureTextEntry={!showPassword}
+											mode="outlined"
+											error={errors.password}
+											left={<TextInput.Icon icon="lock" />}
+											right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)} />}
+											onChangeText={(text) => field.onChange(text)}
+										/>
+									</View>
 									{errors.password && <HelperText type="error">{errors.password.message}</HelperText>}
 								</View>
 							)}
@@ -279,7 +309,7 @@ export const SignUpForm = () => {
 							control={control}
 							defaultValue=""
 							rules={{
-								required: 'Please confirm your password',
+								// required: 'Please confirm your password',
 								validate: (value) => value === getValues('password') || 'Passwords do not match',
 							}}
 							render={({ field }) => (
@@ -288,7 +318,7 @@ export const SignUpForm = () => {
 										style={styles.textInput}
 										{...field}
 										value={field.value}
-										label="Confirm Password"
+										label="Confirmer mot de passe"
 										secureTextEntry
 										mode="outlined"
 										error={errors.confirmPassword}
@@ -299,12 +329,17 @@ export const SignUpForm = () => {
 								</View>
 							)}
 						/>
+						<View style={styles.checkboxContainer}>
+							<CheckBox value={acceptedTerms} onValueChange={toggleTermsAcceptance} />
+							<Text style={styles.checkboxLabel}>J'accepte les conditions d'utilisation de Cashetizer et la politique de confidentialité de Cashetizer industry.</Text>
+						</View>
 						<View style={styles.buttonsContainer}>
-							<Button style={styles.buttonOutlined} mode="outlined" onPress={onReset}>
-								Reset
-							</Button>
 							<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
-								Sign Up
+								<Text style={styles.buttonText}>Créer un compte</Text>
+							</Button>
+
+							<Button mode="outlined" onPress={onReset}>
+								Mot de passe oublié?
 							</Button>
 						</View>
 					</ScrollView>
@@ -337,11 +372,50 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 		margin: 12,
 	},
+	buttonText: {
+		color: 'white',
+		textAlign: 'center',
+		fontWeight: 'bold',
+		fontSize: 16,
+	},
 	textInput: {
 		paddingVertical: 1,
 		paddingHorizontal: 1,
 		fontSize: 12,
 		height: 35,
 		backgroundColor: '#E8E8E8',
+	},
+	checkboxContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginTop: 10,
+		marginBottom: 20,
+	},
+	checkboxLabel: {
+		marginLeft: 8,
+		fontSize: 14,
+	},
+	passwordContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		borderColor: '#ccc',
+		borderWidth: 1,
+		borderRadius: 5,
+		paddingHorizontal: 10,
+		marginBottom: 20,
+	},
+	passwordInput: {
+		flex: 1,
+		height: 40,
+		fontSize: 16,
+		padding: 0,
+	},
+	showButton: {
+		paddingHorizontal: 10,
+	},
+	showButtonText: {
+		fontSize: 16,
+		color: 'blue',
 	},
 });
