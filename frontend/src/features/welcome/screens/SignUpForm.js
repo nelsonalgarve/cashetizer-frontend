@@ -26,6 +26,7 @@ export const SignUpForm = () => {
 	const onSubmit = (data) => {
 		if (!acceptedTerms) {
 			alert("Veuillez accepter les termes d'utilisation avant de vous inscrire.");
+			return;
 		  };
 		  console.log(data);
 		  // Perform the fetch request to your API endpoint here
@@ -214,7 +215,7 @@ export const SignUpForm = () => {
 								<CustomTextInput
 									style={styles.textInput}
 									label="Numéro de téléphone"
-									mode="outline"
+									mode="outlined"
 									maxLength={56}
 									error={errors.phone}
 									leftIconName="phone"
@@ -381,7 +382,7 @@ export const SignUpForm = () => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 40,
+		padding: 25,
 		justifyContent: 'space-between',
 		
 	},
@@ -419,7 +420,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		marginTop: 10,
-		marginBottom: 20,
+		marginBottom: -10,
 	  },
 	  checkboxLabel: {
 		marginLeft: 8,

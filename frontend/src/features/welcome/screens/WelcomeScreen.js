@@ -5,11 +5,11 @@ import formTheme from '../themes/FormTheme';
 
 export const WelcomeScreen = ({ navigation }) => {
 	const handleSignUpPress = () => {
-		navigation.navigate('SignUp');
+		navigation.navigate('SignUpScreen');
 	};
 
 	const handleSignInPress = () => {
-		navigation.navigate('SignIn');
+		navigation.navigate('SignInScreen');
 	};
 
 	return (

@@ -1,19 +1,22 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, ScrollView, StyleSheet, View, Text } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import { CustomTextInput } from '../components/CustomTextInput';
-import formTheme from '../themes/FormTheme';import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import formTheme from '../themes/FormTheme';
 
-export const SignInForm = () => {
-  const navigation = useNavigation();
+export const CheckIdScreen = () => {
+	/* const navigation = useNavigation();
 	const handleSignUpPress = () => {
 		navigation.navigate('SignUpScreen');
-	};
-	const testCheckIdSignUpPress = () => {
-		navigation.navigate('CheckIdScreen');
-	};
+	}; */
+
+
+	const [sendRecto, setSendRecto] = useState(false);
+	const [sendVerso, setSendVerso] = useState(false);
+
 	const {
 		handleSubmit,
 		control,
@@ -37,11 +40,11 @@ export const SignInForm = () => {
 				{/* <KeyboardAvoidingView style={styles.container} behavior="padding" keyboardVerticalOffset={50}> */}
 				<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 					<Controller
-						name="email"
+						name="rectoID"
 						control={control}
 						defaultValue=""
 						rules={{
-							required: 'Email is required',
+							required: "Le recto de votre pièce d'identité est obligatoire",
 							pattern: {
 								value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
 								message: 'Invalid email address',
@@ -54,10 +57,10 @@ export const SignInForm = () => {
 									style={styles.textInput}
 									value={field.value}
 									maxLength={50}
-									label="Email"
+									label="Recto de votre pièce d'identité"
 									mode="outlined"
 									error={errors.email}
-									left={<TextInput.Icon icon="email" />}
+									right={<TextInput.Icon icon="plus" onPress={() => setSendRecto(sendRecto)}/>}
 									onChangeText={(text) => field.onChange(text)}
 								/>
 								{errors.email && <HelperText type="error">{errors.email.message}</HelperText>}
@@ -68,11 +71,11 @@ export const SignInForm = () => {
 					{/* Pour pouvoir utiliser le composant TextInputMask et le theme Paper, nous avons créé un composant custom */}
 
 					<Controller
-						name="password"
+						name="versoID"
 						control={control}
 						defaultValue=""
 						rules={{
-							required: 'Password is required',
+							required: "Le verso de votre pièce d'identité est obligatoire",
 						}}
 						render={({ field }) => (
 							<View>
@@ -80,33 +83,24 @@ export const SignInForm = () => {
 									{...field}
 									style={styles.textInput}
 									value={field.value}
-									label="Password"
+									label="Verso de votre pièce d'identité"
 									secureTextEntry
 									mode="outlined"
-									error={errors.password}
-									left={<TextInput.Icon icon="lock" />}
+									error={errors.versoID}
+									right={<TextInput.Icon icon="plus" onPress={() => setSendVerso(sendVerso)}/>}
 									onChangeText={(text) => field.onChange(text)}
 								/>
-								{errors.password && <HelperText type="error">{errors.password.message}</HelperText>}
+								{errors.versoID && <HelperText type="error">{errors.versoID.message}</HelperText>}
 							</View>
 						)}
 					/>
 
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
-					<Text style={styles.buttonText}>Se connecter</Text>
-					</Button>
-					<Button style={styles.buttonGreenOutlined} mode="outlined" onPress={handleSignUpPress}>
+					
+					<Button style={styles.buttonOutlined}>
 					<Text style={styles.buttonText}>Créer un compte</Text>
 					</Button>
-					<Button style={styles.buttonNoColorOutlined} mode="outlined" onPress={(console.log("cool"))}>
-								Mot de passe oublié?
-							</Button>
-					
-					<Button onPress={onReset}>
+					<Button style={styles.buttonOutlined} mode="outlined" onPress={onReset}>
 						Reset
-					</Button>
-					<Button onPress={testCheckIdSignUpPress}>
-					<Text> Test </Text>
 					</Button>
 				</ScrollView>
 			</View>
@@ -156,25 +150,6 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 		margin: 12,
 	},
-	buttonGreenOutlined:{
-		margin: 10,
-		backgroundColor: '#155263',
-		fontColor: 'black',
-		borderWidth: 1,
-		width: '100%',
-		alignSelf: 'center',
-		margin: 12,
-	},
-	buttonNoColorOutlined:{
-		margin: 10,
-		backgroundColor: 'transparent',
-		fontColor: 'black',
-		borderWidth: 1,
-		width: '100%',
-		alignSelf: 'center',
-		margin: 12,
-	},
-
 	textInput: {
 		paddingVertical: 1,
 		paddingHorizontal: 1,
