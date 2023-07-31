@@ -4,6 +4,7 @@ import { Controller, useController, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData, setToken, setUser } from '../../../../reducers/user';
 import { CustomTextInput } from '../components/CustomTextInput';
@@ -32,7 +33,7 @@ export const SignUpForm = () => {
 		}
 
 		// Adresse du backend pour Fetch POST signup
-		const signUpEndpoint = 'http://192.168.0.15:3000/users';
+		const signUpEndpoint = 'http://192.168.0.12:3000/users';
 
 		// Objet user à envoyer au backend
 		const requestData = {
@@ -94,15 +95,18 @@ export const SignUpForm = () => {
 
 	const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-	const phoneController = useController({
-		control,
-		defaultValue: '',
-		name: 'phone',
-		rules: { required: 'Phone number is required' },
-	});
 	const onReset = () => {
 		reset();
 	};
+
+	function formatPhoneNumber(phoneNumber) {
+		const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+		const match = cleaned.match(/^(\d{2})(\d{1})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+		if (match) {
+			return `+${match[1]} (${match[2]}) ${match[3]} ${match[4]} ${match[5]} ${match[6]} ${match[7]}`;
+		}
+		return phoneNumber;
+	}
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -121,6 +125,7 @@ export const SignUpForm = () => {
 										style={styles.textInput}
 										{...field}
 										value={field.value}
+										autoCapitalize="none"
 										maxLength={32}
 										label="Nom d'utilisateur"
 										mode="outlined"
@@ -189,13 +194,22 @@ export const SignUpForm = () => {
 							}}
 							render={({ field }) => (
 								<View>
-									<TextInput style={styles.textInput} {...field} value={field.value} maxLength={50} label="Email" mode="outlined" error={errors.email} left={<TextInput.Icon icon="email" />} onChangeText={(text) => field.onChange(text)} />
+									<TextInput
+										style={styles.textInput}
+										{...field}
+										value={field.value}
+										maxLength={50}
+										label="Email"
+										mode="outlined"
+										error={errors.email}
+										left={<TextInput.Icon icon="email" />}
+										onChangeText={(text) => field.onChange(text)}
+									/>
 									{errors.email && <HelperText type="error">{errors.email.message}</HelperText>}
 								</View>
 							)}
 						/>
 
-						{/* Pour pouvoir utiliser le composant TextInputMask et le theme Paper, nous avons créé un composant custom */}
 						<Controller
 							name="phone"
 							control={control}
@@ -204,24 +218,21 @@ export const SignUpForm = () => {
 								// required: 'Numéro de téléphone est obligatoire',
 								pattern: {
 									value: /\B(?=(\d{2})+(?!\d))(?<!\+3)|\B(?<=\+33)/g,
-									message: 'Invalid email address',
+									message: 'Invalid Phone number',
 								},
 							}}
 							render={({ field }) => (
-								<CustomTextInput
+								<TextInput
 									style={styles.textInput}
 									label="Numéro de téléphone"
 									mode="outlined"
-									maxLength={56}
+									maxLength={25}
 									error={errors.phone}
-									leftIconName="phone"
-									maskType="custom"
-									maskOptions={{
-										mask: '+33 (0)9-99-99-99-99',
-									}}
+									left={<TextInput.Icon icon="phone" />}
+									autoCapitalize="none"
 									keyboardType="numeric"
-									value={field.value}
-									onChangeText={field.onChange}
+									value={field.value.replace(/\D/g, '')} // Remove non-numeric characters
+									onChangeText={(text) => field.onChange(text.replace(/\D/g, ''))} // Remove non-numeric characters
 								/>
 							)}
 						/>
@@ -232,7 +243,16 @@ export const SignUpForm = () => {
 							// rules={{ required: 'Address is required' }}
 							render={({ field }) => (
 								<View>
-									<TextInput style={styles.textInput} {...field} value={field.value} label="Adresse" mode="outlined" error={errors.address} left={<TextInput.Icon icon="map-marker" />} onChangeText={(text) => field.onChange(text)} />
+									<TextInput
+										style={styles.textInput}
+										{...field}
+										value={field.value}
+										label="Adresse"
+										mode="outlined"
+										error={errors.address}
+										left={<TextInput.Icon icon="map-marker" />}
+										onChangeText={(text) => field.onChange(text)}
+									/>
 									{errors.address && <HelperText type="error">{errors.address.message}</HelperText>}
 								</View>
 							)}
@@ -244,7 +264,16 @@ export const SignUpForm = () => {
 							// rules={{ required: 'La ville est obligatoire.' }}
 							render={({ field }) => (
 								<View>
-									<TextInput style={styles.textInput} {...field} value={field.value} label="Ville" mode="outlined" error={errors.city} left={<TextInput.Icon icon="city" />} onChangeText={(text) => field.onChange(text)} />
+									<TextInput
+										style={styles.textInput}
+										{...field}
+										value={field.value}
+										label="Ville"
+										mode="outlined"
+										error={errors.city}
+										left={<TextInput.Icon icon="city" />}
+										onChangeText={(text) => field.onChange(text)}
+									/>
 									{errors.city && <HelperText type="error">{errors.city.message}</HelperText>}
 								</View>
 							)}
@@ -332,7 +361,9 @@ export const SignUpForm = () => {
 						/>
 						<View style={styles.checkboxContainer}>
 							<CheckBox value={acceptedTerms} onValueChange={toggleTermsAcceptance} />
-							<Text style={styles.checkboxLabel}>J'accepte les conditions d'utilisation de Cashetizer et la politique de confidentialité de Cashetizer industry.</Text>
+							<Text style={styles.checkboxLabel}>
+								J'accepte les conditions d'utilisation de Cashetizer et la politique de confidentialité de Cashetizer industry.
+							</Text>
 						</View>
 						<View style={styles.buttonsContainer}>
 							<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>

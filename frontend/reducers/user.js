@@ -11,8 +11,8 @@ const user = createSlice({
 	initialState,
 	reducers: {
 		setUser: (state, action) => {
-			console.log('actionPayload', action.payload);
-			state.value = { ...action.payload };
+			// console.log('actionPayload', action.payload);
+			state.value = action.payload;
 		},
 		setToken: (state, action) => {
 			state.token = action.payload;
@@ -21,8 +21,8 @@ const user = createSlice({
 			state.error = action.payload;
 		},
 		clearUser: (state) => {
-			state.userData = null;
-			state.token = null;
+			state.value = null;
+			state.tokenValue = null;
 			state.error = null;
 		},
 	},

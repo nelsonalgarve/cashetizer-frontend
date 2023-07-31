@@ -3,10 +3,16 @@ import { Controller, useController, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUser, selectUserData, setToken, setUser } from '../../../../reducers/user';
 import { CustomTextInput } from '../components/CustomTextInput';
+import { SignOut } from '../components/SignOut';
 import formTheme from '../themes/FormTheme';
 
 export const SignInForm = () => {
+	const dispatch = useDispatch();
+	const user = useSelector((state) => state.user.value);
+	const token = useSelector((state) => state.user.token);
 	const {
 		handleSubmit,
 		control,
@@ -17,7 +23,7 @@ export const SignInForm = () => {
 
 	const onSubmit = (data) => {
 		// Adresse du backend pour Fetch POST login
-		const signIn = 'http://192.168.0.15:3000/users/login';
+		const signIn = 'http://192.168.0.12:3000/users/login';
 
 		// Objet user à envoyer au backend
 		const requestData = {
@@ -32,18 +38,19 @@ export const SignInForm = () => {
 			body: JSON.stringify(requestData),
 		})
 			.then((response) => response.json())
-			.then((data) => {
-				console.log('data', data);
+			.then((userData) => {
+				// console.log('data', userData.user);
 				// Réponse du backend { user: {...}, token: "..." }
-				if (data.user && data.token) {
-					console.log('Succes loggedIn', data);
-					dispatch(setToken(data.token));
-					dispatch(setUser(data.user));
+				if (userData.user && userData.token) {
+					// console.log('Succes loggedIn', userData);
+					dispatch(clearUser());
+					dispatch(setToken(userData.token));
+					dispatch(setUser(userData.user));
 					// affichage du reducer user
-					console.log('userfromreducer', user);
-					console.log('tokenFormReducer', token);
+					// console.log('userfromreducer', user);
+					// console.log('tokenFormReducer', token);
 				} else {
-					console.log('Error', data.message || 'Signin failed');
+					console.log('Error', userData.message || 'Signin failed');
 				}
 			})
 			.catch((error) => {
@@ -74,7 +81,18 @@ export const SignInForm = () => {
 						}}
 						render={({ field }) => (
 							<View>
-								<TextInput {...field} style={styles.textInput} value={field.value} maxLength={50} label="Email" mode="outlined" error={errors.email} left={<TextInput.Icon icon="email" />} onChangeText={(text) => field.onChange(text)} />
+								<TextInput
+									{...field}
+									style={styles.textInput}
+									value={field.value}
+									maxLength={50}
+									label="Email"
+									mode="outlined"
+									autoCapitalize="none"
+									error={errors.email}
+									left={<TextInput.Icon icon="email" />}
+									onChangeText={(text) => field.onChange(text)}
+								/>
 								{errors.email && <HelperText type="error">{errors.email.message}</HelperText>}
 							</View>
 						)}
@@ -113,6 +131,7 @@ export const SignInForm = () => {
 					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
 						Connexion
 					</Button>
+					<SignOut />
 				</ScrollView>
 			</View>
 			{/* </KeyboardAvoidingView> */}
