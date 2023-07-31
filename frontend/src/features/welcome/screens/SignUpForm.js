@@ -16,8 +16,54 @@ export const SignUpForm = () => {
 	} = useForm();
 
 	const onSubmit = (data) => {
-		// Handle form submission logic here
 		console.log(data);
+		// Perform the fetch request to your API endpoint here
+		const signUpEndpoint = 'http://192.168.0.15:3000/users';
+
+		// Build the request data object in the format expected by the server
+		const requestData = {
+			username: data.username,
+			firstname: data.firstname,
+			lastname: data.lastname,
+			email: data.email,
+			password: data.password,
+			number: data.number,
+			street: data.address,
+			city: data.city,
+			zipCode: data.zipCode,
+			phone: data.phone,
+			cardName: data.cardName,
+			cardNumber: data.cardNumber,
+			cardType: data.cardType,
+			expDate: data.expDate,
+			isVendor: data.isVendor,
+			notifications: data.notifications,
+		};
+
+		fetch(signUpEndpoint, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(requestData),
+		})
+			.then((response) => response.json())
+			.then((responseData) => {
+				console.log(responseData);
+
+				// Assuming your server responds with a success message like { user: {...}, token: "..." }
+				if (responseData.user && responseData.token) {
+					console.log('Succes loggedIn', responseData.user);
+					// Dispatch to the user reducer and redirect to homepage
+				} else {
+					console.log('Error', responseData.message || 'Sign-up failed');
+				}
+			})
+			.catch((error) => {
+				console.error('Error signing up:', error);
+				// erreur lors de la procédure dínscription
+				console.log('Error', 'An error occurred while signing up. Please try again later.');
+			});
 	};
 
 	const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -117,17 +163,7 @@ export const SignUpForm = () => {
 							}}
 							render={({ field }) => (
 								<View>
-									<TextInput
-										style={styles.textInput}
-										{...field}
-										value={field.value}
-										maxLength={50}
-										label="Email"
-										mode="outlined"
-										error={errors.email}
-										left={<TextInput.Icon icon="email" />}
-										onChangeText={(text) => field.onChange(text)}
-									/>
+									<TextInput style={styles.textInput} {...field} value={field.value} maxLength={50} label="Email" mode="outlined" error={errors.email} left={<TextInput.Icon icon="email" />} onChangeText={(text) => field.onChange(text)} />
 									{errors.email && <HelperText type="error">{errors.email.message}</HelperText>}
 								</View>
 							)}
@@ -157,7 +193,7 @@ export const SignUpForm = () => {
 									maskOptions={{
 										mask: '+33 (0)9-99-99-99-99',
 									}}
-									// keyboardType="numeric"
+									keyboardType="numeric"
 									value={field.value}
 									onChangeText={field.onChange}
 								/>
@@ -170,16 +206,7 @@ export const SignUpForm = () => {
 							rules={{ required: 'Address is required' }}
 							render={({ field }) => (
 								<View>
-									<TextInput
-										style={styles.textInput}
-										{...field}
-										value={field.value}
-										label="Address"
-										mode="outlined"
-										error={errors.address}
-										left={<TextInput.Icon icon="map-marker" />}
-										onChangeText={(text) => field.onChange(text)}
-									/>
+									<TextInput style={styles.textInput} {...field} value={field.value} label="Address" mode="outlined" error={errors.address} left={<TextInput.Icon icon="map-marker" />} onChangeText={(text) => field.onChange(text)} />
 									{errors.address && <HelperText type="error">{errors.address.message}</HelperText>}
 								</View>
 							)}
@@ -191,16 +218,7 @@ export const SignUpForm = () => {
 							rules={{ required: 'City is required' }}
 							render={({ field }) => (
 								<View>
-									<TextInput
-										style={styles.textInput}
-										{...field}
-										value={field.value}
-										label="City"
-										mode="outlined"
-										error={errors.city}
-										left={<TextInput.Icon icon="city" />}
-										onChangeText={(text) => field.onChange(text)}
-									/>
+									<TextInput style={styles.textInput} {...field} value={field.value} label="City" mode="outlined" error={errors.city} left={<TextInput.Icon icon="city" />} onChangeText={(text) => field.onChange(text)} />
 									{errors.city && <HelperText type="error">{errors.city.message}</HelperText>}
 								</View>
 							)}
@@ -236,8 +254,7 @@ export const SignUpForm = () => {
 								required: 'Password is required',
 								pattern: {
 									value: passwordPattern,
-									message:
-										'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
+									message: 'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
 								},
 							}}
 							render={({ field }) => (
