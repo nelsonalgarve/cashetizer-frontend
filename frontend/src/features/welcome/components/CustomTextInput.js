@@ -15,7 +15,7 @@ export const CustomTextInput = ({ style, label, mode, error, leftIconName, maskT
 				left={<TextInput.Icon icon={leftIconName} />}
 				value={value}
 				onChangeText={onChangeText}
-				keyboardType="keyboardType"
+				keyboardType={keyboardType}
 			/>
 			{maskType && (
 				<TextInputMask type={maskType} options={maskOptions} keyboardType={keyboardType} value={value} onChangeText={onChangeText} />

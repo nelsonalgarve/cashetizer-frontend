@@ -17,6 +17,15 @@ import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
 import { theme } from './src/infrastructure/theme';
 import themePaper from './src/infrastructure/theme/themePaper';
 import { Ionicons } from '@expo/vector-icons'; 
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import user from './reducers/user'
+
+
+const store = configureStore({
+	reducer: {user},
+   });
+
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +42,7 @@ export default App = () => {
 
 	return (
 		<>
+		  <Provider store={store}>
 			<ThemeProvider theme={theme}>
 				<PaperProvider theme={themePaper}>
 					<SafeAreaView style={styles.container}>
@@ -90,7 +100,7 @@ export default App = () => {
 					</SafeAreaView>   
 				</PaperProvider>
 			</ThemeProvider>
-			<ExpoStatusBar style="auto" />
+			</Provider>
 		</>
 	);
 };

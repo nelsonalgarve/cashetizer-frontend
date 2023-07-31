@@ -1,13 +1,17 @@
-import {useState} from 'react';
+import React, {useState} from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, View, Text} from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
 import CheckBox from 'expo-checkbox';
+import { useDispatch } from 'react-redux';
+import {user} from '../../../../reducers/user';
+
 
 export const SignUpForm = () => {
+	const dispatch = useDispatch();
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 
@@ -20,13 +24,62 @@ export const SignUpForm = () => {
 	} = useForm();
 
 	const onSubmit = (data) => {
-		if (acceptedTerms) {
-			console.log(data);
-		  } else {
+		if (!acceptedTerms) {
 			alert("Veuillez accepter les termes d'utilisation avant de vous inscrire.");
-		  }
+		  };
+		  console.log(data);
+		  // Perform the fetch request to your API endpoint here
+		  const signUpEndpoint = 'http://192.168.0.15:3000/users';
+  
+		  // Build the request data object in the format expected by the server
+		  const requestData = {
+			  username: data.username,
+			  firstname: data.firstname,
+			  lastname: data.lastname,
+			  email: data.email,
+			  password: data.password,
+			  number: data.number,
+			  street: data.address,
+			  city: data.city,
+			  zipCode: data.zipCode,
+			  phone: data.phone,
+			  cardName: data.cardName,
+			  cardNumber: data.cardNumber,
+			  cardType: data.cardType,
+			  expDate: data.expDate,
+			  isVendor: data.isVendor,
+			  notifications: data.notifications,
+		  };
+  
+		  fetch(signUpEndpoint, {
+			  method: 'POST',
+			  headers: {
+				  'Content-Type': 'application/json',
+			  },
+			  body: JSON.stringify(requestData),
+		  })
+			  .then((response) => response.json())
+			  .then((responseData) => {
+				  console.log(responseData);
+  
+				  // Assuming your server responds with a success message like { user: {...}, token: "..." }
+				  if (data.user && data.token) {
+					  console.log('Succes loggedIn', data);
+					  // Dispatch to the user reducer and redirect to homepage
+				  } else {
+					  console.log('Error', data.message || 'Sign-up failed');
+				  }
+			  })
+			  .catch((error) => {
+				  console.error('Error signing up:', error);
+				  // erreur lors de la procédure dínscription
+				  console.log('Error', 'An error occurred while signing up. Please try again later.');
+			  });
 		
 	};
+	/* const onTogglePassword = () => {
+        setShowPassword(!showPassword);
+    }; */
 
 	const toggleTermsAcceptance = () => {
 		setAcceptedTerms(!acceptedTerms);
@@ -121,10 +174,10 @@ export const SignUpForm = () => {
 							control={control}
 							defaultValue=""
 							rules={{
-								required: 'Email is required',
+								required: "L'email est obligatoire",
 								pattern: {
 									value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-									message: 'Invalid email address',
+									message: 'Adresse email incorrecte',
 								},
 							}}
 							render={({ field }) => (
@@ -151,7 +204,7 @@ export const SignUpForm = () => {
 							control={control}
 							defaultValue=""
 							rules={{
-								required: 'Phone is required',
+								required: 'Numéro de téléphone est obligatoire',
 								pattern: {
 									value: /\B(?=(\d{2})+(?!\d))(?<!\+3)|\B(?<=\+33)/g,
 									message: 'Invalid email address',
@@ -160,8 +213,8 @@ export const SignUpForm = () => {
 							render={({ field }) => (
 								<CustomTextInput
 									style={styles.textInput}
-									label="Phone"
-									mode="outlined"
+									label="Numéro de téléphone"
+									mode="outline"
 									maxLength={56}
 									error={errors.phone}
 									leftIconName="phone"
@@ -169,7 +222,7 @@ export const SignUpForm = () => {
 									maskOptions={{
 										mask: '+33 (0)9-99-99-99-99',
 									}}
-									// keyboardType="numeric"
+									keyboardType="numeric"
 									value={field.value}
 									onChangeText={field.onChange}
 								/>
@@ -186,7 +239,7 @@ export const SignUpForm = () => {
 										style={styles.textInput}
 										{...field}
 										value={field.value}
-										label="Address"
+										label="Adresse"
 										mode="outlined"
 										error={errors.address}
 										left={<TextInput.Icon icon="map-marker" />}
@@ -200,14 +253,14 @@ export const SignUpForm = () => {
 							name="city"
 							control={control}
 							defaultValue=""
-							rules={{ required: 'City is required' }}
+							rules={{ required: 'La ville est obligatoire.' }}
 							render={({ field }) => (
 								<View>
 									<TextInput
 										style={styles.textInput}
 										{...field}
 										value={field.value}
-										label="City"
+										label="Ville"
 										mode="outlined"
 										error={errors.city}
 										left={<TextInput.Icon icon="city" />}
@@ -228,7 +281,7 @@ export const SignUpForm = () => {
 										style={styles.textInput}
 										{...field}
 										value={field.value}
-										label="Zip Code"
+										label="Code postal"
 										mode="outlined"
 										keyboardType="numeric"
 										error={errors.zipCode}
@@ -312,8 +365,8 @@ export const SignUpForm = () => {
 							<Text style={styles.buttonText}>Créer un compte</Text>
 							</Button>
 							
-							<Button style={styles.buttonOutlined} mode="outlined" onPress={onReset}>
-								Reset
+							<Button mode="outlined" onPress={onReset}>
+								Mot de passe oublié?
 							</Button>
 							
 							
