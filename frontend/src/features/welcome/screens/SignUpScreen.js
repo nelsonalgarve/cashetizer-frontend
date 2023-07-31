@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, StyleSheet, Text, View } from 'react-native';
-import MaskedTextInput from 'react-native-masked-text';
+import { TextInputMask } from 'react-native-masked-text';
 import { Button, TextInput } from 'react-native-paper';
 
 export const SignUpScreen = () => {
@@ -142,10 +142,20 @@ export const SignUpScreen = () => {
                     <TextInput
                         style={styles.input}
                         onBlur={onBlur}
-                        onChangeText={value => onChange(value)}
-                        value={value}
                         placeholder='Entrez votre code postal'
                         left={<TextInput.Icon icon='map' />}
+                        // value={value}
+                        // onChangeText={value => onChange(value)}
+                        render={(props) => (
+                            <TextInputMask
+                              {...props}
+                              value={value}
+                              type="cpf"
+                              mask="+1 (999) 999-9999"
+                            //   ref={ref}
+                              onChangeText={(value) => onChange(value)}
+                            />
+                          )}
                     />
                 )}
                 name='postalCode'
@@ -155,13 +165,24 @@ export const SignUpScreen = () => {
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
                     <View>
-                        <MaskedTextInput
+                        <TextInput
                             style={styles.input}
+                            // mode='outlined'
                             onBlur={onBlur}
-                            onChangeText={onChange}
                             value={value}
+                            onChangeText={(value) => onChange(value)}
                             placeholder='Entrez votre numéro de téléphone'
-                            mask='+1 (999) 999-9999'
+                            left={<TextInput.Icon icon='email' />}
+                           
+                            // render={(props) => (
+                            //     <MaskedTextInput
+                            //         {...props}
+                            //         mask="+1 (999) 999-9999"
+                            //         type="cpf"
+                            //         value={value}
+                            //         onChangeText={(value) => onChange(value)}
+                            //     />
+                            //     )}
                         />
                     </View>
                 )}
@@ -175,7 +196,7 @@ export const SignUpScreen = () => {
                     <TextInput
                         style={{ contentStyle: 'red' }}
                         fontSize={5}
-                        mode='outlined'
+                        // mode='outlined'
                         placeholder='Entrez votre mot de passe'
                         secureTextEntry={secureTextEntry} // Fix this prop name
                         onChangeText={value => onChange(value)}

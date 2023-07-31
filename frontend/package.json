@@ -1,40 +1,38 @@
 {
-    "name": "my-app",
-    "version": "1.0.0",
-    "main": "node_modules/expo/AppEntry.js",
-    "scripts": {
-        "start": "expo start",
-        "android": "expo start --android",
-        "ios": "expo start --ios",
-        "web": "expo start --web",
-        "lint": "eslint src --ext .js"
-    },
-    "dependencies": {
-        "@expo-google-fonts/inter": "^0.2.3",
-        "@expo-google-fonts/lato": "^0.2.3",
-        "@expo-google-fonts/oswald": "^0.2.3",
-        "@react-navigation/native": "^6.1.7",
-        "@react-navigation/native-stack": "^6.9.13",
-        "expo": "~49.0.5",
-        "expo-font": "~11.4.0",
-        "expo-splash-screen": "~0.20.5",
-        "expo-status-bar": "~1.6.0",
-        "react": "^18.2.0",
-        "react-hook-form": "^7.45.2",
-        "react-native": "^0.72.3",
-        "react-native-masked-text": "^1.13.0",
-        "react-native-paper": "^5.9.1",
-        "react-native-safe-area-context": "4.6.3",
-        "react-native-screens": "~3.22.0",
-        "react-native-svg": "13.9.0",
-        "react-native-vector-icons": "^10.0.0",
-        "styled-components": "^6.0.5"
-    },
-    "devDependencies": {
-        "@babel/core": "^7.20.0",
-        "@react-native-community/eslint-config": "^3.2.0",
-        "eslint": "^8.45.0",
-        "prettier": "^3.0.0"
-    },
-    "private": true
+	"name": "cashetizer",
+	"version": "1.0.0",
+	"main": "node_modules/expo/AppEntry.js",
+	"scripts": {
+		"start": "npx expo start",
+		"android": "npx expo start --android",
+		"ios": "npx expo start --ios",
+		"web": "npx expo start --web"
+	},
+	"dependencies": {
+		"@babel/preset-env": "^7.1.6",
+		"@expo-google-fonts/inter": "^0.2.3",
+		"@expo-google-fonts/lato": "^0.2.3",
+		"@expo-google-fonts/oswald": "^0.2.3",
+		"@react-navigation/native": "^6.1.7",
+		"@react-navigation/native-stack": "^6.9.13",
+		"expo": "~49.0.5",
+		"expo-font": "~11.4.0",
+		"expo-status-bar": "~1.6.0",
+		"react": "^18.2.0",
+		"react-hook-form": "^7.45.2",
+		"react-native": "^0.72.3",
+		"react-native-mask-text": "^0.14.2",
+		"react-native-masked-text": "^1.13.0",
+		"react-native-paper": "^5.9.1",
+		"react-native-safe-area-context": "4.6.3",
+		"react-native-screens": "~3.22.0",
+		"react-native-svg": "13.9.0",
+		"react-native-text-input-mask": "^3.2.0",
+		"react-native-vector-icons": "^10.0.0",
+		"styled-components": "^6.0.5"
+	},
+	"devDependencies": {
+		"@babel/core": "^7.20.0"
+	},
+	"private": true
 }

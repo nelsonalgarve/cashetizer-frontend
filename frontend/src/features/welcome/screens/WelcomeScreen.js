@@ -1,77 +1,68 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import formTheme from '../themes/FormTheme';
 
 export const WelcomeScreen = ({ navigation }) => {
-    const handleSignUpPress = () => {
-        navigation.navigate('SignUpScreen');
-    };
+	const handleSignUpPress = () => {
+		navigation.navigate('SignUp');
+	};
 
-    const handleSignInPress = () => {
-        navigation.navigate('SignIn');
-    };
+	const handleSignInPress = () => {
+		navigation.navigate('SignIn');
+	};
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.imageContainer}>
-                <Image source={require('../../../../assets/LogoText.png')} style={styles.image} />
-            </View>
-
-            <View style={styles.authButtonsContainer}>
-                <TouchableOpacity style={styles.authButton} onPress={handleSignUpPress}>
-                    <Text style={styles.authButtonText}>Sign up</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.authButton} onPress={handleSignInPress}>
-                    <Text style={styles.authButtonText}>Sign in</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-    );
+	return (
+		<PaperProvider theme={formTheme}>
+			<View style={styles.container}>
+				<View style={styles.imageContainer}>
+					<Image source={require('../../../../assets/LogoCash.png')} style={styles.image} />
+				</View>
+				<View style={styles.buttonsContainer}>
+					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignUpPress}>
+						Sign Up
+					</Button>
+					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignInPress}>
+						Sign In
+					</Button>
+				</View>
+			</View>
+		</PaperProvider>
+	);
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#155263',
-    },
-    imageContainer: {
-        marginTop: 0,
-        alignItems: 'center',
-    },
-    searchBar: {
-        backgroundColor: 'white',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        marginTop: 20,
-        borderRadius: 25,
-    },
-    categoryButtons: {
-        // A remplir plus tard
-    },
-    categoryButton: {
-        // A remplir plus tard
-    },
-    categoryButtonText: {
-        // A remplir plus tard
-    },
-    authButtonsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        width: '100%',
-    },
-    authButton: {
-        borderRadius: 25,
-        backgroundColor: '#FFCE52',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        marginVertical: 10,
-    },
-    authButtonText: {
-        color: 'white',
-        fontSize: 18,
-    },
-    image: {
-        width: 400,
-        height: 400,
-        resizeMode: 'contain',
-    },
+	container: {
+		flex: 1,
+		backgroundColor: '#155263',
+	},
+	imageContainer: {
+		position: 'absolute', // Use absolute positioning for the image container
+		top: 0, // Position the image container at the top edge of the screen
+		left: 0, // Position the image container at the left edge of the screen
+		right: 0, // Position the image container at the right edge of the screen
+		bottom: '80%', // Set the bottom edge of the image container to be at 50% of the screen height
+	},
+	image: {
+		flex: 1,
+		maxWidth: '100%', // Let the width of the image fill the image containe
+		// resizeMode: 'contain',
+	},
+	buttonsContainer: {
+		position: 'absolute', // Use absolute positioning for the buttons container
+		bottom: 0, // Position the buttons container at the bottom edge of the screen
+		left: 0, // Position the buttons container at the left edge of the screen
+		right: 0, // Position the buttons container at the right edge of the screen
+		paddingBottom: 20, // Add padding at the bottom to create space between the buttons and the bottom edge
+		flexDirection: 'row',
+		justifyContent: 'center',
+	},
+	buttonOutlined: {
+		margin: 10,
+		backgroundColor: '#FFCE52',
+		fontColor: 'black',
+		borderWidth: 1,
+		width: '45%',
+		margin: 12,
+	},
 });
