@@ -12,7 +12,7 @@ export const SignOut = () => {
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.value);
 	const token = useSelector((state) => state.user.token);
-
+	console.log(token);
 	const onSubmitLogout = () => {
 		// Adresse du backend pour Fetch POST logout
 		const logout = 'http://192.168.0.12:3000/users/logoutAll';
@@ -36,7 +36,7 @@ export const SignOut = () => {
 			.then((data) => {
 				// setData(data);
 				dispatch(clearUser());
-				dispatch(setToken(null));
+				// dispatch(setToken());
 			})
 			.catch((error) => {
 				setError(error.message);

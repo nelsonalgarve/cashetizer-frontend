@@ -1,26 +1,36 @@
+import { Picker } from '@react-native-community/picker';
 import CheckBox from 'expo-checkbox';
 import React, { useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
-import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import { Button, HelperText, Menu, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData, setToken, setUser } from '../../../../reducers/user';
-import { CustomTextInput } from '../components/CustomTextInput';
-import formTheme from '../themes/FormTheme';
+import formTheme from '../../../features/welcome/themes/FormTheme';
+import { CategoriesAutocomplete } from '../components/CategoriesAutocomplete';
 
-export const SignUpForm = () => {
+export const ItemForm = () => {
+	const [isModalVisible, setModalVisible] = useState(false);
+	const [selectedOption, setSelectedOption] = useState('');
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.value);
 	const token = useSelector((state) => state.user.token);
 	const userData = useSelector(selectUserData);
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
-	const [showPassword, setShowPassword] = useState(false);
+
+	const handleOptionSelect = (value) => {
+		setSelectedOption(value);
+		setValue('dropdown', value);
+		setModalVisible(false);
+	};
 
 	const {
 		handleSubmit,
 		control,
+		setValue,
 		formState: { errors },
 		getValues,
 		reset,
@@ -33,7 +43,7 @@ export const SignUpForm = () => {
 		}
 
 		// Adresse du backend pour Fetch POST signup
-		const signUpEndpoint = 'http://192.168.0.15:3000/users';
+		const signUpEndpoint = 'http://192.168.0.15:3000/items';
 
 		// Objet user à envoyer au backend
 		const requestData = {
@@ -85,28 +95,26 @@ export const SignUpForm = () => {
 			});
 	};
 
-	const onTogglePassword = () => {
-		setShowPassword(!showPassword);
-	};
-
 	const toggleTermsAcceptance = () => {
 		setAcceptedTerms(!acceptedTerms);
 	};
-
-	const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 	const onReset = () => {
 		reset();
 	};
 
-	function formatPhoneNumber(phoneNumber) {
-		const cleaned = ('' + phoneNumber).replace(/\D/g, '');
-		const match = cleaned.match(/^(\d{2})(\d{1})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/);
-		if (match) {
-			return `+${match[1]} (${match[2]}) ${match[3]} ${match[4]} ${match[5]} ${match[6]} ${match[7]}`;
-		}
-		return phoneNumber;
-	}
+	const dropdownCategories = [
+		{ label: 'Option 1', value: 'option1' },
+		{ label: 'Option 2', value: 'option2' },
+		{ label: 'Option 3', value: 'option3' },
+		// Add more options as needed
+	];
+	const dropdownOptions = [
+		{ label: 'Option 1', value: 'option1' },
+		{ label: 'Option 2', value: 'option2' },
+		{ label: 'Option 3', value: 'option3' },
+		// Add more options as needed
+	];
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -114,63 +122,43 @@ export const SignUpForm = () => {
 				<View style={styles.container}>
 					{/* <KeyboardAvoidingView style={styles.container} behavior="padding" keyboardVerticalOffset={50}> */}
 					<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+						<CategoriesAutocomplete />
+						<View style={styles.container}>
+							<Text style={styles.label}>Choisir une Catégorie</Text>
+
+							<Controller
+								control={control}
+								render={({ field: { onChange, value } }) => (
+									<Picker
+										selectedValue={value}
+										onValueChange={(itemValue) => {
+											onChange(itemValue);
+											setValue('dropdown', itemValue); // This is required to update the form value
+										}}>
+										{dropdownOptions.map((option) => (
+											<Picker.Item key={option.value} label={option.label} value={option.value} />
+										))}
+									</Picker>
+								)}
+								name="dropdown"
+								defaultValue={dropdownOptions[0].value} // Set the default value here
+							/>
+						</View>
 						<Controller
-							name="username"
+							name="description"
 							control={control}
 							defaultValue=""
-							rules={{ required: 'Username is required' }}
+							rules={{ required: "La description de l'objet est obligatoire" }}
 							render={({ field }) => (
 								<View>
 									<TextInput
 										style={styles.textInput}
 										{...field}
 										value={field.value}
-										maxLength={32}
-										label="Nom d'utilisateur"
-										mode="outlined"
-										error={errors.username}
-										left={<TextInput.Icon icon="account" />}
-										onChangeText={(text) => field.onChange(text)}
-									/>
-									{errors.username && <HelperText type="error">{errors.username.message}</HelperText>}
-								</View>
-							)}
-						/>
-						<Controller
-							name="firstname"
-							control={control}
-							defaultValue=""
-							rules={{ required: 'First name is required' }}
-							render={({ field }) => (
-								<View>
-									<TextInput
-										style={styles.textInput}
-										{...field}
-										value={field.value}
-										maxLength={32}
-										label="Prénom"
-										mode="outlined"
-										error={errors.firstname}
-										left={<TextInput.Icon icon="account-outline" />}
-										onChangeText={(text) => field.onChange(text)}
-									/>
-									{errors.firstname && <HelperText type="error">{errors.firstname.message}</HelperText>}
-								</View>
-							)}
-						/>
-						<Controller
-							name="lastname"
-							control={control}
-							defaultValue=""
-							rules={{ required: 'Last name is required' }}
-							render={({ field }) => (
-								<View>
-									<TextInput
-										style={styles.textInput}
-										{...field}
-										value={field.value}
-										maxLength={32}
-										label="Nom de famille"
+										maxLength={250}
+										multiline
+										numberOfLines={5}
+										label="Description"
 										mode="outlined"
 										error={errors.lastname}
 										left={<TextInput.Icon icon="account-outline" />}
@@ -181,53 +169,25 @@ export const SignUpForm = () => {
 							)}
 						/>
 						<Controller
-							name="email"
 							control={control}
-							defaultValue=""
-							rules={{
-								required: "L'email est obligatoire",
-								pattern: {
-									value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-									message: 'Adresse email incorrecte',
-								},
-							}}
-							render={({ field }) => (
-								<View>
-									<TextInput style={styles.textInput} {...field} value={field.value} maxLength={50} label="Email" mode="outlined" error={errors.email} left={<TextInput.Icon icon="email" />} onChangeText={(text) => field.onChange(text)} />
-									{errors.email && <HelperText type="error">{errors.email.message}</HelperText>}
-								</View>
+							render={({ field: { onChange, value } }) => (
+								<Picker
+									selectedValue={value}
+									onValueChange={(itemValue) => {
+										onChange(itemValue);
+										setValue('dropdown', itemValue); // This is required to update the form value
+									}}>
+									{dropdownOptions.map((option) => (
+										<Picker.Item key={option.value} label={option.label} value={option.value} />
+									))}
+								</Picker>
 							)}
+							name="dropdown"
+							defaultValue={dropdownOptions[0].value} // Set the default value here
 						/>
 
-						{/* Pour pouvoir utiliser le composant TextInputMask et le theme Paper, nous avons créé un composant custom */}
 						<Controller
-							name="phone"
-							control={control}
-							defaultValue=""
-							rules={{
-								// required: 'Numéro de téléphone est obligatoire',
-								pattern: {
-									value: /\B(?=(\d{2})+(?!\d))(?<!\+3)|\B(?<=\+33)/g,
-									message: 'Invalid Phone number',
-								},
-							}}
-							render={({ field }) => (
-								<TextInput
-									style={styles.textInput}
-									label="Numéro de téléphone"
-									mode="outlined"
-									maxLength={25}
-									error={errors.phone}
-									left={<TextInput.Icon icon="phone" />}
-									autoCapitalize="none"
-									keyboardType="numeric"
-									value={field.value.replace(/\D/g, '')} // Remove non-numeric characters
-									onChangeText={(text) => field.onChange(text.replace(/\D/g, ''))} // Remove non-numeric characters
-								/>
-							)}
-						/>
-						<Controller
-							name="address"
+							name="price"
 							control={control}
 							defaultValue=""
 							rules={{ required: 'Address is required' }}
@@ -272,63 +232,38 @@ export const SignUpForm = () => {
 								</View>
 							)}
 						/>
-						<Controller
-							style={styles.textInput}
-							name="password"
-							control={control}
-							defaultValue=""
-							rules={{
-								required: 'Entrez votre mot de passe',
-								pattern: {
-									value: passwordPattern,
-									message: 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.',
-								},
-							}}
-							render={({ field }) => (
-								<View>
-									<View>
-										<TextInput
-											style={styles.textInput}
-											{...field}
-											value={field.value}
-											label="Mot de passe"
-											secureTextEntry={!showPassword}
-											mode="outlined"
-											error={errors.password}
-											left={<TextInput.Icon icon="lock" />}
-											right={<TextInput.Icon icon="eye" onPress={() => setShowPassword(!showPassword)} />}
-											onChangeText={(text) => field.onChange(text)}
-										/>
-									</View>
-									{errors.password && <HelperText type="error">{errors.password.message}</HelperText>}
-								</View>
-							)}
-						/>
-						<Controller
-							name="confirmPassword"
-							control={control}
-							defaultValue=""
-							rules={{
-								required: 'Please confirm your password',
-								validate: (value) => value === getValues('password') || 'Passwords do not match',
-							}}
-							render={({ field }) => (
-								<View>
-									<TextInput
-										style={styles.textInput}
-										{...field}
-										value={field.value}
-										label="Confirmer mot de passe"
-										secureTextEntry
-										mode="outlined"
-										error={errors.confirmPassword}
-										left={<TextInput.Icon icon="lock" />}
-										onChangeText={(text) => field.onChange(text)}
-									/>
-									{errors.confirmPassword && <HelperText type="error">{errors.confirmPassword.message}</HelperText>}
-								</View>
-							)}
-						/>
+						<View style={{ flexDirection: 'row' }}>
+							<Text style={styles.checkboxLabelExpress}>
+								Mode Express <MaterialCommunityIcons name="help-circle-outline" size={16} />
+							</Text>
+							<View style={{ padding: 16 }}>
+								<Controller
+									control={control}
+									render={({ field: { onChange, value } }) => (
+										<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+											<CheckBox value={value} onValueChange={(newValue) => onChange(newValue)} />
+											<Text>Oui</Text>
+										</View>
+									)}
+									name="checkboxExpressYes"
+									defaultValue={false}
+								/>
+							</View>
+							<View style={{ padding: 16 }}>
+								<Controller
+									control={control}
+									render={({ field: { onChange, value } }) => (
+										<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+											<CheckBox value={value} onValueChange={(newValue) => onChange(newValue)} />
+											<Text>Non</Text>
+										</View>
+									)}
+									name="checkboxExpressNo"
+									defaultValue={false}
+								/>
+							</View>
+						</View>
+
 						<View style={styles.checkboxContainer}>
 							<CheckBox value={acceptedTerms} onValueChange={toggleTermsAcceptance} />
 							<Text style={styles.checkboxLabel}>J'accepte les conditions d'utilisation de Cashetizer et la politique de confidentialité de Cashetizer industry.</Text>
@@ -339,7 +274,7 @@ export const SignUpForm = () => {
 							</Button>
 
 							<Button mode="outlined" onPress={onReset}>
-								Mot de passe oublié?
+								Mot de passe oublié ?
 							</Button>
 						</View>
 					</ScrollView>
@@ -417,5 +352,12 @@ const styles = StyleSheet.create({
 	showButtonText: {
 		fontSize: 16,
 		color: 'blue',
+	},
+	checkboxLabelExpress: {
+		fontSize: 20,
+		paddingRight: 20,
+		paddingTop: 10,
+		justifyContent: 'center',
+		color: '#3A6673',
 	},
 });

@@ -1,6 +1,7 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +11,13 @@ import { SignOut } from '../components/SignOut';
 import formTheme from '../themes/FormTheme';
 
 export const SignInForm = () => {
+	const navigation = useNavigation();
+	const handleSignUpPress = () => {
+		navigation.navigate('SignUpScreen');
+	};
+	const testCheckIdSignUpPress = () => {
+		navigation.navigate('CheckIdScreen');
+	};
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.value);
 	const token = useSelector((state) => state.user.token);
@@ -23,7 +31,7 @@ export const SignInForm = () => {
 
 	const onSubmit = (data) => {
 		// Adresse du backend pour Fetch POST login
-		const signIn = 'http://192.168.0.12:3000/users/login';
+		const signIn = 'http://192.168.0.15:3000/users/login';
 
 		// Objet user à envoyer au backend
 		const requestData = {
@@ -81,18 +89,7 @@ export const SignInForm = () => {
 						}}
 						render={({ field }) => (
 							<View>
-								<TextInput
-									{...field}
-									style={styles.textInput}
-									value={field.value}
-									maxLength={50}
-									label="Email"
-									mode="outlined"
-									autoCapitalize="none"
-									error={errors.email}
-									left={<TextInput.Icon icon="email" />}
-									onChangeText={(text) => field.onChange(text)}
-								/>
+								<TextInput {...field} style={styles.textInput} value={field.value} maxLength={50} label="Email" mode="outlined" error={errors.email} left={<TextInput.Icon icon="email" />} onChangeText={(text) => field.onChange(text)} />
 								{errors.email && <HelperText type="error">{errors.email.message}</HelperText>}
 							</View>
 						)}
@@ -125,11 +122,19 @@ export const SignInForm = () => {
 						)}
 					/>
 
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={onReset}>
-						Reset
-					</Button>
 					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
-						Connexion
+						<Text style={styles.buttonText}>Se connecter</Text>
+					</Button>
+					<Button style={styles.buttonGreenOutlined} mode="outlined" onPress={handleSignUpPress}>
+						<Text style={styles.buttonText}>Créer un compte</Text>
+					</Button>
+					<Button style={styles.buttonNoColorOutlined} mode="outlined" onPress={console.log('cool')}>
+						Mot de passe oublié?
+					</Button>
+
+					<Button onPress={onReset}>Reset</Button>
+					<Button onPress={testCheckIdSignUpPress}>
+						<Text> Test </Text>
 					</Button>
 					<SignOut />
 				</ScrollView>
@@ -142,7 +147,7 @@ export const SignInForm = () => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 40,
+		padding: 25,
 		justifyContent: 'space-between',
 	},
 	scrollContainer: {
@@ -153,6 +158,24 @@ const styles = StyleSheet.create({
 		alignContent: 'flex-end',
 		marginTop: 10,
 	},
+	buttonNoLine: {
+		color: '#FFCE52',
+		textAlign: 'center',
+		fontWeight: 'bold',
+		fontSize: 16,
+		textShadowColor: '#000',
+		textShadowOffset: {
+			width: 0.5,
+			height: 0.5,
+		},
+		textShadowRadius: 2,
+	},
+	buttonText: {
+		color: 'white',
+		textAlign: 'center',
+		fontWeight: 'bold',
+		fontSize: 16,
+	},
 	buttonOutlined: {
 		margin: 10,
 		backgroundColor: '#FFCE52',
@@ -162,6 +185,25 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 		margin: 12,
 	},
+	buttonGreenOutlined: {
+		margin: 10,
+		backgroundColor: '#155263',
+		fontColor: 'black',
+		borderWidth: 1,
+		width: '100%',
+		alignSelf: 'center',
+		margin: 12,
+	},
+	buttonNoColorOutlined: {
+		margin: 10,
+		backgroundColor: 'transparent',
+		fontColor: 'black',
+		borderWidth: 1,
+		width: '100%',
+		alignSelf: 'center',
+		margin: 12,
+	},
+
 	textInput: {
 		paddingVertical: 1,
 		paddingHorizontal: 1,

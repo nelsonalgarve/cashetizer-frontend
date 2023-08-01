@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Searchbar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import formTheme from '../themes/FormTheme';
 
@@ -11,6 +11,9 @@ export const WelcomeScreen = ({ navigation }) => {
 	const handleSignInPress = () => {
 		navigation.navigate('SignIn');
 	};
+	const handlePressItemForm = () => {
+		navigation.navigate('ItemForm');
+	};
 
 	return (
 		<PaperProvider theme={formTheme}>
@@ -18,6 +21,22 @@ export const WelcomeScreen = ({ navigation }) => {
 				<View style={styles.imageContainer}>
 					<Image source={require('../../../../assets/LogoCash.png')} style={styles.image} />
 				</View>
+				<View style={styles.buttonCategorie}>
+					<Text>test</Text>
+					<TouchableOpacity style={styles.button}>
+						<Text style={styles.buttonText}>Bricolage</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={styles.button}>
+						<Text style={styles.buttonText}>Sport</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={styles.button}>
+						<Text style={styles.buttonText}>Musique</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={styles.button}>
+						<Text style={styles.buttonText}>Multimédia</Text>
+					</TouchableOpacity>
+				</View>
+
 				<View style={styles.buttonsContainer}>
 					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignUpPress}>
 						Sign Up
@@ -25,6 +44,12 @@ export const WelcomeScreen = ({ navigation }) => {
 					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignInPress}>
 						Sign In
 					</Button>
+					<Button style={styles.buttonOutlined} mode="outlined" onPress={handlePressItemForm}>
+						ItemForm
+					</Button>
+				</View>
+				<View style={styles.infoBar}>
+					<Text style={styles.infoText}>Louez malin. Gagnez des € en chemin.</Text>
 				</View>
 			</View>
 		</PaperProvider>
@@ -34,7 +59,7 @@ export const WelcomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#155263',
+		backgroundColor: '#F1F1F1',
 	},
 	imageContainer: {
 		position: 'absolute', // Use absolute positioning for the image container
@@ -48,6 +73,31 @@ const styles = StyleSheet.create({
 		maxWidth: '100%', // Let the width of the image fill the image containe
 		// resizeMode: 'contain',
 	},
+	buttonCategorie: {
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	button: {
+		backgroundColor: '#155263',
+		paddingVertical: 12,
+		paddingHorizontal: 24,
+		borderRadius: 8,
+		marginVertical: 8,
+		alignItems: 'center',
+		/*marginTop: '50%',*/
+	},
+
+	buttonText: {
+		color: '#FFCE52',
+		textAlign: 'center',
+		fontSize: 18,
+	},
+	bottomContainer: {
+		flexDirection: 'row',
+		/*justifyContent: 'space-between',*/
+		marginVertical: 16,
+	},
+
 	buttonsContainer: {
 		position: 'absolute', // Use absolute positioning for the buttons container
 		bottom: 0, // Position the buttons container at the bottom edge of the screen
@@ -64,5 +114,15 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		width: '45%',
 		margin: 12,
+	},
+	infoBar: {
+		backgroundColor: '#FFCE52',
+		paddingVertical: 8,
+		paddingHorizontal: 16,
+	},
+	infoText: {
+		color: '#F1F1F1',
+		textAlign: 'center',
+		fontSize: 16,
 	},
 });

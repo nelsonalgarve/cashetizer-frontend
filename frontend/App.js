@@ -6,17 +6,18 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { configureStore } from '@reduxjs/toolkit';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import React from 'react';
-import { KeyboardAvoidingView, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Provider as PaperProvider } from 'react-native-paper';
+import { KeyboardAvoidingView, SafeAreaView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { IconButton, Provider as PaperProvider } from 'react-native-paper';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import user from './reducers/user';
+import { ItemForm } from './src/features/Items/screens/ItemForm';
 import { ItemsScreen } from './src/features/Items/screens/ItemsScreen';
 import { ListItems } from './src/features/Items/screens/ListItems';
 import { SingleItem } from './src/features/Items/screens/SingleItem';
 import { SignUpForm } from './src/features/welcome//screens/SignUpForm';
+import { CheckIdScreen } from './src/features/welcome/screens/CheckIdScreen';
 import { SignInForm } from './src/features/welcome/screens/SignInForm';
-import { SignUpScreen } from './src/features/welcome/screens/SignUpScreen';
 import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
 import { theme } from './src/infrastructure/theme';
 import themePaper from './src/infrastructure/theme/themePaper';
@@ -41,49 +42,33 @@ export default App = () => {
 	return (
 		<>
 			<Provider store={store}>
-				{/* <ThemeProvider theme={theme}> */}
-				<PaperProvider theme={themePaper}>
-					<SafeAreaView style={styles.container}>
-						<NavigationContainer>
-							<Stack.Navigator
-								screenOptions={{
-									headerShown: true,
-									headerTitleStyle: {
-										fontWeight: 'bold',
-										fontSize: 28,
-									},
-									headerStyle: {
-										backgroundColor: '#155263',
-									},
-									headerTintColor: '#fff',
-									headerTitleAlign: 'center',
-								}}>
-								<Stack.Screen
-									name="Welcome"
-									component={WelcomeScreen}
-									options={{
-										headerShown: false,
-									}}
-								/>
-								<Stack.Screen
-									name="SignUp"
-									component={SignUpForm}
-									options={({ navigation }) => ({
-										title: 'Créer un compte',
-										headerLeft: () => (
-											<TouchableOpacity onPress={() => navigation.navigate('Welcome')} style={styles.backButton}>
-												<Ionicons name="close" size={30} color="white" />
-											</TouchableOpacity>
-										),
-									})}
-								/>
-
-								<Stack.Screen name="SignIn" component={SignInForm} />
-
-								{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}
-								{/* <Stack.Screen
-										name="SignUpScreen"
-										component={SignUpScreen}
+				<ThemeProvider theme={theme}>
+					<PaperProvider theme={themePaper}>
+						<SafeAreaView style={styles.container}>
+							<NavigationContainer>
+								<Stack.Navigator
+									screenOptions={{
+										headerShown: true,
+										headerTitleStyle: {
+											fontWeight: 'bold',
+											fontSize: 28,
+										},
+										headerStyle: {
+											backgroundColor: '#155263',
+										},
+										headerTintColor: '#fff',
+										headerTitleAlign: 'center',
+									}}>
+									<Stack.Screen
+										name="WelcomeScreen"
+										component={WelcomeScreen}
+										options={{
+											headerShown: false,
+										}}
+									/>
+									<Stack.Screen
+										name="SignUp"
+										component={SignUpForm}
 										options={({ navigation }) => ({
 											title: 'Créer un compte',
 											headerLeft: () => (
@@ -91,15 +76,79 @@ export default App = () => {
 													<Ionicons name="close" size={30} color="white" />
 												</TouchableOpacity>
 											),
+											headerRight: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('SignInForm')} style={styles.backButton}>
+													<Ionicons name="key-outline" size={30} color="white" />
+												</TouchableOpacity>
+											),
 										})}
-									/> */}
-								{/* <ItemsScreen /> */}
-								{/* <SingleItem /> */}
-							</Stack.Navigator>
-						</NavigationContainer>
-					</SafeAreaView>
-				</PaperProvider>
-				{/* </ThemeProvider> */}
+									/>
+
+									<Stack.Screen
+										name="SignIn"
+										component={SignInForm}
+										options={({ navigation }) => ({
+											title: 'Connexion',
+											headerLeft: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('WelcomeScreen')} style={styles.backButton}>
+													<Ionicons name="close" size={30} color="white" />
+												</TouchableOpacity>
+											),
+											headerRight: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('SignUpScreen')} style={styles.newAccButton}>
+													<Ionicons name="person-add-outline" size={30} color="white" />
+												</TouchableOpacity>
+											),
+										})}
+									/>
+									<Stack.Screen
+										name="CheckIdScreen"
+										component={CheckIdScreen}
+										options={({ navigation }) => ({
+											title: 'Vérification ID',
+											headerLeft: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('WelcomeScreen')} style={styles.backButton}>
+													{/* <Ionicons name="close" size={30} color="white" /> */}
+												</TouchableOpacity>
+											),
+											headerRight: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('SignUpScreen')} style={styles.newAccButton}>
+													<Ionicons name="person-add-outline" size={30} color="white" />
+												</TouchableOpacity>
+											),
+										})}
+									/>
+									<Stack.Screen
+										name="ItemForm"
+										component={ItemForm}
+										options={{
+											headerShown: false,
+										}}
+									/>
+
+									{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}
+									{/* <Stack.Screen
+								 name="SignUpScreen"
+								 component={SignUpScreen}
+								 options={({ navigation }) => ({
+								   title: 'Créer un compte', 
+								   headerLeft: () => (
+									 <TouchableOpacity
+									   onPress={() => navigation.navigate('WelcomeScreen')}
+									   style={styles.backButton}
+									 >
+									   <Ionicons name="close" size={30} color="white" />
+									 </TouchableOpacity>
+								   ),
+								 })}
+							   /> */}
+									{/* <ItemsScreen /> */}
+									{/* <SingleItem /> */}
+								</Stack.Navigator>
+							</NavigationContainer>
+						</SafeAreaView>
+					</PaperProvider>
+				</ThemeProvider>
 			</Provider>
 		</>
 	);

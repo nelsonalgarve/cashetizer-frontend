@@ -2,8 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
 	value: {},
-	tokenValue: null,
-	error: null,
+	tokenValue: '',
+	error: '',
 };
 
 const user = createSlice({
@@ -21,9 +21,9 @@ const user = createSlice({
 			state.error = action.payload;
 		},
 		clearUser: (state) => {
-			state.value = null;
-			state.tokenValue = null;
-			state.error = null;
+			state.value = {};
+			state.tokenValue = '';
+			state.error = '';
 		},
 	},
 });
