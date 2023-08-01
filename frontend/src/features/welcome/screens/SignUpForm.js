@@ -201,34 +201,31 @@ export const SignUpForm = () => {
 
 						{/* Pour pouvoir utiliser le composant TextInputMask et le theme Paper, nous avons créé un composant custom */}
 						<Controller
-							name="phone"
-							control={control}
-							defaultValue=""
-							rules={{
-								required: 'Numéro de téléphone est obligatoire',
-								pattern: {
-									value: /\B(?=(\d{2})+(?!\d))(?<!\+3)|\B(?<=\+33)/g,
-									message: 'Invalid email address',
-								},
-							}}
-							render={({ field }) => (
-								<CustomTextInput
-									style={styles.textInput}
-									label="Numéro de téléphone"
-									mode="outlined"
-									maxLength={56}
-									error={errors.phone}
-									leftIconName="phone"
-									maskType="custom"
-									maskOptions={{
-										mask: '+33 (0)9-99-99-99-99',
-									}}
-									keyboardType="numeric"
-									value={field.value}
-									onChangeText={field.onChange}
-								/>
-							)}
-						/>
+    name="phone"
+  control={control}
+  defaultValue=""
+  rules={{
+      // required: 'Numéro de téléphone est obligatoire',
+      pattern: {
+          value: /\B(?=(\d{2})+(?!\d))(?<!\+3)|\B(?<=\+33)/g,
+          message: 'Invalid Phone number',
+      },
+  }}
+  render={({ field }) => (
+      <TextInput
+          style={styles.textInput}
+          label="Numéro de téléphone"
+          mode="outlined"
+          maxLength={25}
+          error={errors.phone}
+          left={<TextInput.Icon icon="phone" />}
+          autoCapitalize="none"
+          keyboardType="numeric"
+          value={field.value.replace(/\D/g, '')} // Remove non-numeric characters
+          onChangeText={(text) => field.onChange(text.replace(/\D/g, ''))} // Remove non-numeric characters
+      />
+  )}
+/>
 						<Controller
 							name="address"
 							control={control}

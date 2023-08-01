@@ -108,18 +108,18 @@ export default App = () => {
 									title: 'Vérification ID', 
 									headerLeft: () => (
 									  <TouchableOpacity
-										onPress={() => navigation.navigate('WelcomeScreen')}
+										onPress={() => navigation.navigate('SignUpScreen')}
 										style={styles.backButton}
 									  >
-										{/* <Ionicons name="close" size={30} color="white" /> */}
+										<Ionicons name="arrow-back" size={30} color="white" />
 									  </TouchableOpacity>
 									), 
 									headerRight: () => (
-									 <TouchableOpacity
-										onPress={() => navigation.navigate('SignUpScreen')}
-										style={styles.newAccButton}
+										<TouchableOpacity
+										onPress={() => navigation.navigate('SignInScreen')}
+										style={styles.backButton}
 									  >
-										<Ionicons name="person-add-outline" size={30} color="white" />
+										<Ionicons name="key-outline" size={30} color="white" />
 									  </TouchableOpacity>
 									  ),
 								  })}/>
