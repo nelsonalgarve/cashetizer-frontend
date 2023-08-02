@@ -3,29 +3,25 @@ import CheckBox from 'expo-checkbox';
 import React, { useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import Autocomplete from 'react-native-autocomplete-input';
+import { SelectList } from 'react-native-dropdown-select-list';
 import { TextInputMask } from 'react-native-masked-text';
-import { Button, HelperText, Menu, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import { Button, HelperText, IconButton, Menu, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData, setToken, setUser } from '../../../../reducers/user';
 import formTheme from '../../../features/welcome/themes/FormTheme';
 import { CategoriesAutocomplete } from '../components/CategoriesAutocomplete';
+import { MapPicker } from '../components/MapPicker';
+import { ModalMap } from '../components/ModalMap';
 
 export const ItemForm = () => {
-	const [isModalVisible, setModalVisible] = useState(false);
-	const [selectedOption, setSelectedOption] = useState('');
+	const [isMapVisible, setMapVisible] = useState(false);
+	const [selectedLocation, setSelectedLocation] = useState(null);
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.value);
 	const token = useSelector((state) => state.user.token);
-	const userData = useSelector(selectUserData);
-	const [acceptedTerms, setAcceptedTerms] = useState(false);
-
-	const handleOptionSelect = (value) => {
-		setSelectedOption(value);
-		setValue('dropdown', value);
-		setModalVisible(false);
-	};
 
 	const {
 		handleSubmit,
@@ -36,264 +32,267 @@ export const ItemForm = () => {
 		reset,
 	} = useForm();
 
+	// On Form Submit
 	const onSubmit = (data) => {
-		if (!acceptedTerms) {
-			alert("Veuillez accepter les termes d'utilisation avant de vous inscrire.");
-			return;
+		// Handle form submission here
+		console.log(data);
+	};
+
+	//Set The Location from the map
+	const handleLocationSelected = (location, address) => {
+		console.log('Selected location:', location);
+		console.log('Selected address:', address);
+		setSelectedLocation({ location, address });
+		setMapVisible(false);
+	};
+
+	// AUTOCOMPLETE A A DEPLACeR ICI
+	const data = [
+		{ name: 'Très usé', id: '1' },
+		{ name: 'Usé', id: '2' },
+		{ name: 'Bon état', id: '3' },
+		{ name: 'Neuf', id: '4' },
+	];
+
+	const findItem = (query) => {
+		if (query === '') {
+			return [];
 		}
 
-		// Adresse du backend pour Fetch POST signup
-		const signUpEndpoint = 'http://192.168.0.15:3000/items';
-
-		// Objet user à envoyer au backend
-		const requestData = {
-			username: data.username,
-			firstname: data.firstname,
-			lastname: data.lastname,
-			email: data.email,
-			password: data.password,
-			number: data.number,
-			street: data.address,
-			city: data.city,
-			zipCode: data.zipCode,
-			phone: data.phone,
-			cardName: data.cardName,
-			cardNumber: data.cardNumber,
-			cardType: data.cardType,
-			expDate: data.expDate,
-			isVendor: data.isVendor,
-			notifications: data.notifications,
-		};
-
-		fetch(signUpEndpoint, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(requestData),
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				// console.log('data', userData);
-
-				// Réponse du backend { user: {...}, token: "..." }
-				if (data.user && data.token) {
-					console.log('Succes loggedIn', data);
-					dispatch(setToken(data.token));
-					dispatch(setUser(data.user));
-					// affichage du reducer user
-					console.log('userfromreducer', user);
-					console.log('tokenFormReducer', token);
-				} else {
-					console.log('Error', data.message || 'Sign-up failed');
-				}
-			})
-			.catch((error) => {
-				console.error('Error signing up:', error);
-				// erreur lors de la procédure d'inscription
-				console.log('Error', 'An error occurred while signing up. Please try again later.');
-			});
+		const regex = new RegExp(`${query.trim()}`, 'i');
+		return data.filter((item) => item.name.search(regex) >= 0);
 	};
 
-	const toggleTermsAcceptance = () => {
-		setAcceptedTerms(!acceptedTerms);
-	};
+	const [selected, setSelected] = React.useState('');
+	const [categories, setCategories] = React.useState([]);
 
-	const onReset = () => {
-		reset();
-	};
-
-	const dropdownCategories = [
-		{ label: 'Option 1', value: 'option1' },
-		{ label: 'Option 2', value: 'option2' },
-		{ label: 'Option 3', value: 'option3' },
-		// Add more options as needed
-	];
-	const dropdownOptions = [
-		{ label: 'Option 1', value: 'option1' },
-		{ label: 'Option 2', value: 'option2' },
-		{ label: 'Option 3', value: 'option3' },
-		// Add more options as needed
+	const dataSelectList = [
+		{ key: 'bad', value: 'Très usé' },
+		{ key: 'used', value: 'Usé' },
+		{ key: 'good', value: 'Bon état' },
+		{ key: 'new', value: 'Neuf' },
 	];
 
 	return (
-		<KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-			<PaperProvider theme={formTheme}>
+		<PaperProvider theme={formTheme}>
+			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<View style={styles.container}>
-					{/* <KeyboardAvoidingView style={styles.container} behavior="padding" keyboardVerticalOffset={50}> */}
-					<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-						<CategoriesAutocomplete />
-						<View style={styles.container}>
-							<Text style={styles.label}>Choisir une Catégorie</Text>
-
-							<Controller
-								control={control}
-								render={({ field: { onChange, value } }) => (
-									<Picker
-										selectedValue={value}
-										onValueChange={(itemValue) => {
-											onChange(itemValue);
-											setValue('dropdown', itemValue); // This is required to update the form value
-										}}>
-										{dropdownOptions.map((option) => (
-											<Picker.Item key={option.value} label={option.label} value={option.value} />
-										))}
-									</Picker>
+					<Controller
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<Autocomplete
+								data={findItem(value)}
+								defaultValue={value}
+								onChangeText={(text) => onChange(text)}
+								onBlur={onBlur}
+								placeholder="Choix de section..."
+								renderItem={({ item }) => (
+									<TouchableOpacity onPress={() => onChange(item.name)}>
+										<Text>{item.name}</Text>
+									</TouchableOpacity>
 								)}
-								name="dropdown"
-								defaultValue={dropdownOptions[0].value} // Set the default value here
 							/>
-						</View>
+						)}
+						name="selectedFruit"
+						defaultValue=""
+					/>
+					<Controller
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<TextInput
+								label="Titre"
+								mode="outlined"
+								onChangeText={(text) => onChange(text)}
+								onBlur={onBlur}
+								value={value}
+								error={errors.name ? true : false}
+							/>
+						)}
+						name="name"
+						rules={{ required: "Le titre de l/'annonce est obligatoire" }}
+						defaultValue=""
+					/>
+
+					<Controller
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<TextInput
+								label="Description"
+								mode="outlined"
+								multiline={true}
+								numberOfLines={5}
+								style={{ height: 100, paddingVertical: 10 }}
+								onChangeText={(text) => onChange(text)}
+								onBlur={onBlur}
+								value={value}
+								error={errors.name ? true : false}
+							/>
+						)}
+						name="description"
+						rules={{ required: 'La description est obligatoire' }}
+						defaultValue=""
+					/>
+
+					<Controller
+						control={control}
+						render={({ field: { onChange, onBlur, value } }) => (
+							<SelectList setSelected={setSelected} data={dataSelectList} />
+							// <Picker selectedValue={value} onValueChange={(itemValue) => onChange(itemValue)}>
+							// 	<Picker.Item label="Quel est l'état de l'objet ?" value="" />
+							// 	<Picker.Item label="Mauvais état" value="bad" />
+							// 	<Picker.Item label="Usé" value="used" />
+							// 	<Picker.Item label="Bon état" value="good" />
+							// 	<Picker.Item label="Neuf" value="new" />
+							// </Picker>
+						)}
+						name="selectOption"
+						rules={{ required: 'Please select an option' }}
+						defaultValue=""
+					/>
+					<View style={styles.rowContainer}>
 						<Controller
-							name="description"
 							control={control}
-							defaultValue=""
-							rules={{ required: "La description de l'objet est obligatoire" }}
-							render={({ field }) => (
-								<View>
-									<TextInput
-										style={styles.textInput}
-										{...field}
-										value={field.value}
-										maxLength={250}
-										multiline
-										numberOfLines={5}
-										label="Description"
-										mode="outlined"
-										error={errors.lastname}
-										left={<TextInput.Icon icon="account-outline" />}
-										onChangeText={(text) => field.onChange(text)}
-									/>
-									{errors.lastname && <HelperText type="error">{errors.lastname.message}</HelperText>}
-								</View>
+							render={({ field: { onChange, onBlur, value } }) => (
+								<TextInput
+									style={styles.inputInRow}
+									label="Prix"
+									mode="outlined"
+									onChangeText={(text) => onChange(text)}
+									onBlur={onBlur}
+									value={value}
+									error={errors.name ? true : false}
+								/>
 							)}
+							name="Prix"
+							rules={{ required: 'Le prix est obligatoire.' }}
+							defaultValue=""
 						/>
+						<Controller
+							control={control}
+							render={({ field: { onChange, onBlur, value } }) => (
+								<TextInput
+									style={styles.inputInRow}
+									label="Caution"
+									mode="outlined"
+									onChangeText={(text) => onChange(text)}
+									onBlur={onBlur}
+									value={value}
+									error={errors.name ? true : false}
+								/>
+							)}
+							name="caution"
+							rules={{ required: 'Le montant de la caution est obligatoire.' }}
+							defaultValue=""
+						/>
+					</View>
+					<View>
+						<Controller
+							control={control}
+							render={({ field: { onChange, onBlur, value } }) => (
+								<TextInput
+									style={styles.inputInRow}
+									label="Photos"
+									mode="outlined"
+									onChangeText={(text) => onChange(text)}
+									onBlur={onBlur}
+									value={value}
+									error={errors.name ? true : false}
+								/>
+							)}
+							name="photos"
+							rules={{ required: '' }}
+							defaultValue=""
+						/>
+						<Controller
+							control={control}
+							render={({ field: { onChange, onBlur, value } }) => (
+								<TextInput
+									style={styles.inputInRow}
+									label="Calendrier"
+									mode="outlined"
+									onChangeText={(text) => onChange(text)}
+									onBlur={onBlur}
+									value={value}
+									error={errors.name ? true : false}
+								/>
+							)}
+							name="calendrier"
+							rules={{ required: '' }}
+							defaultValue=""
+						/>
+					</View>
+
+					<View style={{ Flex: 1, flexDirection: 'row' }}>
+						<Text>Select Location</Text>
+						<IconButton icon="map" size={40} onPress={() => setMapVisible(true)} />
+						<MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} />
+						{/* <Text>{selectedLocation}</Text> */}
+					</View>
+				</View>
+
+				<View style={{ flexDirection: 'row' }}>
+					<Text style={styles.checkboxLabelExpress}>
+						Mode Express <MaterialCommunityIcons name="help-circle-outline" size={16} />
+					</Text>
+					<View style={{ padding: 16 }}>
 						<Controller
 							control={control}
 							render={({ field: { onChange, value } }) => (
-								<Picker
-									selectedValue={value}
-									onValueChange={(itemValue) => {
-										onChange(itemValue);
-										setValue('dropdown', itemValue); // This is required to update the form value
-									}}>
-									{dropdownOptions.map((option) => (
-										<Picker.Item key={option.value} label={option.label} value={option.value} />
-									))}
-								</Picker>
-							)}
-							name="dropdown"
-							defaultValue={dropdownOptions[0].value} // Set the default value here
-						/>
-
-						<Controller
-							name="price"
-							control={control}
-							defaultValue=""
-							rules={{ required: 'Address is required' }}
-							render={({ field }) => (
-								<View>
-									<TextInput style={styles.textInput} {...field} value={field.value} label="Adresse" mode="outlined" error={errors.address} left={<TextInput.Icon icon="map-marker" />} onChangeText={(text) => field.onChange(text)} />
-									{errors.address && <HelperText type="error">{errors.address.message}</HelperText>}
+								<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+									<CheckBox value={value} onValueChange={(newValue) => onChange(newValue)} />
+									<Text>Oui</Text>
 								</View>
 							)}
+							name="checkboxExpressYes"
+							defaultValue={false}
 						/>
+					</View>
+					<View style={{ padding: 16 }}>
 						<Controller
-							name="city"
 							control={control}
-							defaultValue=""
-							rules={{ required: 'La ville est obligatoire.' }}
-							render={({ field }) => (
-								<View>
-									<TextInput style={styles.textInput} {...field} value={field.value} label="Ville" mode="outlined" error={errors.city} left={<TextInput.Icon icon="city" />} onChangeText={(text) => field.onChange(text)} />
-									{errors.city && <HelperText type="error">{errors.city.message}</HelperText>}
+							render={({ field: { onChange, value } }) => (
+								<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+									<CheckBox value={value} onValueChange={(newValue) => onChange(newValue)} />
+
+									<Text>Non</Text>
 								</View>
 							)}
+							name="checkboxExpressNo"
+							defaultValue={false}
 						/>
-						<Controller
-							name="zipCode"
-							control={control}
-							defaultValue=""
-							rules={{ required: 'Zip Code is required' }}
-							render={({ field }) => (
-								<View>
-									<TextInput
-										style={styles.textInput}
-										{...field}
-										value={field.value}
-										label="Code postal"
-										mode="outlined"
-										keyboardType="numeric"
-										error={errors.zipCode}
-										left={<TextInput.Icon icon="map" />}
-										onChangeText={(text) => field.onChange(text)}
-									/>
-									{errors.zipCode && <HelperText type="error">{errors.zipCode.message}</HelperText>}
-								</View>
-							)}
-						/>
-						<View style={{ flexDirection: 'row' }}>
-							<Text style={styles.checkboxLabelExpress}>
-								Mode Express <MaterialCommunityIcons name="help-circle-outline" size={16} />
-							</Text>
-							<View style={{ padding: 16 }}>
-								<Controller
-									control={control}
-									render={({ field: { onChange, value } }) => (
-										<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-											<CheckBox value={value} onValueChange={(newValue) => onChange(newValue)} />
-											<Text>Oui</Text>
-										</View>
-									)}
-									name="checkboxExpressYes"
-									defaultValue={false}
-								/>
-							</View>
-							<View style={{ padding: 16 }}>
-								<Controller
-									control={control}
-									render={({ field: { onChange, value } }) => (
-										<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-											<CheckBox value={value} onValueChange={(newValue) => onChange(newValue)} />
-											<Text>Non</Text>
-										</View>
-									)}
-									name="checkboxExpressNo"
-									defaultValue={false}
-								/>
-							</View>
-						</View>
-
-						<View style={styles.checkboxContainer}>
-							<CheckBox value={acceptedTerms} onValueChange={toggleTermsAcceptance} />
-							<Text style={styles.checkboxLabel}>J'accepte les conditions d'utilisation de Cashetizer et la politique de confidentialité de Cashetizer industry.</Text>
-						</View>
-						<View style={styles.buttonsContainer}>
-							<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
-								<Text style={styles.buttonText}>Créer un compte</Text>
-							</Button>
-
-							<Button mode="outlined" onPress={onReset}>
-								Mot de passe oublié ?
-							</Button>
-						</View>
-					</ScrollView>
+					</View>
 				</View>
-			</PaperProvider>
-		</KeyboardAvoidingView>
+			</ScrollView>
+		</PaperProvider>
 	);
 };
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		flexDirection: 'column',
 		padding: 25,
 		justifyContent: 'space-between',
 	},
-	scrollContainer: {
-		flexGrow: 1,
+	rowContainer: {
+		// flex: 1,
+		flexDirection: 'row',
+		alignItems: 'space-between',
+		justifyContent: 'flex-start',
 	},
-	buttonsContainer: {
+	pickerSelect: {
+		height: 150,
+		fontSize: 8,
+	},
+	inputInRow: {
+		flex: 1,
+		marginRight: 10,
+		marginLeft: 10,
+		fontSize: 12,
+		height: 35,
+		backgroundColor: '#E8E8E8',
+	},
+	uttonsContainer: {
 		flex: 1,
 		alignContent: 'flex-end',
 		marginTop: 10,
@@ -352,12 +351,5 @@ const styles = StyleSheet.create({
 	showButtonText: {
 		fontSize: 16,
 		color: 'blue',
-	},
-	checkboxLabelExpress: {
-		fontSize: 20,
-		paddingRight: 20,
-		paddingTop: 10,
-		justifyContent: 'center',
-		color: '#3A6673',
 	},
 });

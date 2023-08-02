@@ -11,6 +11,7 @@ import { IconButton, Provider as PaperProvider } from 'react-native-paper';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import user from './reducers/user';
+import { MapPicker } from './src/features/Items/components/MapPicker';
 import { ItemForm } from './src/features/Items/screens/ItemForm';
 import { ItemsScreen } from './src/features/Items/screens/ItemsScreen';
 import { ListItems } from './src/features/Items/screens/ListItems';
@@ -58,7 +59,8 @@ export default App = () => {
 										},
 										headerTintColor: '#fff',
 										headerTitleAlign: 'center',
-									}}>
+									}}
+								>
 									<Stack.Screen
 										name="WelcomeScreen"
 										component={WelcomeScreen}
@@ -83,7 +85,6 @@ export default App = () => {
 											),
 										})}
 									/>
-
 									<Stack.Screen
 										name="SignIn"
 										component={SignInForm}
@@ -118,14 +119,15 @@ export default App = () => {
 											),
 										})}
 									/>
+									<Stack.Screen name="ItemForm" component={ItemForm} />
+
 									<Stack.Screen
-										name="ItemForm"
-										component={ItemForm}
+										name="MapPicker"
+										component={MapPicker}
 										options={{
 											headerShown: false,
 										}}
 									/>
-
 									{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}
 									{/* <Stack.Screen
 								 name="SignUpScreen"
