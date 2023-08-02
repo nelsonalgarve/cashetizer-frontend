@@ -1,27 +1,74 @@
 import { Picker } from '@react-native-community/picker';
 import CheckBox from 'expo-checkbox';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { TextInputMask } from 'react-native-masked-text';
-import { Button, HelperText, IconButton, Menu, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import { Badge, Button, HelperText, IconButton, List, MD3Colors, Menu, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData, setToken, setUser } from '../../../../reducers/user';
 import formTheme from '../../../features/welcome/themes/FormTheme';
+import { parseAddress } from '../../helpers/addressHelper';
+import { fetchCategories } from '../../helpers/fetchCategories';
 import { CategoriesAutocomplete } from '../components/CategoriesAutocomplete';
 import { MapPicker } from '../components/MapPicker';
-import { ModalMap } from '../components/ModalMap';
 
 export const ItemForm = () => {
 	const [isMapVisible, setMapVisible] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState(null);
+	const [selectedEtat, setSelectedEtat] = useState('');
+	const [selectedRemise, setSelectedRemise] = useState('');
+	const [category, setCategory] = useState([]);
+	const [categories, setCategories] = useState([]);
+	const [myAddressParsed, setMyAddressParsed] = useState({});
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.value);
 	const token = useSelector((state) => state.user.token);
+	const [acceptedTerms, setAcceptedTerms] = useState(false);
+	const [selectedCategory, setSelectedCategory] = useState('');
+	// Filter out objects with undefined values
+	const filteredCategories = categories.filter((category) => category.value !== undefined);
+
+	useEffect(() => {
+		fetchData();
+	}, []);
+
+	const fetchData = async () => {
+		try {
+			const data = await fetchCategories(); // Use the helper function
+			console.log('from thefetch in form', data);
+			setCategories(data);
+		} catch (error) {
+			// Handle the error if needed
+		}
+	};
+
+	const handleSelectCategories = (suggestion) => {
+		if (selectedCategory) {
+			setCategory(suggestion);
+			console.log('hello', category);
+			setSelectedCategory(null);
+		}
+	};
+
+	const onSubmitTerms = (data) => {
+		if (!acceptedTerms) {
+			alert("Veuillez accepter les termes d'utilisation avant de vous inscrire.");
+			return;
+		}
+	};
+
+	const toggleTermsAcceptance = () => {
+		setAcceptedTerms(!acceptedTerms);
+	};
+
+	const onReset = () => {
+		reset();
+	};
 
 	const {
 		handleSubmit,
@@ -31,10 +78,14 @@ export const ItemForm = () => {
 		getValues,
 		reset,
 	} = useForm();
+	// PARSE L ADRESSE DANS UN OBJET
 
 	// On Form Submit
 	const onSubmit = (data) => {
 		// Handle form submission here
+		console.log('FORM SUBMISSION');
+		console.log('form submission dddddd', myAddressParsed);
+		console.log(selectedRemise);
 		console.log(data);
 	};
 
@@ -46,7 +97,15 @@ export const ItemForm = () => {
 		setMapVisible(false);
 	};
 
-	// AUTOCOMPLETE A A DEPLACeR ICI
+	useEffect(() => {
+		if (selectedLocation) {
+			const parsedAddress = parseAddress(selectedLocation.address);
+			setMyAddressParsed(parsedAddress);
+			console.log('parsed address on map pick', parsedAddress);
+		}
+	}, [selectedLocation]);
+
+	// AUTOCOMPLETE A A DEPLACER ICI
 	const data = [
 		{ name: 'Très usé', id: '1' },
 		{ name: 'Usé', id: '2' },
@@ -63,9 +122,6 @@ export const ItemForm = () => {
 		return data.filter((item) => item.name.search(regex) >= 0);
 	};
 
-	const [selected, setSelected] = React.useState('');
-	const [categories, setCategories] = React.useState([]);
-
 	const dataSelectList = [
 		{ key: 'bad', value: 'Très usé' },
 		{ key: 'used', value: 'Usé' },
@@ -73,10 +129,23 @@ export const ItemForm = () => {
 		{ key: 'new', value: 'Neuf' },
 	];
 
+	const dataModeRemise = [
+		{ key: '1', value: 'Remise en main propre' },
+		{ key: '2', value: 'A retirer sur place' },
+		{ key: '3', value: 'Livraison' },
+		// { key: '4', value: 'Neuf' },
+	];
+
 	return (
 		<PaperProvider theme={formTheme}>
 			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<View style={styles.container}>
+					{/* // CHAMP CATEGORIE -------------------------------------------------------------------- */}
+					<CategoriesAutocomplete handleSelectCategories={handleSelectCategories} />
+
+					<View style={{ width: '90%', alignSelf: 'center' }}>
+						<SelectList setSelected={setSelectedCategory} data={filteredCategories} value={selectedCategory} />
+					</View>
 					<Controller
 						control={control}
 						render={({ field: { onChange, onBlur, value } }) => (
@@ -93,9 +162,10 @@ export const ItemForm = () => {
 								)}
 							/>
 						)}
-						name="selectedFruit"
+						name="selectedCategory"
 						defaultValue=""
 					/>
+					{/* // CHAMP TITRE -------------------------------------------------------------------- */}
 					<Controller
 						control={control}
 						render={({ field: { onChange, onBlur, value } }) => (
@@ -112,7 +182,7 @@ export const ItemForm = () => {
 						rules={{ required: "Le titre de l/'annonce est obligatoire" }}
 						defaultValue=""
 					/>
-
+					{/* // CHAMP DESCRIPTION ------------------------------------------------------------------- */}
 					<Controller
 						control={control}
 						render={({ field: { onChange, onBlur, value } }) => (
@@ -132,65 +202,68 @@ export const ItemForm = () => {
 						rules={{ required: 'La description est obligatoire' }}
 						defaultValue=""
 					/>
-
-					<Controller
-						control={control}
-						render={({ field: { onChange, onBlur, value } }) => (
-							<SelectList setSelected={setSelected} data={dataSelectList} />
-							// <Picker selectedValue={value} onValueChange={(itemValue) => onChange(itemValue)}>
-							// 	<Picker.Item label="Quel est l'état de l'objet ?" value="" />
-							// 	<Picker.Item label="Mauvais état" value="bad" />
-							// 	<Picker.Item label="Usé" value="used" />
-							// 	<Picker.Item label="Bon état" value="good" />
-							// 	<Picker.Item label="Neuf" value="new" />
-							// </Picker>
-						)}
-						name="selectOption"
-						rules={{ required: 'Please select an option' }}
-						defaultValue=""
-					/>
+					{/* // CHAMP ETAT DE L'OBJET --------------------------------------------------------------------- */}
+					<View>
+						<SelectList setSelected={setSelectedEtat} data={dataSelectList} value={selectedEtat} />
+					</View>
+					{/* // ROW CONTAINER -------------------------------------------------------------------- */}
 					<View style={styles.rowContainer}>
+						{/* // CHAMP PRIX ---------------------------------------------------------------- */}
 						<Controller
+							name="price"
 							control={control}
-							render={({ field: { onChange, onBlur, value } }) => (
-								<TextInput
-									style={styles.inputInRow}
-									label="Prix"
-									mode="outlined"
-									onChangeText={(text) => onChange(text)}
-									onBlur={onBlur}
-									value={value}
-									error={errors.name ? true : false}
-								/>
-							)}
-							name="Prix"
-							rules={{ required: 'Le prix est obligatoire.' }}
 							defaultValue=""
+							rules={{ required: 'Price is required' }}
+							render={({ field }) => (
+								<View style={{ flex: 1 }}>
+									<TextInput
+										style={styles.textInput}
+										{...field}
+										value={field.value}
+										maxLength={6}
+										label="Prix"
+										mode="outlined"
+										error={errors && errors.price}
+										left={<TextInput.Icon icon="currency-eur" />}
+										keyboardType="numeric"
+										onChangeText={(text) => field.onChange(text)}
+									/>
+									{errors.price && <HelperText type="error">{errors.price.message}</HelperText>}
+								</View>
+							)}
 						/>
+						{/* //CHAMP CAUTION ----------------------------------------------------------------- */}
 						<Controller
-							control={control}
-							render={({ field: { onChange, onBlur, value } }) => (
-								<TextInput
-									style={styles.inputInRow}
-									label="Caution"
-									mode="outlined"
-									onChangeText={(text) => onChange(text)}
-									onBlur={onBlur}
-									value={value}
-									error={errors.name ? true : false}
-								/>
-							)}
 							name="caution"
-							rules={{ required: 'Le montant de la caution est obligatoire.' }}
+							control={control}
 							defaultValue=""
+							rules={{ required: 'Caution is required' }}
+							render={({ field }) => (
+								<View style={{ flex: 1 }}>
+									<TextInput
+										style={styles.textInput}
+										{...field}
+										value={field.value}
+										maxLength={6}
+										label="Caution"
+										mode="outlined"
+										error={errors && errors.caution}
+										left={<TextInput.Icon icon="currency-eur" />}
+										keyboardType="numeric"
+										onChangeText={(text) => field.onChange(text)}
+									/>
+									{errors.caution && <HelperText type="error">{errors.caution.message}</HelperText>}
+								</View>
+							)}
 						/>
 					</View>
 					<View>
+						{/* // CHAMP PHOTOS A IMPORTER ------------------------------------------------------------------ */}
 						<Controller
 							control={control}
 							render={({ field: { onChange, onBlur, value } }) => (
 								<TextInput
-									style={styles.inputInRow}
+									style={styles.textInput}
 									label="Photos"
 									mode="outlined"
 									onChangeText={(text) => onChange(text)}
@@ -200,14 +273,15 @@ export const ItemForm = () => {
 								/>
 							)}
 							name="photos"
-							rules={{ required: '' }}
+							rules={{ required: 'Vouds devez poster au moins une photo de votre objet' }}
 							defaultValue=""
 						/>
+						{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
 						<Controller
 							control={control}
 							render={({ field: { onChange, onBlur, value } }) => (
 								<TextInput
-									style={styles.inputInRow}
+									style={styles.textInput}
 									label="Calendrier"
 									mode="outlined"
 									onChangeText={(text) => onChange(text)}
@@ -222,15 +296,32 @@ export const ItemForm = () => {
 						/>
 					</View>
 
-					<View style={{ Flex: 1, flexDirection: 'row' }}>
-						<Text>Select Location</Text>
-						<IconButton icon="map" size={40} onPress={() => setMapVisible(true)} />
-						<MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} />
-						{/* <Text>{selectedLocation}</Text> */}
+					{/* // CHAMP MAP --------------------------------------------------------------------- */}
+					<View style={{ Flex: 1, fontSize: 25 }}>
+						<Text tyle={{ flex: 1, alignSelf: 'center', fontSize: 25 }}>Localisez votre objet.</Text>
+						{/* <Text>{selectedLocation.address ? MyAddress : ''}</Text> */}
+					</View>
+					<MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} />
+					<View style={{ flex: 1, alignSelf: 'center' }}>
+						<IconButton icon="map" size={30} onPress={() => setMapVisible(true)} />
+					</View>
+					<View style={{ flex: 1, alignSelf: 'center' }}>
+						{selectedLocation ? (
+							<Badge size="30" style={{ paddingHorizontal: 20 }}>
+								{selectedLocation.address}
+							</Badge>
+						) : (
+							''
+						)}
 					</View>
 				</View>
 
-				<View style={{ flexDirection: 'row' }}>
+				{/* // CHAMP MODE DE REMISE ---------------------------------------------------------------- */}
+				<View style={{ width: '90%', alignSelf: 'center' }}>
+					<SelectList setSelected={setSelectedRemise} data={dataModeRemise} value={selectedRemise} />
+				</View>
+
+				<View style={{ flexDirection: 'row', alignSelf: 'center' }}>
 					<Text style={styles.checkboxLabelExpress}>
 						Mode Express <MaterialCommunityIcons name="help-circle-outline" size={16} />
 					</Text>
@@ -261,6 +352,22 @@ export const ItemForm = () => {
 							defaultValue={false}
 						/>
 					</View>
+				</View>
+				{/* // CONDITIONS ET SUBMIT BUTTON - */}
+				<View style={styles.checkboxContainer}>
+					<CheckBox value={acceptedTerms} onValueChange={toggleTermsAcceptance} />
+					<Text style={styles.checkboxLabel}>
+						J'accepte les conditions d'utilisation de Cashetizer et la politique de confidentialité de Cashetizer industry.
+					</Text>
+				</View>
+				<View style={styles.buttonsContainer}>
+					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
+						<Text style={styles.buttonText}>Poster l'annonce</Text>
+					</Button>
+
+					{/* <Button mode="outlined" onPress={onReset}>
+						Mot de passe oublié ?
+					</Button> */}
 				</View>
 			</ScrollView>
 		</PaperProvider>
@@ -328,6 +435,13 @@ const styles = StyleSheet.create({
 	checkboxLabel: {
 		marginLeft: 8,
 		fontSize: 14,
+	},
+
+	selectList: {
+		flex: 1,
+		fontSize: 10,
+		height: 25,
+		backgroundColor: '#E8E8E8',
 	},
 	passwordContainer: {
 		flexDirection: 'row',

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export const CategoriesAutocomplete = () => {
+export const CategoriesAutocomplete = ({ handleSelectCategories }) => {
 	const [input, setInput] = useState('');
 	const [suggestions, setSuggestions] = useState([]);
 
@@ -30,19 +30,21 @@ export const CategoriesAutocomplete = () => {
 
 	return (
 		<View>
-			<TextInput value={input} onChangeText={handleInputChange} />
+			<TextInput style={styles.textInput} value={input} onChangeText={handleInputChange} />
 			{suggestions.map((suggestion, i) => (
-				<TouchableOpacity key={i} onPress={() => handleSelect(suggestion)}>
+				<TouchableOpacity key={i} onPress={() => handleSelectCategories(suggestion)}>
 					<Text>{suggestion}</Text>
 				</TouchableOpacity>
 			))}
 		</View>
-
-		// <View>
-		// 	<TextInput value={input} onChangeText={handleInputChange} />
-		// 	{suggestions.map((suggestion, i) => (
-		// 		<Text key={i}>{suggestion}</Text>
-		// 	))}
-		// </View>
 	);
 };
+const styles = StyleSheet.create({
+	textInput: {
+		paddingVertical: 1,
+		paddingHorizontal: 1,
+		fontSize: 12,
+		height: 35,
+		backgroundColor: '#E8E8E8',
+	},
+});
