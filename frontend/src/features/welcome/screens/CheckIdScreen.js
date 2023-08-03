@@ -117,13 +117,13 @@ export const CheckIdScreen = () => {
 			});
 			console.log('step2');
 			if (data.rectoID && data.versoID && livePhoto && acceptedTerms) {
-				navigation.navigate('ConfirmationAccountScreen');
+				navigation.navigate('ConfirmationAccount');
 			} else {
 				Alert.alert('Attention', 'Veuillez remplir tous les champs et cocher la case avant de valider votre compte.');
 				return;
 			}
 
-			const response = await fetch('http://172.20.10.4:3000/IDCheck', {
+			const response = await fetch('http://192.168.0.15:3000/IDCheck', {
 				method: 'POST',
 				body: formData,
 			});

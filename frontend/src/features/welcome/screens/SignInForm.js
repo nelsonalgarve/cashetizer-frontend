@@ -10,13 +10,13 @@ import formTheme from '../themes/FormTheme';
 export const SignInForm = () => {
 	const navigation = useNavigation();
 	const handleSignUpPress = () => {
-		navigation.navigate('SignUpScreen');
+		navigation.navigate('SignUp');
 	};
 	const testCheckIdSignUpPress = () => {
-		navigation.navigate('CheckIdScreen');
+		navigation.navigate('CheckId');
 	};
 	const testConfirmationAccountScreen = () => {
-		navigation.navigate('ConfirmationAccountScreen');
+		navigation.navigate('ConfirmationAccount');
 	};
 	const {
 		handleSubmit,

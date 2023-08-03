@@ -18,6 +18,7 @@ import { ListItems } from './src/features/Items/screens/ListItems';
 import { SingleItem } from './src/features/Items/screens/SingleItem';
 import { SignUpForm } from './src/features/welcome//screens/SignUpForm';
 import { CheckIdScreen } from './src/features/welcome/screens/CheckIdScreen';
+import { ConfirmationAccountScreen } from './src/features/welcome/screens/ConfirmationAccountScreen';
 import { SignInForm } from './src/features/welcome/screens/SignInForm';
 import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
 import { theme } from './src/infrastructure/theme';
@@ -101,23 +102,7 @@ export default App = () => {
 											),
 										})}
 									/>
-									<Stack.Screen
-										name="CheckId"
-										component={CheckIdScreen}
-										options={({ navigation }) => ({
-											title: 'Vérification ID',
-											headerLeft: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('Welcome')} style={styles.backButton}>
-													{/* <Ionicons name="close" size={30} color="white" /> */}
-												</TouchableOpacity>
-											),
-											headerRight: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={styles.newAccButton}>
-													<Ionicons name="person-add-outline" size={30} color="white" />
-												</TouchableOpacity>
-											),
-										})}
-									/>
+
 									<Stack.Screen name="ItemForm" component={ItemForm} />
 
 									<Stack.Screen
