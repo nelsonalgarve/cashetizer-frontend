@@ -1,6 +1,6 @@
 const createNewItem = async (token, newItemData) => {
 	try {
-		const response = await fetch('http://192.168.0.15:3000/items', {
+		const response = await fetch('http://172.20.10.4:3000/items', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

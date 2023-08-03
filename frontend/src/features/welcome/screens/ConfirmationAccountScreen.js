@@ -9,6 +9,10 @@ import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
 
 export const ConfirmationAccountScreen = () => {
+	const navigation = useNavigation();
+	const WelcomeScreen = () => {
+		navigation.navigate('Welcome');
+	  };
 	const handleNotificationPermission = async () => {
 		const { status: existingStatus } = await Notifications.getPermissionsAsync();
 		let finalStatus = existingStatus;
@@ -48,31 +52,32 @@ export const ConfirmationAccountScreen = () => {
 					<Text style={styles.title}> Félicitations ! </Text>
 
 					<Text style={styles.text}>
-						Votre annonce est complète.{'\n'}
-						{'\n'}
-						Elle sera publiée d’ici peu.{'\n'}
-						{'\n'}
-						Vous recevrez une notification et un email une fois votre compte confirmé.{'\n'}
-						{'\n'}
-						Pensez à vérifier votre adresse email.
-					</Text>
+			Votre compte est en cours de validation.{'\n'}
+			  {'\n'}
+              Vous recevrez une notification 
+			  {'\n'}et un email une fois votre compte confirmé.{'\n'}
+			  {'\n'}
+              Pensez à vérifier votre boite email 
+			  {'\n'}et à activer les notifications.
+            </Text>
 				</View>
 				<Button style={styles.buttonOutlined} mode="outlined" onPress={handleNotificationPermission}>
-					<Text style={styles.buttonText}>Activer les notifications</Text>
+					<Text style={styles.buttonText}>J'active les notifications</Text>
 				</Button>
 
 				<View style={styles.textContainer}>
 					<Text style={styles.text}>
-						Vous recevrez une notification et un email une fois votre compte confirmé.{'\n'}
-						{'\n'}
-						Pensez à vérifier votre adresse email.
+					Vous pouvez dès à présent {'\n'}
+                    commencer à louer à petits prix {'\n'}
+					ou à générer un revenu {'\n'}
+					en mettant vos produits en location!!
 					</Text>
 				</View>
-				<Button style={styles.buttonOutlined} mode="outlined">
+				<Button style={styles.buttonOutlined} mode="outlined" onPress={WelcomeScreen}>
 					<Text style={styles.buttonText}>Je commence l'aventure</Text>
 				</Button>
 			</View>
-			<View style={styles.imageContainer}>
+			<View style={[styles.imageContainer, { zIndex: -1 }]}>
 				<Image source={require('../../../../assets/LogoShortUp.png')} style={styles.image} />
 			</View>
 			<View style={styles.greenRectangle}>

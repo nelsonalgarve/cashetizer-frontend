@@ -11,7 +11,9 @@ export const WelcomeScreen = ({ navigation }) => {
 	const handleSignInPress = () => {
 		navigation.navigate('SignIn');
 	};
-
+	const handlePressItemForm = () => {
+		navigation.navigate('ItemForm');
+	};
 	// Définissez les catégories ici
 	const categories = ['Bricolage', 'Sport', 'Musique', 'Multimédia'];
 
@@ -41,6 +43,11 @@ export const WelcomeScreen = ({ navigation }) => {
 					</Button>
 					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignInPress}>
 						Se connecter
+					</Button>
+				</View>
+				<View>
+					<Button style={styles.buttonOutlined} mode="outlined" onPress={handlePressItemForm}>
+						<Text>Items</Text>
 					</Button>
 				</View>
 

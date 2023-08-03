@@ -18,6 +18,12 @@ export const SignInForm = () => {
 	const testConfirmationAccountScreen = () => {
 		navigation.navigate('ConfirmationAccount');
 	};
+	const testConfirmationAdvertScreen = () => {
+		navigation.navigate('ConfirmationAdvert');
+	};
+	const testConfirmationRentScreen = () => {
+		navigation.navigate('ConfirmationRent');
+	};
 	const {
 		handleSubmit,
 		control,
@@ -111,7 +117,13 @@ export const SignInForm = () => {
 						<Text> Test CheckId </Text>
 					</Button>
 					<Button onPress={testConfirmationAccountScreen}>
-						<Text> ConfirmationAccountScreen </Text>
+						<Text> Test ConfirmationAccountScreen </Text>
+					</Button>
+					<Button onPress={testConfirmationRentScreen}>
+					<Text> Test ConfirmationRentScreen </Text>
+					</Button>
+					<Button onPress={testConfirmationAdvertScreen}>
+					<Text> Test ConfirmationAdvertScreen </Text>
 					</Button>
 				</ScrollView>
 			</View>

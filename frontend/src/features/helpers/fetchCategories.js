@@ -2,7 +2,7 @@
 
 export const fetchCategories = async () => {
 	try {
-		const response = await fetch('http://192.168.0.15:3000/categories');
+		const response = await fetch('http://172.20.10.4:3000/categories');
 		if (!response.ok) {
 			throw new Error('Network response was not ok');
 		}

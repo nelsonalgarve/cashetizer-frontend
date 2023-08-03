@@ -19,6 +19,8 @@ import { SingleItem } from './src/features/Items/screens/SingleItem';
 import { SignUpForm } from './src/features/welcome//screens/SignUpForm';
 import { CheckIdScreen } from './src/features/welcome/screens/CheckIdScreen';
 import { ConfirmationAccountScreen } from './src/features/welcome/screens/ConfirmationAccountScreen';
+import { ConfirmationRentScreen } from './src/features/welcome/screens/ConfirmationRentScreen';
+import { ConfirmationAdvertScreen } from './src/features/welcome/screens/ConfirmationAdvertScreen';
 import { SignInForm } from './src/features/welcome/screens/SignInForm';
 import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
 import { theme } from './src/infrastructure/theme';
@@ -134,7 +136,33 @@ export default App = () => {
 										component={ConfirmationAccountScreen}
 										options={({ navigation }) => ({
 											title: 'Bienvenue!',
-											headerLeft: () => () => null,
+											headerLeft: () => (''),
+											headerRight: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('SignIn')} style={styles.backButton}>
+													<Ionicons name="home-outline" size={30} color="white" />
+												</TouchableOpacity>
+											),
+										})}
+									/>
+									<Stack.Screen
+										name="ConfirmationRent"
+										component={ConfirmationRentScreen}
+										options={({ navigation }) => ({
+											title: 'Bienvenue!',
+											headerLeft: () => (''),
+											headerRight: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('SignIn')} style={styles.backButton}>
+													<Ionicons name="home-outline" size={30} color="white" />
+												</TouchableOpacity>
+											),
+										})}
+									/>
+									<Stack.Screen
+										name="ConfirmationAdvert"
+										component={ConfirmationAdvertScreen}
+										options={({ navigation }) => ({
+											title: 'Bienvenue!',
+											headerLeft: () => (''),
 											headerRight: () => (
 												<TouchableOpacity onPress={() => navigation.navigate('SignIn')} style={styles.backButton}>
 													<Ionicons name="home-outline" size={30} color="white" />
