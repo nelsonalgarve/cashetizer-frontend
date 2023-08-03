@@ -2,9 +2,10 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { TextInputMask } from 'react-native-masked-text';
 import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
-import { CustomTextInput } from '../components/CustomTextInput';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUser, selectUserData, setToken, setUser } from '../../../../reducers/user';
+import { SignOut } from '../components/SignOut';
 import formTheme from '../themes/FormTheme';
 
 export const SignInForm = () => {
@@ -25,10 +26,46 @@ export const SignInForm = () => {
 		getValues,
 		reset,
 	} = useForm();
+	const dispatch = useDispatch();
+	const user = useSelector((state) => state.user.value);
+	const token = useSelector((state) => state.user.token);
 
 	const onSubmit = (data) => {
-		// Handle form submission logic here
-		console.log(data);
+		// Adresse du backend pour Fetch POST login
+		const signIn = 'http://192.168.0.15:3000/users/login';
+
+		// Objet user à envoyer au backend
+		const requestData = {
+			email: data.email,
+			password: data.password,
+		};
+		fetch(signIn, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(requestData),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				console.log('data', data);
+				// Réponse du backend { user: {...}, token: "..." }
+				if (data.user && data.token) {
+					console.log('Succes loggedIn', data);
+					dispatch(setToken(data.token));
+					dispatch(setUser(data.user));
+					// affichage du reducer user
+					console.log('userfromreducer', user);
+					console.log('tokenFormReducer', token);
+				} else {
+					console.log('Error', data.message || 'Signin failed');
+				}
+			})
+			.catch((error) => {
+				console.error('Error signing up:', error);
+				// erreur lors de la procédure d'inscription
+				console.log('Error', 'An error occurred while signing up. Please try again later.');
+			});
 	};
 
 	const onReset = () => {
@@ -113,6 +150,7 @@ export const SignInForm = () => {
 					<Button onPress={testConfirmationAccountScreen}>
 						<Text> ConfirmationAccountScreen </Text>
 					</Button>
+					<SignOut />
 				</ScrollView>
 			</View>
 			{/* </KeyboardAvoidingView> */}

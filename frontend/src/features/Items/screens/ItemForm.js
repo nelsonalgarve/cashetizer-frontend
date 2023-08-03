@@ -37,7 +37,7 @@ export const ItemForm = () => {
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState('');
 	// Filter out objects with undefined values
-
+	console.log('From the reducer ', token);
 	// A DEPLACER DANS LE HELPER CategoriesAutocomplete
 	const filteredCategories = categories.filter((category) => category.value !== undefined);
 
@@ -91,27 +91,31 @@ export const ItemForm = () => {
 	// --------------------------ENVOI DU FORMULAIRE --------------------------------
 	const onSubmit = (data) => {
 		const newItemData = {
-			...data,
-			address: myAddressParsed,
 			category: selectedCategory,
+			name: data.name,
+			description: {
+				details: data.description,
+				photos: data.photos,
+				videos: data.videos,
+			},
+
 			etat: selectedEtat,
 			localisation: selectedLocation.location,
 			remise: selectedRemise,
 		};
+
 		console.log('newItemDataaaaa:', newItemData);
 		// Call the helper function to create a new item
-
-		createNewItem(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGJhZDQ4YTgxMTI0Njk4ZmFhNDExMzYiLCJpYXQiOjE2ODk5NjU3MDZ9.nPCaGL_D_HBdbzRUS8ftx2DsIZZQJ7zNRMxHly6TxU8',
-			newItemData
-		)
+		// TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGM3YzUyYjRkNGFmNzIwNDY5OWM3ZjciLCJpYXQiOjE2OTA4MTM3Mzl9.B3ZGiXcBZHAK4JtH6ZfM3_PGxJhoxEdC3SSZmVztMdw
+		// NE PAS OUBLIER DE RETIRER
+		// token =
+		// 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGM3YzUyYjRkNGFmNzIwNDY5OWM3ZjciLCJpYXQiOjE2OTA4MTM3Mzl9.B3ZGiXcBZHAK4JtH6ZfM3_PGxJhoxEdC3SSZmVztMdw';
+		console.log('token from create item', token);
+		createNewItem(token, newItemData)
 			.then((data) => {
-				console.log('New item created:', data);
-				// Handle the response data here
+				console.log('New item created:fffffffffffffffffffffffffffffffffffffff', data);
 			})
-			.catch((error) => {
-				// Handle errors here
-			});
+			.catch((error) => {});
 	};
 
 	//Set The Location from the map
@@ -421,7 +425,6 @@ export const ItemForm = () => {
 		</PaperProvider>
 	);
 };
-
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,

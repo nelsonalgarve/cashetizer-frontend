@@ -12,6 +12,10 @@ export const WelcomeScreen = ({ navigation }) => {
 		navigation.navigate('SignIn');
 	};
 
+	const handlePressItemForm = () => {
+		navigation.navigate('ItemForm');
+	};
+
 	// Définissez les catégories ici
 	const categories = ['Bricolage', 'Sport', 'Musique', 'Multimédia'];
 
@@ -33,6 +37,11 @@ export const WelcomeScreen = ({ navigation }) => {
 							<Text style={styles.buttonText}>{category}</Text>
 						</TouchableOpacity>
 					))}
+				</View>
+				<View>
+					<Button style={styles.buttonOutlined} mode="outlined" onPress={handlePressItemForm}>
+						<Text>Items</Text>
+					</Button>
 				</View>
 
 				<View style={styles.buttonsContainer}>

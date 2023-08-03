@@ -6,6 +6,7 @@ import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser, selectUserData, setError, setToken, setUser } from '../../../../reducers/user';
 import { CustomTextInput } from '../components/CustomTextInput';
+
 import formTheme from '../themes/FormTheme';
 
 export const SignOut = () => {

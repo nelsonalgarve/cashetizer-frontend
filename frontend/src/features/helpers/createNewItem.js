@@ -1,5 +1,6 @@
 const createNewItem = async (token, newItemData) => {
 	try {
+		console.log('token from createNewItem handler', token);
 		const response = await fetch('http://192.168.0.15:3000/items', {
 			method: 'POST',
 			headers: {

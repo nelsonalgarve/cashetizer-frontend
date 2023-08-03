@@ -1,6 +1,9 @@
 // AddressHelper.js
 
 function parseAddress(addressString) {
+	if (!addressString) {
+		return;
+	}
 	const addressParts = addressString.split(', ');
 
 	const address = addressParts[0];

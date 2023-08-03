@@ -33,7 +33,7 @@ export const SignUpForm = () => {
 		}
 
 		// Adresse du backend pour Fetch POST signup
-		const signUpEndpoint = 'http://192.168.0.12:3000/users';
+		const signUpEndpoint = 'http://192.168.0.15:3000/users';
 
 		// Objet user à envoyer au backend
 		const requestData = {
