@@ -1,23 +1,30 @@
-import React, {useState} from 'react';
-import { Controller, useController, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, ScrollView, StyleSheet, View, Text, Image} from 'react-native';
-import { TextInputMask } from 'react-native-masked-text';
+import React, {useState, useEffect, useRef} from 'react';
+import { Controller, useController, useForm, handleSubmit } from 'react-hook-form';
+import { Alert, TouchableWithoutFeedback, Keyboard, ScrollView, StyleSheet, View, Text, Image} from 'react-native';
 import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import { CustomTextInput } from '../components/CustomTextInput';
 import { useNavigation } from '@react-navigation/native';
 import formTheme from '../themes/FormTheme';
 import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
 import placeholderImage from '../../../../assets/Vacant.png';
 import CheckBox from 'expo-checkbox';
+import { Camera, CameraType, FlashMode } from 'expo-camera';
+import { useIsFocused } from "@react-navigation/native";
 
 export const CheckIdScreen = () => {
-	/* const navigation = useNavigation();
-	const handleSignUpPress = () => {
-		navigation.navigate('SignUpScreen');
-	}; */
+	const navigation = useNavigation();
+	const [livePhoto, setLivePhoto] = useState('');
+	const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [cameraType, setCameraType] = useState(CameraType.front);
+	const [hasPermission, setHasPermission] = useState(false);
+	const [showCamera, setShowCamera] = useState(false);
+
+	const isFocused = useIsFocused();
+
+    const cameraRef = useRef(null);
+
 	const pickImageFromGallery = async (field) => {
-		const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 	  
 		if (status === 'granted') {
 		  const result = await ImagePicker.launchImageLibraryAsync({
@@ -27,39 +34,55 @@ export const CheckIdScreen = () => {
 			quality: 1,
 		  });
 	  
-		  if (!result.canceled) {
+		  if (!result.canceled && result.assets.length > 0) {
 			field.onChange(result.assets[0].uri);
 		  }
 		} else {
 		  console.log('Permission not granted');
 		}
 	  };
-	  
-	  const takePhoto = async (field) => {
-		const { status } = await Permissions.askAsync(Permissions.CAMERA);
-	  
-		if (status === 'granted') {
-		  const result = await ImagePicker.launchCameraAsync({
-			allowsEditing: true,
-			aspect: [4, 3],
-			quality: 1,
-		  });
-	  
-		  if (!result.cancelled) {
-			field.onChange(result.uri);
-			setLivePhoto(result.uri); 
-		  }
-		} else {
-		  console.log('Permission not granted');
-		}
-	  };
-	  
 	
-	const [livePhoto, setLivePhoto] = useState('');
-  
-	const [acceptedTerms, setAcceptedTerms] = useState(false);
-    const [sendRecto, setSendRecto] = useState('');
-	const [sendVerso, setSendVerso] = useState('');
+
+	  useEffect(() => {
+		const requestCameraPermission = async () => {
+		  const { status } = await Camera.requestCameraPermissionsAsync();
+		  setHasPermission(status === 'granted');
+		};
+	
+		if (isFocused) {
+		  requestCameraPermission(); 
+		}
+	  }, [isFocused]);
+
+	  const takePhoto = async () => {
+		if (cameraRef.current) {
+		  const photo = await cameraRef.current.takePictureAsync({ quality: 1});
+		 setLivePhoto(photo.uri);
+		  setShowCamera(false);
+		  const formData = new FormData();
+    formData.append('photoFromFront', {
+      uri: photo.uri,
+      name: 'photo.jpg',
+      type: 'image/jpeg',
+	});
+	/* const response = await fetch('http://172.20.10.4:3000/testUpload', {
+        method: 'POST',
+        body: formData,
+      });
+
+	  const data = await response.json();
+
+	  if (data.result && data.url) {
+        setLivePhoto(data.url);
+        console.log('Image téléchargée avec succès:', data.url);
+		} else {
+		  console.log('Référence à la caméra invalide.');
+		} */
+	}
+	  };
+	const toggleCamera = () => {
+		setShowCamera(!showCamera); 
+	  }; 
 
 	const {
 		handleSubmit,
@@ -72,10 +95,55 @@ export const CheckIdScreen = () => {
 	const toggleTermsAcceptance = () => {
 		setAcceptedTerms(!acceptedTerms);
 	  };
-	const onSubmit = (data) => {
-		data.livePhoto = livePhoto;
-		console.log(data);
-	};
+
+	  const onSubmit = async () => {
+		try {
+		  console.log("step1");
+		  const data = getValues();
+	  
+		  const formData = new FormData();
+		  formData.append('rectoID', {
+			uri: data.rectoID,
+			name: 'recto.jpg',
+			type: 'image/jpeg',
+		  });
+		  formData.append('versoID', {
+			uri: data.versoID,
+			name: 'verso.jpg',
+			type: 'image/jpeg',
+		  });
+		  formData.append('livePhoto', {
+			uri: livePhoto,
+			name: 'live.jpg',
+			type: 'image/jpeg',
+		  });
+		  console.log("step2");
+		  if (data.rectoID && data.versoID && livePhoto && acceptedTerms) {
+	
+			navigation.navigate('ConfirmationAccountScreen');
+		  } else {
+			Alert.alert('Attention', 'Veuillez remplir tous les champs et cocher la case avant de valider votre compte.');
+			return
+		  }
+	  
+		  const response = await fetch('http://172.20.10.4:3000/IDCheck', {
+			method: 'POST',
+			body: formData,
+		  });
+	  
+		  const responseData = await response.json();
+		  if (responseData.result && responseData.rectoIdUrl && responseData.versoIdUrl && responseData.livePhotoUrl) {
+			console.log('URL du recto:', responseData.rectoIdUrl);
+			console.log('URL du verso:', responseData.versoIdUrl);
+			console.log('URL de la photo en direct:', responseData.livePhotoUrl);
+		  } else {
+			console.error('Erreur lors de l\'enregistrement des images:', responseData.error);
+		  }
+		} catch (error) {
+		  console.error('Error submitting form:', error);
+		}
+	  };
+	  
 
 	const onReset = () => {
 		reset();
@@ -83,7 +151,17 @@ export const CheckIdScreen = () => {
 
 	return (
 		<PaperProvider theme={formTheme}>
-			<View style={styles.container}>
+			<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+		<View style={styles.container}>
+		  {/* Affichez la caméra uniquement si showCamera est true */}
+		  {showCamera && (
+			<>
+			  <Camera type={cameraType} ref={cameraRef} style={styles.camera} />
+			  <Button style={styles.buttonOutlined} onPress={takePhoto}>
+				Prendre la photo
+			  </Button>
+			</>
+		  )}
 				{/* <KeyboardAvoidingView style={styles.container} behavior="padding" keyboardVerticalOffset={50}> */}
 				<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<Controller
@@ -97,10 +175,11 @@ export const CheckIdScreen = () => {
       <TextInput
         {...field}
 		style={styles.textInput}
-		value={field.value}
+		value={field.value ? "Le recto de votre ID est enregistrée :)" : ""}
 		label="Recto de votre pièce d'identité"
 		mode="outlined"
         right={<TextInput.Icon icon="plus" onPress={() => pickImageFromGallery(field)} />}
+		editable={false}
       />
       {errors.rectoID && <HelperText type="error">{errors.rectoID.message}</HelperText>}
     </View>
@@ -118,11 +197,12 @@ export const CheckIdScreen = () => {
     <View>
       <TextInput
         style={styles.textInput}
-		value={field.value}
+		value={field.value ? "Le verso de votre ID est enregistrée :)" : ""}
 		label="Verso de votre pièce d'identité"
 		mode="outlined"
 		error={errors.versoID}
         right={<TextInput.Icon icon="plus" onPress={() => pickImageFromGallery(field)} />}
+		editable={false}
       />
       {errors.versoID && <HelperText type="error">{errors.versoID.message}</HelperText>}
     </View>
@@ -141,11 +221,11 @@ export const CheckIdScreen = () => {
       <TextInput
         {...field}
 		style={styles.textInput}
-		value={field.value}
-		label="Une photo prise à l'instant"
+		value={livePhoto ?  "Votre photo est enregistrée :)" : "Appuyez sur l'appareil photo et souriez :)" }
 		mode="outlined"
-		error={errors.versoID}
-        right={<TextInput.Icon icon="camera" onPress={() => takePhoto(field)} />}
+		error={errors.livePhoto}
+        right={<TextInput.Icon icon="camera" onPress={toggleCamera} />}
+		editable={false}
       />
       {errors.livePhoto && <HelperText type="error">{errors.livePhoto.message}</HelperText>}
     </View>
@@ -154,22 +234,15 @@ export const CheckIdScreen = () => {
  {/* ... */}
       {/* Image placeholder */}
       {!livePhoto && <Image source={placeholderImage} style={styles.placeholderImage} />}
-<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="never">
   {/* Affichez la "livePhoto" conditionnellement */}
   {livePhoto ? <Image source={{ uri: livePhoto }} style={styles.image} /> : null}
-
-  {/* Le reste de votre code pour les champs TextInput */}
 </ScrollView>
-
-<Button style={styles.buttonNewPhoto}
-mode="outlined"
-onPress={() => {
-field.onChange(''); 
-setLivePhoto(''); 
-}}
-        >
-          Prendre une nouvelle photo
-        </Button>	
+ {!showCamera && livePhoto && (
+          <Button style={styles.buttonNewPhoto} mode="outlined" onPress={toggleCamera}>
+            Prendre une nouvelle photo
+          </Button>
+        )}
 		
 					
 					<View style={styles.checkboxContainer}>
@@ -181,22 +254,28 @@ setLivePhoto('');
 		Je reconnais avoir pris connaissance du réglement et je certifie la conformité des informations soumises.
         </Text>
       </View>
-	  <Button style={styles.buttonOutlined}>
-					<Text style={styles.buttonText}>Valider mon compte</Text>
+	  <Button style={styles.buttonOutlined} onPress={() => cameraRef && onSubmit()}>
+					<Text style={styles.buttonText} >Valider mon compte</Text>
 					</Button>
 					<Button style={styles.buttonReset} onPress={onReset}>
 						Reset
 					</Button>
 				</ScrollView>
 			</View>
-			
+			</TouchableWithoutFeedback>
 		</PaperProvider>
+
 	);
 };
 
 const styles = StyleSheet.create({
 	buttonNewPhoto:{
 		marginTop: 15,
+	},
+	camera:{
+		flex: 1,
+		width: '100%',
+        height: '100%',
 	},
 	container: {
 		flex: 1,

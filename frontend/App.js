@@ -14,6 +14,7 @@ import { SignUpForm } from './src/features/welcome//screens/SignUpForm';
 import { SignInForm } from './src/features/welcome/screens/SignInForm';
 import {CheckIdScreen} from './src/features/welcome/screens/CheckIdScreen';
 import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
+import { ConfirmationAccountScreen } from './src/features/welcome/screens/ConfirmationAccountScreen';
 import { theme } from './src/infrastructure/theme';
 import themePaper from './src/infrastructure/theme/themePaper';
 import { Ionicons } from '@expo/vector-icons'; 
@@ -123,7 +124,18 @@ export default App = () => {
 									  </TouchableOpacity>
 									  ),
 								  })}/>
-								
+								<Stack.Screen name="ConfirmationAccountScreen" component={ConfirmationAccountScreen} options={({ navigation }) => ({
+									title: 'Bienvenue!', 
+									headerLeft: () => () => null, 
+									headerRight: () => (
+										<TouchableOpacity
+										onPress={() => navigation.navigate('SignInScreen')}
+										style={styles.backButton}
+									  >
+										<Ionicons name="home-outline" size={30} color="white" />
+									  </TouchableOpacity>
+									  ),
+								  })}/>
 								{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}
 								{/* <Stack.Screen
 								 name="SignUpScreen"

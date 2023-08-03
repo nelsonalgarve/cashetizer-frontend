@@ -14,6 +14,9 @@ export const SignInForm = () => {
 	const testCheckIdSignUpPress = () => {
 		navigation.navigate('CheckIdScreen');
 	};
+	const testConfirmationAccountScreen = () => {
+		navigation.navigate('ConfirmationAccountScreen');
+	};
 	const {
 		handleSubmit,
 		control,
@@ -106,7 +109,10 @@ export const SignInForm = () => {
 						Reset
 					</Button>
 					<Button onPress={testCheckIdSignUpPress}>
-					<Text> Test </Text>
+					<Text> Test CheckId </Text>
+					</Button>
+					<Button onPress={testConfirmationAccountScreen}>
+					<Text> ConfirmationAccountScreen </Text>
 					</Button>
 				</ScrollView>
 			</View>
