@@ -30,16 +30,20 @@ export const MapPicker = ({ onLocationSelected, isVisible, onClose }) => {
 	const handleMarkerDragEnd = (event) => {
 		const { latitude, longitude } = event.nativeEvent.coordinate;
 		setLocation({ latitude, longitude });
+		getAddressFromCoordinates(latitude, longitude);
 	};
 
-	const handleSubmit = () => {
-		Geocoder.from(location)
+	const getAddressFromCoordinates = (latitude, longitude) => {
+		Geocoder.from({ latitude, longitude })
 			.then((json) => {
 				var addressComponent = json.results[0].formatted_address;
 				setAddress(addressComponent);
-				onLocationSelected && onLocationSelected(location, addressComponent);
 			})
 			.catch((error) => console.warn(error));
+	};
+
+	const handleSubmit = () => {
+		onLocationSelected && onLocationSelected(location, address);
 	};
 
 	return (

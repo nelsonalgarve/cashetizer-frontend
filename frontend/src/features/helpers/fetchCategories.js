@@ -2,13 +2,13 @@
 
 export const fetchCategories = async () => {
 	try {
-		const response = await fetch('http://192.168.0.15:3000/categories');
+		const response = await fetch('http://192.168.0.12:3000/categories');
 		if (!response.ok) {
 			throw new Error('Network response was not ok');
 		}
 		const categories = await response.json();
 		console.log(categories);
-		const data = categories.data.map((categories) => ({ label: categories._id, value: categories.name }));
+		const data = categories.data.map((categories) => ({ key: categories._id, value: categories.name }));
 		console.log(data);
 		return data;
 	} catch (error) {

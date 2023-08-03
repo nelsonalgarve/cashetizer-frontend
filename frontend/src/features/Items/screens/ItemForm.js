@@ -4,24 +4,30 @@ import React, { useEffect, useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { TextInputMask } from 'react-native-masked-text';
 import { Badge, Button, HelperText, IconButton, List, MD3Colors, Menu, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import SelectDropdown from 'react-native-select-dropdown';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData, setToken, setUser } from '../../../../reducers/user';
 import formTheme from '../../../features/welcome/themes/FormTheme';
 import { parseAddress } from '../../helpers/addressHelper';
+import { createNewItem } from '../../helpers/createNewItem';
 import { fetchCategories } from '../../helpers/fetchCategories';
-import { CategoriesAutocomplete } from '../components/CategoriesAutocomplete';
 import { MapPicker } from '../components/MapPicker';
 
 export const ItemForm = () => {
+	// GOOGLE PLACES
 	const [isMapVisible, setMapVisible] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState(null);
+	// SELECT LIST ETAT
 	const [selectedEtat, setSelectedEtat] = useState('');
+	// SELECT LIST MODE DE REMISE
 	const [selectedRemise, setSelectedRemise] = useState('');
+	//
 	const [category, setCategory] = useState([]);
 	const [categories, setCategories] = useState([]);
 	const [myAddressParsed, setMyAddressParsed] = useState({});
@@ -31,6 +37,8 @@ export const ItemForm = () => {
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState('');
 	// Filter out objects with undefined values
+
+	// A DEPLACER DANS LE HELPER CategoriesAutocomplete
 	const filteredCategories = categories.filter((category) => category.value !== undefined);
 
 	useEffect(() => {
@@ -80,19 +88,30 @@ export const ItemForm = () => {
 	} = useForm();
 	// PARSE L ADRESSE DANS UN OBJET
 
-	// On Form Submit
+	// --------------------------ENVOI DU FORMULAIRE --------------------------------
 	const onSubmit = (data) => {
-		// Handle form submission here
-		console.log('FORM SUBMISSION');
-		console.log('form submission dddddd', myAddressParsed);
-		console.log(selectedRemise);
-		console.log(data);
+		const newItemData = {
+			...data,
+			address: myAddressParsed,
+			category: selectedCategory,
+			etat: selectedEtat,
+			localisation: selectedLocation.location,
+			remise: selectedRemise,
+		};
+		console.log('newItemDataaaaa:', newItemData);
+		// Call the helper function to create a new item
+		createNewItem(token, newItemData)
+			.then((data) => {
+				console.log('New item created:', data);
+				// Handle the response data here
+			})
+			.catch((error) => {
+				// Handle errors here
+			});
 	};
 
 	//Set The Location from the map
 	const handleLocationSelected = (location, address) => {
-		console.log('Selected location:', location);
-		console.log('Selected address:', address);
 		setSelectedLocation({ location, address });
 		setMapVisible(false);
 	};
@@ -141,30 +160,36 @@ export const ItemForm = () => {
 			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<View style={styles.container}>
 					{/* // CHAMP CATEGORIE -------------------------------------------------------------------- */}
-					<CategoriesAutocomplete handleSelectCategories={handleSelectCategories} />
-
+					{/* <DropDownPicker
+						items={filteredCategories}
+						defaultValue={selectedCategory}
+						containerProps={{ style: { height: 40, width: 200 } }}
+						style={{ backgroundColor: '#fafafa' }}
+						itemStyle={{ justifyContent: 'flex-start' }}
+						dropDownContainerStyle={{ backgroundColor: '#fafafa' }}
+						onChangeItem={(item) => setSelectedCategory(item.value)}
+						labelProps={{ style: { fontSize: 14, color: 'black' } }}
+						selectedItemLabelProps={{ style: { color: 'red' } }}
+						arrowIconStyle={{ tintColor: 'black' }}
+					/> */}
+					{/* //SELECTDOWN ---------------------------------------------------------------------- */}
+					{/* <SelectDropdown
+						data={filteredCategories}
+						onSelect={(selectedItem, index) => {
+							setSelectedCategory(selectedItem);
+							console.log(selectedItem, index);
+						}}
+						buttonTextAfterSelection={(selectedItem, index) => {
+							return selectedItem.value;
+						}}
+						rowTextForSelection={(item, index) => {
+							return item.value;
+						}}
+					/> */}
 					<View style={{ width: '90%', alignSelf: 'center' }}>
 						<SelectList setSelected={setSelectedCategory} data={filteredCategories} value={selectedCategory} />
 					</View>
-					<Controller
-						control={control}
-						render={({ field: { onChange, onBlur, value } }) => (
-							<Autocomplete
-								data={findItem(value)}
-								defaultValue={value}
-								onChangeText={(text) => onChange(text)}
-								onBlur={onBlur}
-								placeholder="Choix de section..."
-								renderItem={({ item }) => (
-									<TouchableOpacity onPress={() => onChange(item.name)}>
-										<Text>{item.name}</Text>
-									</TouchableOpacity>
-								)}
-							/>
-						)}
-						name="selectedCategory"
-						defaultValue=""
-					/>
+
 					{/* // CHAMP TITRE -------------------------------------------------------------------- */}
 					<Controller
 						control={control}
@@ -224,7 +249,7 @@ export const ItemForm = () => {
 										label="Prix"
 										mode="outlined"
 										error={errors && errors.price}
-										left={<TextInput.Icon icon="currency-eur" />}
+										right={<TextInput.Icon icon="currency-eur" />}
 										keyboardType="numeric"
 										onChangeText={(text) => field.onChange(text)}
 									/>
@@ -248,7 +273,7 @@ export const ItemForm = () => {
 										label="Caution"
 										mode="outlined"
 										error={errors && errors.caution}
-										left={<TextInput.Icon icon="currency-eur" />}
+										right={<TextInput.Icon icon="currency-eur" />}
 										keyboardType="numeric"
 										onChangeText={(text) => field.onChange(text)}
 									/>
@@ -270,6 +295,7 @@ export const ItemForm = () => {
 									onBlur={onBlur}
 									value={value}
 									error={errors.name ? true : false}
+									left={<TextInput.Icon icon="camera" />}
 								/>
 							)}
 							name="photos"
@@ -288,6 +314,7 @@ export const ItemForm = () => {
 									onBlur={onBlur}
 									value={value}
 									error={errors.name ? true : false}
+									left={<TextInput.Icon icon="calendar" />}
 								/>
 							)}
 							name="calendrier"
@@ -297,9 +324,26 @@ export const ItemForm = () => {
 					</View>
 
 					{/* // CHAMP MAP --------------------------------------------------------------------- */}
+
+					<View style={{ flex: 1 }}>
+						{/* Button to open the MapPicker */}
+						<Button title="Select Location" onPress={() => setMapVisible(true)} />
+						{/* Show the selected location */}
+						{selectedLocation && (
+							<View>
+								<Text>Latitude: {selectedLocation.location.latitude}</Text>
+								<Text>Longitude: {selectedLocation.location.longitude}</Text>
+							</View>
+						)}
+						{/* The MapPicker component */}
+						{/* <MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} /> */}
+					</View>
 					<View style={{ Flex: 1, fontSize: 25 }}>
-						<Text tyle={{ flex: 1, alignSelf: 'center', fontSize: 25 }}>Localisez votre objet.</Text>
-						{/* <Text>{selectedLocation.address ? MyAddress : ''}</Text> */}
+						<View tyle={{ flex: 1, alignItems: 'center', fontSize: 25 }}>
+							<Badge size="30" style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}>
+								Localisation de votre objet
+							</Badge>
+						</View>
 					</View>
 					<MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} />
 					<View style={{ flex: 1, alignSelf: 'center' }}>

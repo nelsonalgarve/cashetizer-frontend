@@ -33,7 +33,7 @@ export const SignUpForm = () => {
 		}
 
 		// Adresse du backend pour Fetch POST signup
-		const signUpEndpoint = 'http://192.168.0.15:3000/users';
+		const signUpEndpoint = 'http://192.168.0.12:3000/users';
 
 		// Objet user à envoyer au backend
 		const requestData = {
@@ -193,7 +193,17 @@ export const SignUpForm = () => {
 							}}
 							render={({ field }) => (
 								<View>
-									<TextInput style={styles.textInput} {...field} value={field.value} maxLength={50} label="Email" mode="outlined" error={errors.email} left={<TextInput.Icon icon="email" />} onChangeText={(text) => field.onChange(text)} />
+									<TextInput
+										style={styles.textInput}
+										{...field}
+										value={field.value}
+										maxLength={50}
+										label="Email"
+										mode="outlined"
+										error={errors.email}
+										left={<TextInput.Icon icon="email" />}
+										onChangeText={(text) => field.onChange(text)}
+									/>
 									{errors.email && <HelperText type="error">{errors.email.message}</HelperText>}
 								</View>
 							)}
@@ -233,7 +243,16 @@ export const SignUpForm = () => {
 							rules={{ required: 'Address is required' }}
 							render={({ field }) => (
 								<View>
-									<TextInput style={styles.textInput} {...field} value={field.value} label="Adresse" mode="outlined" error={errors.address} left={<TextInput.Icon icon="map-marker" />} onChangeText={(text) => field.onChange(text)} />
+									<TextInput
+										style={styles.textInput}
+										{...field}
+										value={field.value}
+										label="Adresse"
+										mode="outlined"
+										error={errors.address}
+										left={<TextInput.Icon icon="map-marker" />}
+										onChangeText={(text) => field.onChange(text)}
+									/>
 									{errors.address && <HelperText type="error">{errors.address.message}</HelperText>}
 								</View>
 							)}
@@ -245,7 +264,16 @@ export const SignUpForm = () => {
 							rules={{ required: 'La ville est obligatoire.' }}
 							render={({ field }) => (
 								<View>
-									<TextInput style={styles.textInput} {...field} value={field.value} label="Ville" mode="outlined" error={errors.city} left={<TextInput.Icon icon="city" />} onChangeText={(text) => field.onChange(text)} />
+									<TextInput
+										style={styles.textInput}
+										{...field}
+										value={field.value}
+										label="Ville"
+										mode="outlined"
+										error={errors.city}
+										left={<TextInput.Icon icon="city" />}
+										onChangeText={(text) => field.onChange(text)}
+									/>
 									{errors.city && <HelperText type="error">{errors.city.message}</HelperText>}
 								</View>
 							)}
@@ -281,7 +309,8 @@ export const SignUpForm = () => {
 								required: 'Entrez votre mot de passe',
 								pattern: {
 									value: passwordPattern,
-									message: 'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.',
+									message:
+										'Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.',
 								},
 							}}
 							render={({ field }) => (
@@ -331,7 +360,9 @@ export const SignUpForm = () => {
 						/>
 						<View style={styles.checkboxContainer}>
 							<CheckBox value={acceptedTerms} onValueChange={toggleTermsAcceptance} />
-							<Text style={styles.checkboxLabel}>J'accepte les conditions d'utilisation de Cashetizer et la politique de confidentialité de Cashetizer industry.</Text>
+							<Text style={styles.checkboxLabel}>
+								J'accepte les conditions d'utilisation de Cashetizer et la politique de confidentialité de Cashetizer industry.
+							</Text>
 						</View>
 						<View style={styles.buttonsContainer}>
 							<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
