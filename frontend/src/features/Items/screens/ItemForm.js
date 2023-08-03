@@ -1,6 +1,6 @@
 import { Picker } from '@react-native-community/picker';
 import CheckBox from 'expo-checkbox';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect,useRef ,useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
@@ -18,6 +18,8 @@ import { parseAddress } from '../../helpers/addressHelper';
 import { createNewItem } from '../../helpers/createNewItem';
 import { fetchCategories } from '../../helpers/fetchCategories';
 import { MapPicker } from '../components/MapPicker';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { Camera, CameraType, FlashMode } from 'expo-camera';
 
 export const ItemForm = () => {
 	// GOOGLE PLACES
@@ -36,6 +38,13 @@ export const ItemForm = () => {
 	const token = useSelector((state) => state.user.token);
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState('');
+	const [cameraType, setCameraType] = useState(CameraType.front);
+	const [hasPermission, setHasPermission] = useState(false);
+	const [showCamera, setShowCamera] = useState(false);
+	const [livePhoto, setLivePhoto] = useState('');
+	const isFocused = useIsFocused();
+
+	const cameraRef = useRef(null);
 	// Filter out objects with undefined values
 
 	// A DEPLACER DANS LE HELPER CategoriesAutocomplete
@@ -44,6 +53,67 @@ export const ItemForm = () => {
 	useEffect(() => {
 		fetchData();
 	}, []);
+
+	useEffect(() => {
+		const requestCameraPermission = async () => {
+			const { status } = await Camera.requestCameraPermissionsAsync();
+			setHasPermission(status === 'granted');
+		};
+
+		if (isFocused) {
+			requestCameraPermission();
+		}
+	}, [isFocused]);
+
+	
+
+	const takePhoto = async () => {
+		if (cameraRef.current) {
+		  const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+		  setLivePhoto(photo.uri);
+		  setShowCamera(false);
+	  
+		  // Prepare the form data to send the photo to the server
+		  const formData = new FormData();
+		  formData.append('photoFromFront', {
+			uri: photo.uri,
+			name: 'photo.jpg',
+			type: 'image/jpeg',
+		  });
+	  
+		  try {
+			const response = await fetch('http://172.20.10.4:3000/UploadPhotos', {
+			  method: 'POST',
+			  body: formData,
+			});
+	  
+			const data = await response.json();
+	  
+			if (data.result && data.url) {
+			  setLivePhoto(data.url);
+			  console.log('Image téléchargée avec succès:', data.url);
+			} else {
+			  console.log('Référence à la caméra invalide.');
+			}
+		  } catch (error) {
+			console.error('Error uploading photo:', error);
+		  }
+		}
+	  };
+
+	  const toggleCamera = () => {
+		setShowCamera((prevShowCamera) => !prevShowCamera);
+		if (showCamera) {
+            takePhoto();
+        }
+	  };
+
+	  const toggleCameraType = () => {
+		setCameraType((prevCameraType) =>
+		  prevCameraType === CameraType.front ? CameraType.back : CameraType.front
+		);
+	  };
+
 
 	const fetchData = async () => {
 		try {
@@ -163,6 +233,7 @@ export const ItemForm = () => {
 		<PaperProvider theme={formTheme}>
 			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<View style={styles.container}>
+				
 					{/* // CHAMP CATEGORIE -------------------------------------------------------------------- */}
 					{/* <DropDownPicker
 						items={filteredCategories}
@@ -258,6 +329,7 @@ export const ItemForm = () => {
 										onChangeText={(text) => field.onChange(text)}
 									/>
 									{errors.price && <HelperText type="error">{errors.price.message}</HelperText>}
+									
 								</View>
 							)}
 						/>
@@ -286,8 +358,28 @@ export const ItemForm = () => {
 							)}
 						/>
 					</View>
+						{/* Affichez la caméra uniquement si showCamera est true */}
+						{showCamera && (
+						 <Modal
+						 animationType="slide"
+						 transparent={false}
+						 visible={showCamera}
+						 onRequestClose={() => setShowCamera(false)}
+					   >
+						 <View style={{ flex: 1 }}>
+						   <Camera type={cameraType} ref={cameraRef} style={{ flex: 1 }} />
+						   <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
+							 <IconButton icon="close" size={30} onPress={() => setShowCamera(false)} />
+							 <IconButton icon="camera-switch" size={30} onPress={toggleCameraType} />
+							 <IconButton icon="camera" size={30} onPress={toggleCamera} />
+						   </View>
+						 </View>
+					   </Modal>
+					)}
 					<View>
-						{/* // CHAMP PHOTOS A IMPORTER ------------------------------------------------------------------ */}
+						
+						
+				{/* // CHAMP PHOTOS A IMPORTER ------------------------------------------------------------------ */}
 						<Controller
 							control={control}
 							render={({ field: { onChange, onBlur, value } }) => (
@@ -299,11 +391,11 @@ export const ItemForm = () => {
 									onBlur={onBlur}
 									value={value}
 									error={errors.name ? true : false}
-									left={<TextInput.Icon icon="camera" />}
-								/>
+									right={<TextInput.Icon icon="camera" onPress={toggleCamera}/>}
+								/>  
 							)}
 							name="photos"
-							rules={{ required: 'Vouds devez poster au moins une photo de votre objet' }}
+							rules={{ required: 'Vous devez poster au moins une photo de votre objet' }}
 							defaultValue=""
 						/>
 						{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
@@ -318,7 +410,7 @@ export const ItemForm = () => {
 									onBlur={onBlur}
 									value={value}
 									error={errors.name ? true : false}
-									left={<TextInput.Icon icon="calendar" />}
+									right={<TextInput.Icon icon="calendar" />}
 								/>
 							)}
 							name="calendrier"
@@ -423,6 +515,11 @@ export const ItemForm = () => {
 };
 
 const styles = StyleSheet.create({
+	camera: {
+		flex: 1,
+		width: '100',
+		height: 600,
+	},
 	container: {
 		flex: 1,
 		flexDirection: 'column',
