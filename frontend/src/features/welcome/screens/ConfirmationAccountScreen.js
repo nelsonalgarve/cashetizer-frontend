@@ -14,13 +14,13 @@ export const ConfirmationAccountScreen = () => {
 		const { status: existingStatus } = await Notifications.getPermissionsAsync();
 		let finalStatus = existingStatus;
 	
-		// If the permission is not granted, ask for it
+		
 		if (existingStatus !== 'granted') {
 		  const { status } = await Notifications.requestPermissionsAsync();
 		  finalStatus = status;
 		}
 	
-		// If the permission is granted, display a success message (you can do more here)
+		
 		if (finalStatus === 'granted') {
 		  console.log('Notification permission granted!');
 		}
