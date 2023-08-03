@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Provider as PaperProvider, Searchbar, TextInput } from 'react-native-paper';
 import formTheme from '../themes/FormTheme';
 
-export const WelcomeScreen = ({ navigation }) => {
+export const SearchScreen = ({ navigation }) => {
 	const handleSignUpPress = () => {
 		navigation.navigate('SignUp');
 	};
@@ -35,18 +35,7 @@ export const WelcomeScreen = ({ navigation }) => {
 					))}
 				</View>
 
-				<View style={styles.buttonsContainer}>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignUpPress}>
-						S'inscrire
-					</Button>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignInPress}>
-						Se connecter
-					</Button>
-				</View>
-
-				<View style={styles.infoBar}>
-					<Text style={styles.infoText}>Louez malin. Gagnez des € en chemin.</Text>
-				</View>
+				<View style={styles.infoBar}></View>
 			</View>
 		</PaperProvider>
 	);
@@ -118,13 +107,9 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		bottom: '0%', // Ajustez cette valeur pour déplacer les boutons vers le bas
 		width: '100%',
+		height: 100,
 		alignItems: 'center',
 		justifyContent: 'center',
-	},
-	infoText: {
-		color: '#F1F1F1',
-		textAlign: 'center',
-		fontSize: 16,
 	},
 
 	textInput: {

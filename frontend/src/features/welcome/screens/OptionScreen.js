@@ -1,29 +1,17 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Button, Provider as PaperProvider, Searchbar, TextInput } from 'react-native-paper';
+import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import formTheme from '../themes/FormTheme';
 
-export const WelcomeScreen = ({ navigation }) => {
-	const handleSignUpPress = () => {
-		navigation.navigate('SignUp');
-	};
-
-	const handleSignInPress = () => {
-		navigation.navigate('SignIn');
-	};
-
+export const OptionScreen = ({ navigation }) => {
 	// Définissez les catégories ici
-	const categories = ['Bricolage', 'Sport', 'Musique', 'Multimédia'];
+	const categories = ['Mettre un objet en location', 'Louer un objet', 'Mes locations', 'Mes annonces'];
 
 	return (
 		<PaperProvider theme={formTheme}>
 			<View style={styles.container}>
 				<View style={styles.imageContainer}>
 					<Image source={require('../../../../assets/LogoCash.png')} style={styles.image} />
-				</View>
-				{/* Barre de recherche */}
-				<View>
-					<TextInput style={styles.textInput} label="Rechercher" mode="outlined" Left={<TextInput.Icon icon="search" />} />
 				</View>
 
 				{/* Affichage des boutons de catégorie */}
@@ -35,18 +23,11 @@ export const WelcomeScreen = ({ navigation }) => {
 					))}
 				</View>
 
-				<View style={styles.buttonsContainer}>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignUpPress}>
-						S'inscrire
-					</Button>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignInPress}>
-						Se connecter
-					</Button>
-				</View>
+				<View style={styles.yellowBar}></View>
 
-				<View style={styles.infoBar}>
-					<Text style={styles.infoText}>Louez malin. Gagnez des € en chemin.</Text>
-				</View>
+				<Text style={styles.annonce}>Annonce sponsorisées</Text>
+
+				<View style={styles.infoBar}></View>
 			</View>
 		</PaperProvider>
 	);
@@ -70,7 +51,7 @@ const styles = StyleSheet.create({
 	},
 	buttonCategorie: {
 		position: 'absolute',
-		bottom: '40%', // Ajustez cette valeur pour déplacer les boutons vers le bas
+		bottom: '50%', // Ajustez cette valeur pour déplacer les boutons vers le bas
 		width: '100%',
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -81,10 +62,10 @@ const styles = StyleSheet.create({
 		backgroundColor: '#155263',
 		paddingVertical: 12,
 		paddingHorizontal: 24,
-		borderRadius: 50,
 		marginVertical: 8,
 		alignItems: 'center',
-		width: 200, //largeur des boutons
+		width: 290, //largeur des boutons
+		borderRadius: 50, //  pour des bords arrondis
 	},
 	buttonText: {
 		color: '#FFCE52',
@@ -102,15 +83,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 
-	buttonOutlined: {
-		margin: 10,
-		backgroundColor: '#FFCE52',
-		borderWidth: 1,
-		width: '45%',
-		margin: 12,
-		bottom: '10%',
-	},
-
 	infoBar: {
 		backgroundColor: '#155263',
 		paddingVertical: 8,
@@ -118,21 +90,23 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		bottom: '0%', // Ajustez cette valeur pour déplacer les boutons vers le bas
 		width: '100%',
+		height: 100,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
-	infoText: {
-		color: '#F1F1F1',
+
+	annonce: {
+		color: '#155263',
 		textAlign: 'center',
 		fontSize: 16,
+		bottom: -450, //Position revoir le style
 	},
 
-	textInput: {
-		marginTop: 110,
-		paddingVertical: 1,
-		paddingHorizontal: 1,
-		fontSize: 12,
-		height: 35,
-		backgroundColor: '#E8E8E8',
+	yellowBar: {
+		backgroundColor: '#FFCE52',
+		height: 5, // hauteur de la barre comme souhaité
+		width: '100%',
+		position: 'absolute',
+		bottom: '35%', //position de la barre
 	},
 });
