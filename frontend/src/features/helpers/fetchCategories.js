@@ -2,7 +2,8 @@
 
 export const fetchCategories = async () => {
 	try {
-		const response = await fetch('http://192.168.0.15:3000/categories');
+		// const response = await fetch('https://cashetizer.vercel.app/categories');
+		const response = await fetch('http://192.168.0.12:3000/categories');
 		if (!response.ok) {
 			throw new Error('Network response was not ok');
 		}

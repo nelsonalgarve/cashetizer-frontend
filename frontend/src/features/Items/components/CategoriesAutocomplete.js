@@ -10,8 +10,9 @@ export const CategoriesAutocomplete = ({ handleSelectCategories }) => {
 		if (text === '') {
 			setSuggestions([]);
 		} else {
-			// fetch(`http://192.168.0.15:3000/category/autocomplete?q=${encodeURIComponent(text)}`)
-			fetch(`http://192.168.0.15:3000/category/autocomplete?q=${text}`)
+			fetch(`http://192.168.0.12:3000/category/autocomplete?q=${encodeURIComponent(text)}`)
+				// fetch(`https://cashetizer-backend-git-main-nelsonalgarve.vercel.app/category/autocomplete?q=${text}`)
+				// fetch(`https://cashetizer-backend-3h3irl1p3-nelsonalgarve.vercel.app/autocomplete?q=${text}`)
 				.then((response) => response.json())
 				.then((data) => {
 					if (Array.isArray(data)) {

@@ -1,5 +1,7 @@
 import { Picker } from '@react-native-community/picker';
 import CheckBox from 'expo-checkbox';
+import moment from 'moment';
+import 'moment/locale/fr';
 import React, { useEffect, useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
@@ -7,7 +9,19 @@ import Autocomplete from 'react-native-autocomplete-input';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { TextInputMask } from 'react-native-masked-text';
-import { Badge, Button, HelperText, IconButton, List, MD3Colors, Menu, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import {
+	Badge,
+	Button,
+	Divider,
+	HelperText,
+	IconButton,
+	List,
+	MD3Colors,
+	Menu,
+	Provider as PaperProvider,
+	Surface,
+	TextInput,
+} from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -17,6 +31,7 @@ import formTheme from '../../../features/welcome/themes/FormTheme';
 import { parseAddress } from '../../helpers/addressHelper';
 import { createNewItem } from '../../helpers/createNewItem';
 import { fetchCategories } from '../../helpers/fetchCategories';
+import DatePicker from '../components/DatePicker';
 import { MapPicker } from '../components/MapPicker';
 
 export const ItemForm = () => {
@@ -25,6 +40,24 @@ export const ItemForm = () => {
 	const [selectedLocation, setSelectedLocation] = useState(null);
 	// SELECT LIST ETAT
 	const [selectedEtat, setSelectedEtat] = useState('');
+	// DATE PICKER
+	const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+	const [periods, setPeriods] = useState([]);
+	moment.locale('fr');
+	const addPeriod = (period) => {
+		// Prevent adding a period if the start date is later than the end date
+		if (period.start > period.end) {
+			alert('Invalid period. The start date should be earlier than the end date.');
+			return;
+		}
+
+		setPeriods((oldPeriods) => [...oldPeriods, period]);
+	};
+
+	const deletePeriod = (index) => {
+		setPeriods((oldPeriods) => oldPeriods.filter((_, i) => i !== index));
+	};
+
 	// SELECT LIST MODE DE REMISE
 	const [selectedRemise, setSelectedRemise] = useState('');
 	//
@@ -89,6 +122,7 @@ export const ItemForm = () => {
 	// PARSE L ADRESSE DANS UN OBJET
 
 	// --------------------------ENVOI DU FORMULAIRE --------------------------------
+	console.log(periods);
 	const onSubmit = (data) => {
 		const newItemData = {
 			category: selectedCategory,
@@ -98,7 +132,7 @@ export const ItemForm = () => {
 				photos: data.photos,
 				videos: data.videos,
 			},
-
+			periodes: periods,
 			etat: selectedEtat,
 			localisation: selectedLocation.location,
 			remise: selectedRemise,
@@ -307,11 +341,12 @@ export const ItemForm = () => {
 								/>
 							)}
 							name="photos"
-							rules={{ required: 'Vouds devez poster au moins une photo de votre objet' }}
+							rules={{ required: 'Vous devez poster au moins une photo de votre objet' }}
 							defaultValue=""
 						/>
-						{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
-						<Controller
+						<Surface style={styles.surface} elevation={1}>
+							{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
+							{/* <Controller
 							control={control}
 							render={({ field: { onChange, onBlur, value } }) => (
 								<TextInput
@@ -322,50 +357,97 @@ export const ItemForm = () => {
 									onBlur={onBlur}
 									value={value}
 									error={errors.name ? true : false}
-									left={<TextInput.Icon icon="calendar" />}
+									left={<TextInput.Icon icon="calendar" onPress={() => setDatePickerVisible(true)} />}
 								/>
 							)}
 							name="calendrier"
 							rules={{ required: '' }}
-							defaultValue=""
-						/>
-					</View>
+							defaultValue="" 
+						/> */}
+							<View style={{ flex: 1, minWidth: '100%', justifyContent: 'center', alignItems: 'center', paddingTop: 10 }}>
+								<Badge
+									size="30"
+									icon="camera"
+									style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}
+									onPress={() => setDatePickerVisible(true)}
+								>
+									Periode de location souhaitée
+								</Badge>
 
-					{/* // CHAMP MAP --------------------------------------------------------------------- */}
+								<DatePicker isVisible={isDatePickerVisible} onClose={() => setDatePickerVisible(false)} onAddPeriod={addPeriod} />
+								<ScrollView style={{ marginTop: 20, width: '80%' }}>
+									{periods.map((period, index) => (
+										<View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+											<Divider />
+											<Badge
+												icon="camera"
+												size="35"
+												style={{
+													paddingHorizontal: 5,
+													alignSelf: 'center',
+													// backgroundColor: '#FFCE52',
+													color: '#155263',
+													fontSize: 12,
+													color: 'white',
+													minHeight: '100%',
+												}}
+											>
+												Période {index + 1}: {moment(period.start).format('L')} - {moment(period.end).format('L')}
+											</Badge>
+											<Divider />
 
-					<View style={{ flex: 1 }}>
-						{/* Button to open the MapPicker */}
-						<Button title="Select Location" onPress={() => setMapVisible(true)} />
-						{/* Show the selected location */}
-						{selectedLocation && (
-							<View>
-								<Text>Latitude: {selectedLocation.location.latitude}</Text>
-								<Text>Longitude: {selectedLocation.location.longitude}</Text>
+											<Button
+												icon="delete"
+												mode="elevated"
+												compact="false"
+												style={{ paddingHorizontal: 5, margin: 5 }}
+												onPress={() => deletePeriod(index)}
+											>
+												Delete
+											</Button>
+										</View>
+									))}
+								</ScrollView>
 							</View>
-						)}
-						{/* The MapPicker component */}
-						{/* <MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} /> */}
+						</Surface>
 					</View>
-					<View style={{ Flex: 1, fontSize: 25 }}>
-						<View tyle={{ flex: 1, alignItems: 'center', fontSize: 25 }}>
-							<Badge size="30" style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}>
-								Localisation de votre objet
-							</Badge>
+
+					{/* // CHAMP MAP PICKER --------------------------------------------------------------------- */}
+					<Surface style={styles.surface} elevation={1}>
+						<View style={{ flex: 1 }}>
+							{/* Button to open the MapPicker */}
+							<Button title="Select Location" onPress={() => setMapVisible(true)} />
+							{/* Show the selected location */}
+							{selectedLocation && (
+								<View>
+									<Text>Latitude: {selectedLocation.location.latitude}</Text>
+									<Text>Longitude: {selectedLocation.location.longitude}</Text>
+								</View>
+							)}
+							{/* The MapPicker component */}
+							{/* <MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} /> */}
 						</View>
-					</View>
-					<MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} />
-					<View style={{ flex: 1, alignSelf: 'center' }}>
-						<IconButton icon="map" size={30} onPress={() => setMapVisible(true)} />
-					</View>
-					<View style={{ flex: 1, alignSelf: 'center' }}>
-						{selectedLocation ? (
-							<Badge size="30" style={{ paddingHorizontal: 20 }}>
-								{selectedLocation.address}
-							</Badge>
-						) : (
-							''
-						)}
-					</View>
+						<View style={{ Flex: 1, fontSize: 25 }}>
+							<View tyle={{ flex: 1, alignItems: 'center', fontSize: 25 }}>
+								<Badge size="30" style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}>
+									Localisation de votre objet
+								</Badge>
+							</View>
+						</View>
+						<MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} />
+						<View style={{ flex: 1, alignSelf: 'center' }}>
+							<IconButton icon="map" size={30} onPress={() => setMapVisible(true)} />
+						</View>
+						<View style={{ flex: 1, alignSelf: 'center' }}>
+							{selectedLocation ? (
+								<Badge size="30" style={{ paddingHorizontal: 20 }}>
+									{selectedLocation.address}
+								</Badge>
+							) : (
+								''
+							)}
+						</View>
+					</Surface>
 				</View>
 
 				{/* // CHAMP MODE DE REMISE ---------------------------------------------------------------- */}
@@ -516,5 +598,15 @@ const styles = StyleSheet.create({
 	showButtonText: {
 		fontSize: 16,
 		color: 'blue',
+	},
+	surface: {
+		padding: 8,
+		marginVertical: 8,
+		backgroundColor: '#E8E8E8',
+		borderRadius: 5,
+		height: 'auto',
+		width: '100%',
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 });

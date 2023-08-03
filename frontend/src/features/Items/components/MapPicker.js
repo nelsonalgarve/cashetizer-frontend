@@ -35,6 +35,7 @@ export const MapPicker = ({ onLocationSelected, isVisible, onClose }) => {
 			};
 			setLocation(newRegion);
 			setRegion(newRegion);
+			getAddressFromCoordinates(location.coords.latitude, location.coords.longitude);
 		})();
 	}, []);
 

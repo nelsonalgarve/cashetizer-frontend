@@ -1,7 +1,9 @@
 const createNewItem = async (token, newItemData) => {
 	try {
 		console.log('token from createNewItem handler', token);
-		const response = await fetch('http://192.168.0.15:3000/items', {
+		// const response = await fetch('http://192.168.0.15:3000/items', {
+		// const response = await fetch('https://cashetizer-backend.vercel.app//items', {
+		const response = await fetch('http://192.168.0.12:3000/items', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
