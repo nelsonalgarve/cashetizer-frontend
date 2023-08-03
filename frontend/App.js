@@ -59,10 +59,9 @@ export default App = () => {
 										},
 										headerTintColor: '#fff',
 										headerTitleAlign: 'center',
-									}}
-								>
+									}}>
 									<Stack.Screen
-										name="WelcomeScreen"
+										name="Welcome"
 										component={WelcomeScreen}
 										options={{
 											headerShown: false,
@@ -74,12 +73,12 @@ export default App = () => {
 										options={({ navigation }) => ({
 											title: 'Créer un compte',
 											headerLeft: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('WelcomeScreen')} style={styles.backButton}>
+												<TouchableOpacity onPress={() => navigation.navigate('Welcome')} style={styles.backButton}>
 													<Ionicons name="close" size={30} color="white" />
 												</TouchableOpacity>
 											),
 											headerRight: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('SignInForm')} style={styles.backButton}>
+												<TouchableOpacity onPress={() => navigation.navigate('SignIn')} style={styles.backButton}>
 													<Ionicons name="key-outline" size={30} color="white" />
 												</TouchableOpacity>
 											),
@@ -91,29 +90,29 @@ export default App = () => {
 										options={({ navigation }) => ({
 											title: 'Connexion',
 											headerLeft: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('WelcomeScreen')} style={styles.backButton}>
+												<TouchableOpacity onPress={() => navigation.navigate('Welcome')} style={styles.backButton}>
 													<Ionicons name="close" size={30} color="white" />
 												</TouchableOpacity>
 											),
 											headerRight: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('SignUpScreen')} style={styles.newAccButton}>
+												<TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={styles.newAccButton}>
 													<Ionicons name="person-add-outline" size={30} color="white" />
 												</TouchableOpacity>
 											),
 										})}
 									/>
 									<Stack.Screen
-										name="CheckIdScreen"
+										name="CheckId"
 										component={CheckIdScreen}
 										options={({ navigation }) => ({
 											title: 'Vérification ID',
 											headerLeft: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('WelcomeScreen')} style={styles.backButton}>
+												<TouchableOpacity onPress={() => navigation.navigate('Welcome')} style={styles.backButton}>
 													{/* <Ionicons name="close" size={30} color="white" /> */}
 												</TouchableOpacity>
 											),
 											headerRight: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('SignUpScreen')} style={styles.newAccButton}>
+												<TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={styles.newAccButton}>
 													<Ionicons name="person-add-outline" size={30} color="white" />
 												</TouchableOpacity>
 											),
@@ -127,6 +126,36 @@ export default App = () => {
 										options={{
 											headerShown: false,
 										}}
+									/>
+									<Stack.Screen
+										name="CheckId"
+										component={CheckIdScreen}
+										options={({ navigation }) => ({
+											title: 'Vérification ID',
+											headerLeft: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={styles.backButton}>
+													<Ionicons name="arrow-back" size={30} color="white" />
+												</TouchableOpacity>
+											),
+											headerRight: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('SignIn')} style={styles.backButton}>
+													<Ionicons name="key-outline" size={30} color="white" />
+												</TouchableOpacity>
+											),
+										})}
+									/>
+									<Stack.Screen
+										name="ConfirmationAccount"
+										component={ConfirmationAccountScreen}
+										options={({ navigation }) => ({
+											title: 'Bienvenue!',
+											headerLeft: () => () => null,
+											headerRight: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('SignIn')} style={styles.backButton}>
+													<Ionicons name="home-outline" size={30} color="white" />
+												</TouchableOpacity>
+											),
+										})}
 									/>
 									{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}
 									{/* <Stack.Screen

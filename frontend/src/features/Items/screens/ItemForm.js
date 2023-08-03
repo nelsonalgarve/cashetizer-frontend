@@ -100,7 +100,11 @@ export const ItemForm = () => {
 		};
 		console.log('newItemDataaaaa:', newItemData);
 		// Call the helper function to create a new item
-		createNewItem(token, newItemData)
+
+		createNewItem(
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGJhZDQ4YTgxMTI0Njk4ZmFhNDExMzYiLCJpYXQiOjE2ODk5NjU3MDZ9.nPCaGL_D_HBdbzRUS8ftx2DsIZZQJ7zNRMxHly6TxU8',
+			newItemData
+		)
 			.then((data) => {
 				console.log('New item created:', data);
 				// Handle the response data here

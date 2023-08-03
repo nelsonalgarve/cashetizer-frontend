@@ -1,13 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
-import { clearUser, selectUserData, setToken, setUser } from '../../../../reducers/user';
 import { CustomTextInput } from '../components/CustomTextInput';
-import { SignOut } from '../components/SignOut';
 import formTheme from '../themes/FormTheme';
 
 export const SignInForm = () => {
@@ -18,9 +15,9 @@ export const SignInForm = () => {
 	const testCheckIdSignUpPress = () => {
 		navigation.navigate('CheckIdScreen');
 	};
-	const dispatch = useDispatch();
-	const user = useSelector((state) => state.user.value);
-	const token = useSelector((state) => state.user.token);
+	const testConfirmationAccountScreen = () => {
+		navigation.navigate('ConfirmationAccountScreen');
+	};
 	const {
 		handleSubmit,
 		control,
@@ -30,43 +27,10 @@ export const SignInForm = () => {
 	} = useForm();
 
 	const onSubmit = (data) => {
-		// Adresse du backend pour Fetch POST login
-		const signIn = 'http://192.168.0.15:3000/users/login';
-
-		// Objet user à envoyer au backend
-		const requestData = {
-			email: data.email,
-			password: data.password,
-		};
-		fetch(signIn, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(requestData),
-		})
-			.then((response) => response.json())
-			.then((userData) => {
-				// console.log('data', userData.user);
-				// Réponse du backend { user: {...}, token: "..." }
-				if (userData.user && userData.token) {
-					// console.log('Succes loggedIn', userData);
-					dispatch(clearUser());
-					dispatch(setToken(userData.token));
-					dispatch(setUser(userData.user));
-					// affichage du reducer user
-					// console.log('userfromreducer', user);
-					// console.log('tokenFormReducer', token);
-				} else {
-					console.log('Error', userData.message || 'Signin failed');
-				}
-			})
-			.catch((error) => {
-				console.error('Error signing up:', error);
-				// erreur lors de la procédure d'inscription
-				console.log('Error', 'An error occurred while signing up. Please try again later.');
-			});
+		// Handle form submission logic here
+		console.log(data);
 	};
+
 	const onReset = () => {
 		reset();
 	};
@@ -89,7 +53,17 @@ export const SignInForm = () => {
 						}}
 						render={({ field }) => (
 							<View>
-								<TextInput {...field} style={styles.textInput} value={field.value} maxLength={50} label="Email" mode="outlined" error={errors.email} left={<TextInput.Icon icon="email" />} onChangeText={(text) => field.onChange(text)} />
+								<TextInput
+									{...field}
+									style={styles.textInput}
+									value={field.value}
+									maxLength={50}
+									label="Email"
+									mode="outlined"
+									error={errors.email}
+									left={<TextInput.Icon icon="email" />}
+									onChangeText={(text) => field.onChange(text)}
+								/>
 								{errors.email && <HelperText type="error">{errors.email.message}</HelperText>}
 							</View>
 						)}
@@ -134,9 +108,11 @@ export const SignInForm = () => {
 
 					<Button onPress={onReset}>Reset</Button>
 					<Button onPress={testCheckIdSignUpPress}>
-						<Text> Test </Text>
+						<Text> Test CheckId </Text>
 					</Button>
-					<SignOut />
+					<Button onPress={testConfirmationAccountScreen}>
+						<Text> ConfirmationAccountScreen </Text>
+					</Button>
 				</ScrollView>
 			</View>
 			{/* </KeyboardAvoidingView> */}
