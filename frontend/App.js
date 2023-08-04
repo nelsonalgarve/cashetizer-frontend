@@ -3,6 +3,7 @@ import { Oswald_400Regular, useFonts as useOswald } from '@expo-google-fonts/osw
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { configureStore } from '@reduxjs/toolkit';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import React from 'react';
@@ -21,6 +22,9 @@ import { CheckIdScreen } from './src/features/welcome/screens/CheckIdScreen';
 import { ConfirmationAccountScreen } from './src/features/welcome/screens/ConfirmationAccountScreen';
 import { ConfirmationRentScreen } from './src/features/welcome/screens/ConfirmationRentScreen';
 import { ConfirmationAdvertScreen } from './src/features/welcome/screens/ConfirmationAdvertScreen';
+import { HomeScreen } from './src/features/welcome/screens/HomeScreen';
+import { SettingsScreen } from './src/features/welcome/screens/SettingsScreen';
+import { MyProfileScreen } from './src/features/welcome/screens/MyProfileScreen';
 import { SignInForm } from './src/features/welcome/screens/SignInForm';
 import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
 import { theme } from './src/infrastructure/theme';
@@ -31,6 +35,33 @@ const store = configureStore({
 });
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+
+
+const TabNavigator = () => {
+	return (
+	  <Tab.Navigator screenOptions={({ route }) => ({
+		tabBarIcon: ({ color, size }) => {
+		  let iconName = '';
+  
+		  if (route.name === 'MyProfile') {
+			iconName = 'location-arrow';
+		  } else if (route.name === 'Settings') {
+			iconName = 'map-pin';
+		  }
+  
+		  return <FontAwesome name={iconName} size={size} color={color} />;
+		},
+		tabBarActiveTintColor: '#ec6e5b',
+		tabBarInactiveTintColor: '#335561',
+		headerShown: false,
+	  })}>
+		<Tab.Screen name="MyProfile" component={MyProfileScreen} />
+		<Tab.Screen name="Settings" component={SettingsScreen} />
+	  </Tab.Navigator>
+	);
+  };
 
 export default App = () => {
 	// const [fontsLoaded] = useLato({
