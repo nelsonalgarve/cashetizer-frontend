@@ -1,14 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
 import React from 'react';
-import { Controller, useController, useForm } from 'react-hook-form';
-import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { TextInputMask } from 'react-native-masked-text';
-import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
-import { CustomTextInput } from '../components/CustomTextInput';
-import formTheme from '../themes/FormTheme';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { Button, Provider as PaperProvider } from 'react-native-paper';
 
-export const ConfirmationAccountScreen = () => {
+export const ConfirmationRentScreen = () => {
 	const navigation = useNavigation();
 	const WelcomeScreen = () => {
 		navigation.navigate('Welcome');
@@ -27,50 +23,31 @@ export const ConfirmationAccountScreen = () => {
 		}
 	};
 
-	const {
-		handleSubmit,
-		control,
-		formState: { errors },
-		getValues,
-		reset,
-	} = useForm();
-
-	const onSubmit = (data) => {
-		// Handle form submission logic here
-		console.log(data);
-	};
-
-	const onReset = () => {
-		reset();
-	};
-
 	return (
-		<PaperProvider theme={formTheme}>
+		<PaperProvider>
 			<View style={styles.container}>
 				<View style={styles.textContainer}>
 					<Text style={styles.emoji}>🥳</Text>
 					<Text style={styles.title}> Félicitations ! </Text>
-
 					<Text style={styles.text}>
-						Votre compte est en cours de validation.{'\n'}
+						Votre annonce est complète.{'\n'}
 						{'\n'}
-						Vous recevrez une notification
-						{'\n'}et un email une fois votre compte confirmé.{'\n'}
+						Elle sera publiée d\'ici peu.{'\n'}
 						{'\n'}
-						Pensez à vérifier votre boite email
-						{'\n'}et à activer les notifications.
+						Vous recevrez une notification et un email une fois votre compte confirmé.{'\n'}
+						{'\n'}
+						Pensez à vérifier votre adresse email.
 					</Text>
 				</View>
 				<Button style={styles.buttonOutlined} mode="outlined" onPress={handleNotificationPermission}>
-					<Text style={styles.buttonText}>J'active les notifications</Text>
+					<Text style={styles.buttonText}>Activer les notifications</Text>
 				</Button>
 
 				<View style={styles.textContainer}>
 					<Text style={styles.text}>
-						Vous pouvez dès à présent {'\n'}
-						commencer à louer à petits prix {'\n'}
-						ou à générer un revenu {'\n'}
-						en mettant vos produits en location!!
+						Vous recevrez une notification et un email une fois votre compte confirmé.{'\n'}
+						{'\n'}
+						Pensez à vérifier votre adresse email.
 					</Text>
 				</View>
 				<Button style={styles.buttonOutlined} mode="outlined" onPress={WelcomeScreen}>
@@ -83,7 +60,7 @@ export const ConfirmationAccountScreen = () => {
 			<View style={styles.greenRectangle}>
 				<Text style={styles.rectangleText}>
 					Economies futées,{'\n'}
-					Des revenus assurés !{' '}
+					Des revenus assurés !
 				</Text>
 			</View>
 		</PaperProvider>
@@ -94,7 +71,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
-
 	imageContainer: {
 		width: '100%',
 		marginBottom: -18,
@@ -148,18 +124,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignContent: 'flex-end',
 		marginTop: 10,
-	},
-	buttonNoLine: {
-		color: '#FFCE52',
-		textAlign: 'center',
-		fontWeight: 'bold',
-		fontSize: 16,
-		textShadowColor: '#000',
-		textShadowOffset: {
-			width: 0.5,
-			height: 0.5,
-		},
-		textShadowRadius: 2,
 	},
 	buttonText: {
 		color: 'white',

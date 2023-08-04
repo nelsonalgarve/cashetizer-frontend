@@ -16,7 +16,7 @@ export const CheckIdScreen = () => {
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const [cameraType, setCameraType] = useState(CameraType.front);
 	const [hasPermission, setHasPermission] = useState(false);
-	const [showCamera, setShowCamera] = useState(false);
+	const [showCamera, setShowCamera] = useState(true);
 
 	const isFocused = useIsFocused();
 
@@ -123,7 +123,7 @@ export const CheckIdScreen = () => {
 				return;
 			}
 
-			const response = await fetch('http://192.168.0.15:3000/IDCheck', {
+			const response = await fetch('http://172.20.10.4:3000/IDCheck', {
 				method: 'POST',
 				body: formData,
 			});
