@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
 		left: 0,
 		right: 0,
 		bottom: '80%',
+        marginTop:-35,
 	},
 	image: {
 		flex: 1,
