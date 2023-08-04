@@ -8,12 +8,25 @@ import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-
 import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
 
-export const ConfirmationAccountScreen = () => {
+export const AlertCheckIdScreen = () => {
 	const navigation = useNavigation();
 	const WelcomeScreen = () => {
 		navigation.navigate('Welcome');
 	};
-	
+	const handleNotificationPermission = async () => {
+		const { status: existingStatus } = await Notifications.getPermissionsAsync();
+		let finalStatus = existingStatus;
+
+		if (existingStatus !== 'granted') {
+			const { status } = await Notifications.requestPermissionsAsync();
+			finalStatus = status;
+		}
+
+		if (finalStatus === 'granted') {
+			console.log('Notification permission granted!');
+		}
+	};
+
 	const {
 		handleSubmit,
 		control,
@@ -22,8 +35,10 @@ export const ConfirmationAccountScreen = () => {
 		reset,
 	} = useForm();
 
-	
-	
+	const onSubmit = (data) => {
+		// Handle form submission logic here
+		console.log(data);
+	};
 
 	const onReset = () => {
 		reset();
@@ -33,35 +48,30 @@ export const ConfirmationAccountScreen = () => {
 		<PaperProvider theme={formTheme}>
 			<View style={styles.container}>
 				<View style={styles.textContainer}>
-					<Text style={styles.emoji}>🥳</Text>
-					<Text style={styles.title}> Félicitations ! </Text>
+					<Text style={styles.emoji}>🤩</Text>
+					<Text style={styles.title}> Bravooo ! </Text>
 
 					<Text style={styles.text}>
-					
-					Bienvenue dans la communauté Cashetizer.
+					{'\n'}
+					Vous n'êtes plus qu'à deux clics {'\n'} du niveau supérieur.
 						{'\n'}{'\n'}
-						Location à petits prix? {'\n'}un revenu de vos locations?
-						{'\n'}{'\n'}
-						Pour pouvoir profiter pleinement {'\n'}
-						des fonctionnalités de Cashetizer, {'\n'}
-						vous pouvez faire vérifier votre compte. 
+						La sécurité de nos membres est {'\n'} au coeur de notre préoccupation{'\n'}
+						et votre compte n'est pas encore vérifié.{'\n'}
+                        {'\n'}
+                        
+						Afin de pouvoir profiter pleinement {'\n'}
+						des opportunités au sein de Cashetizer, {'\n'}
+						vous proposons de faire {'\n'}
+                        vérifier votre compte. {'\n'}
+                        {'\n'}
+                        Ça prendra moins de 5 minutes ⏳
+                        
 					</Text>
 				</View>
 				<Button style={styles.buttonOutlined} mode="outlined" onPress={handleNotificationPermission}>
 					<Text style={styles.buttonText}>Je fais vérifier mon compte</Text>
 				</Button>
 
-				<View style={styles.textContainer}>
-					<Text style={styles.text}>
-						Ou vous pouvez dès à présent {'\n'}
-						commencer à naviguer à travers les belles {'\n'} 
-						opportunités qui vous attendent {'\n'}
-						sur Cashetizer. 
-					</Text>
-				</View>
-				<Button style={styles.buttonOutlined} mode="outlined" onPress={WelcomeScreen}>
-					<Text style={styles.buttonText}>Je commence l'aventure</Text>
-				</Button>
 			</View>
 			<View style={[styles.imageContainer, { zIndex: -1 }]}>
 				<Image source={require('../../../../assets/LogoShortUp.png')} style={styles.image} />
@@ -120,8 +130,8 @@ const styles = StyleSheet.create({
 	},
 	emoji: {
 		fontSize: 60,
-		marginTop: 25,
-		marginBottom: 25,
+		marginTop: 40,
+		marginBottom: 20,
 	},
 	text: {
 		fontSize: 16,
@@ -159,7 +169,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		width: '80%',
 		alignSelf: 'center',
-		margin: 10,
+		margin: 30,
 	},
 	buttonGreenOutlined: {
 		margin: 10,

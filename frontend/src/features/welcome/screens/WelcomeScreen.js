@@ -24,9 +24,10 @@ export const WelcomeScreen = ({ navigation }) => {
 					<Image source={require('../../../../assets/LogoCash.png')} style={styles.image} />
 				</View>
 				{/* Barre de recherche */}
-				<View>
+				<View style={styles.imageContainer}> 
 					<TextInput style={styles.textInput} label="Rechercher" mode="outlined" Left={<TextInput.Icon icon="search" />} />
 				</View>
+				
 
 				{/* Affichage des boutons de catégorie */}
 				<View style={styles.buttonCategorie}>
@@ -47,7 +48,8 @@ export const WelcomeScreen = ({ navigation }) => {
 				</View>
 				<View>
 					<Button style={styles.buttonOutlined} mode="outlined" onPress={handlePressItemForm}>
-						<Text>Items</Text>
+						<Text>
+							Items</Text>
 					</Button>
 				</View>
 
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
 	},
 
 	textInput: {
-		marginTop: 110,
+		marginTop: 122,
 		paddingVertical: 1,
 		paddingHorizontal: 1,
 		fontSize: 12,

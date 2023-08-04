@@ -8,12 +8,25 @@ import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-
 import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
 
-export const ConfirmationAccountScreen = () => {
+export const ConfCheckIdScreen = () => {
 	const navigation = useNavigation();
 	const WelcomeScreen = () => {
 		navigation.navigate('Welcome');
 	};
-	
+	const handleNotificationPermission = async () => {
+		const { status: existingStatus } = await Notifications.getPermissionsAsync();
+		let finalStatus = existingStatus;
+
+		if (existingStatus !== 'granted') {
+			const { status } = await Notifications.requestPermissionsAsync();
+			finalStatus = status;
+		}
+
+		if (finalStatus === 'granted') {
+			console.log('Notification permission granted!');
+		}
+	};
+
 	const {
 		handleSubmit,
 		control,
@@ -22,8 +35,10 @@ export const ConfirmationAccountScreen = () => {
 		reset,
 	} = useForm();
 
-	
-	
+	const onSubmit = (data) => {
+		// Handle form submission logic here
+		console.log(data);
+	};
 
 	const onReset = () => {
 		reset();
@@ -37,26 +52,25 @@ export const ConfirmationAccountScreen = () => {
 					<Text style={styles.title}> Félicitations ! </Text>
 
 					<Text style={styles.text}>
-					
-					Bienvenue dans la communauté Cashetizer.
-						{'\n'}{'\n'}
-						Location à petits prix? {'\n'}un revenu de vos locations?
-						{'\n'}{'\n'}
-						Pour pouvoir profiter pleinement {'\n'}
-						des fonctionnalités de Cashetizer, {'\n'}
-						vous pouvez faire vérifier votre compte. 
+						Votre compte est en cours de validation.{'\n'}
+						{'\n'}
+						Vous recevrez une notification
+						{'\n'}et un email une fois votre compte confirmé.{'\n'}
+						{'\n'}
+						Pensez à vérifier votre boite email
+						{'\n'}et à activer les notifications.
 					</Text>
 				</View>
 				<Button style={styles.buttonOutlined} mode="outlined" onPress={handleNotificationPermission}>
-					<Text style={styles.buttonText}>Je fais vérifier mon compte</Text>
+					<Text style={styles.buttonText}>J'active les notifications</Text>
 				</Button>
 
 				<View style={styles.textContainer}>
 					<Text style={styles.text}>
-						Ou vous pouvez dès à présent {'\n'}
-						commencer à naviguer à travers les belles {'\n'} 
-						opportunités qui vous attendent {'\n'}
-						sur Cashetizer. 
+						Vous pouvez dès à présent {'\n'}
+						commencer à louer à petits prix {'\n'}
+						ou à générer un revenu {'\n'}
+						en mettant vos produits en location!!
 					</Text>
 				</View>
 				<Button style={styles.buttonOutlined} mode="outlined" onPress={WelcomeScreen}>

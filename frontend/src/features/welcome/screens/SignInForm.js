@@ -29,6 +29,12 @@ export const SignInForm = () => {
 	const testGoHome = () => {
 		navigation.navigate('TabNavigator');
 	};
+	const testConfCheckIdPress = () => {
+		navigation.navigate('ConfCheckId');
+	};
+	const AlertCheckIdPress = () => {
+		navigation.navigate('AlertCheckId');
+	};
 	const {
 		handleSubmit,
 		control,
@@ -168,6 +174,12 @@ export const SignInForm = () => {
 					</Button>
 					<Button onPress={testGoHome}>
 						<Text> Test Go Home </Text>
+					</Button>
+					<Button onPress={testConfCheckIdPress}>
+						<Text> Test ConfCheckId </Text> 
+					</Button>
+					<Button onPress={AlertCheckIdPress}>
+						<Text> Test AlertCheckId </Text> 
 					</Button>
 					<SignOut />
 				</ScrollView>
