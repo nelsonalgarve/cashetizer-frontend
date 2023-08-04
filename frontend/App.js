@@ -96,7 +96,7 @@ const TabNavigator = () => {
 			paddingHorizontal: 0, 
 			paddingVertical: 0,
 		  }}
-		  tabBarVisible={getTabBarVisible}
+		 
 		  >
 			<Tab.Screen name="Home" component={HomeScreen} />
 			<Tab.Screen name="MyProfile" component={MyProfileScreen} />
@@ -204,7 +204,7 @@ export default App = () => {
 											title: 'Bienvenue!',
 											headerLeft: () => (''),
 											headerRight: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('SignIn')} style={styles.backButton}>
+												<TouchableOpacity onPress={() => navigation.navigate('TabNavigator')} style={styles.backButton}>
 													<Ionicons name="home-outline" size={30} color="white" />
 												</TouchableOpacity>
 											),
@@ -217,7 +217,7 @@ export default App = () => {
 											title: 'Bienvenue!',
 											headerLeft: () => (''),
 											headerRight: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('SignIn')} style={styles.backButton}>
+												<TouchableOpacity onPress={() => navigation.navigate('TabNavigator')} style={styles.backButton}>
 													<Ionicons name="home-outline" size={30} color="white" />
 												</TouchableOpacity>
 											),
@@ -230,7 +230,7 @@ export default App = () => {
 											title: 'Bienvenue!',
 											headerLeft: () => (''),
 											headerRight: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('SignIn')} style={styles.backButton}>
+												<TouchableOpacity onPress={() => navigation.navigate('TabNavigator')} style={styles.backButton}>
 													<Ionicons name="home-outline" size={30} color="white" />
 												</TouchableOpacity>
 											),
