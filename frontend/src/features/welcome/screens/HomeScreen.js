@@ -4,8 +4,9 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import formTheme from '../themes/FormTheme';
 
-export const HomeScreen = ({ }) => {
-    const navigation = useNavigation();
+
+export const HomeScreen = ({ nav}) => {
+   
 	const handleSignUpPress = () => {
 		navigation.navigate('SignUp');
 	};
@@ -33,8 +34,8 @@ export const HomeScreen = ({ }) => {
 
 				<Text style={styles.annonce}>Annonce sponsorisées</Text>
 
-				<View style={styles.infoBar}></View>
-                <TabNavigator />
+				
+                
 			</View>
 		</PaperProvider>
 	);
@@ -51,6 +52,7 @@ const styles = StyleSheet.create({
 		left: 0,
 		right: 0,
 		bottom: '80%',
+        marginTop:-35,
 	},
 	image: {
 		flex: 1,
@@ -62,7 +64,8 @@ const styles = StyleSheet.create({
 		width: '100%',
 		alignItems: 'center',
 		justifyContent: 'center',
-		height: 200, // hauteur des boutons
+		height: 130, // hauteur des boutons
+        marginTop: 80,
 	},
 
 	button: {
@@ -71,13 +74,17 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 24,
 		marginVertical: 8,
 		alignItems: 'center',
-		width: 290, //largeur des boutons
+        justifyContent: 'center',
+        marginTop: 10,
+        height: 70, 
+		width: 350, //largeur des boutons
 		borderRadius: 50, //  pour des bords arrondis
 	},
 	buttonText: {
-		color: '#FFCE52',
+		color: 'white',
 		textAlign: 'center',
 		fontSize: 18,
+        fontWeight: '500',
 	},
 
 	buttonsContainer: {
@@ -90,30 +97,21 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 
-	infoBar: {
-		backgroundColor: '#155263',
-		paddingVertical: 8,
-		paddingHorizontal: 16,
-		position: 'absolute',
-		bottom: '0%', // Ajustez cette valeur pour déplacer les boutons vers le bas
-		width: '100%',
-		height: 100,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-
 	annonce: {
 		color: '#155263',
 		textAlign: 'center',
 		fontSize: 16,
-		bottom: -450, //Position revoir le style
+		marginTop: 490, //Position revoir le style
 	},
 
 	yellowBar: {
 		backgroundColor: '#FFCE52',
-		height: 5, // hauteur de la barre comme souhaité
-		width: '100%',
+        alignSelf: 'center',
+		height: 2, // hauteur de la barre comme souhaité
+		width: '60%',
 		position: 'absolute',
-		bottom: '35%', //position de la barre
+		bottom: '31%', //position de la barre
 	},
 });
+
+export default HomeScreen; 

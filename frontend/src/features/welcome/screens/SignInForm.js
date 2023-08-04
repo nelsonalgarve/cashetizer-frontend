@@ -25,7 +25,7 @@ export const SignInForm = () => {
 		navigation.navigate('ConfirmationRent');
 	};
 	const testGoHome = () => {
-		navigation.navigate('Home');
+		navigation.navigate('TabNavigator');
 	};
 	const {
 		handleSubmit,

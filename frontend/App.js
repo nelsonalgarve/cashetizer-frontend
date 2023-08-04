@@ -1,14 +1,14 @@
 import { Lato_400Regular, useFonts as useLato } from '@expo-google-fonts/lato';
 import { Oswald_400Regular, useFonts as useOswald } from '@expo-google-fonts/oswald';
 import { Ionicons } from '@expo/vector-icons';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { configureStore } from '@reduxjs/toolkit';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import React from 'react';
-import { KeyboardAvoidingView, SafeAreaView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import { IconButton, Provider as PaperProvider } from 'react-native-paper';
+import { KeyboardAvoidingView, SafeAreaView, Text, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { IconButton, Provider as PaperProvider} from 'react-native-paper';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import user from './reducers/user';
@@ -23,12 +23,15 @@ import { ConfirmationAccountScreen } from './src/features/welcome/screens/Confir
 import { ConfirmationRentScreen } from './src/features/welcome/screens/ConfirmationRentScreen';
 import { ConfirmationAdvertScreen } from './src/features/welcome/screens/ConfirmationAdvertScreen';
 import { HomeScreen } from './src/features/welcome/screens/HomeScreen';
-import { SettingsScreen } from './src/features/welcome/screens/SettingsScreen';
-import { MyProfileScreen } from './src/features/welcome/screens/MyProfileScreen';
+import  SettingsScreen from './src/features/welcome/screens/SettingsScreen';
+import  MyProfileScreen from './src/features/welcome/screens/MyProfileScreen';
 import { SignInForm } from './src/features/welcome/screens/SignInForm';
 import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
+import FavouriteScreen from './src/features/welcome/screens/FavouriteScreen';
 import { theme } from './src/infrastructure/theme';
 import themePaper from './src/infrastructure/theme/themePaper';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 
 const store = configureStore({
 	reducer: { user },
@@ -38,41 +41,73 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 
-
 const TabNavigator = () => {
+	
+	const getTabBarVisible = (route) => {
+		const routeName = route.state?.routes[route.state.index]?.name ?? '';
+		return routeName !== 'Welcome';
+	  };
+	
+
 	return (
-	  <Tab.Navigator screenOptions={({ route }) => ({
-		tabBarIcon: ({ color, size }) => {
-		  let iconName = '';
-  
-		  if (route.name === 'MyProfile') {
-			iconName = 'location-arrow';
-		  } else if (route.name === 'Settings') {
-			iconName = 'map-pin';
-		  }
-  
-		  return <FontAwesome name={iconName} size={size} color={color} />;
-		},
-		tabBarActiveTintColor: '#ec6e5b',
-		tabBarInactiveTintColor: '#335561',
-		headerShown: false,
-	  })}>
-		<Tab.Screen name="MyProfile" component={MyProfileScreen} />
-		<Tab.Screen name="Settings" component={SettingsScreen} />
-	  </Tab.Navigator>
+	    <Tab.Navigator style={{ padding: 0}}
+		screenOptions={({ route }) => ({
+			tabBarIcon: ({ color, size }) => {
+			  let iconName = '';
+	  
+			  if (route.name === 'Home') {
+				iconName = 'home';
+				} else if (route.name === 'MyProfile') {
+				iconName = 'person';
+				} else if (route.name === 'Favourite') {
+				iconName = 'heart';
+				} else if (route.name === 'Settings') {
+				iconName = 'cog';
+				} else if (route.name === 'Welcome') {
+				 iconName='exit-outline';
+				} 
+			  return (
+				<View style={{ justifyContent: 'center', alignItems: 'center', height: 50, marginTop:40 }}>
+				  <Ionicons name={iconName} size={30} color={color} />
+				</View>
+			  );
+			},
+			tabBarActiveTintColor: '#FFCE52',
+			tabBarInactiveTintColor: '#335561',
+			headerShown: false,
+			tabBarShowLabel: false, 
+			/* tabBarLabel: ({ focused, color }) => {
+				let label = '';
+				if (route.name === 'Home') {
+				label = 'Accueil';
+				} else if (route.name === 'MyProfile') {
+				label = 'Mon Profil';
+				} else if (route.name === 'Favourite') {
+				label = 'Favoris';
+				} else if (route.name === 'Settings') {
+				label = 'Réglages';
+				} else if (route.name === 'Welcome') {
+				label = 'Exit';
+				}
+				return <Text style={{ color, marginTop: 35 }}>{label}</Text>;
+			}, */
+		  })}
+		  tabBarStyle={{
+			paddingHorizontal: 0, 
+			paddingVertical: 0,
+		  }}
+		  tabBarVisible={getTabBarVisible}
+		  >
+			<Tab.Screen name="Home" component={HomeScreen} />
+			<Tab.Screen name="MyProfile" component={MyProfileScreen} />
+			<Tab.Screen name="Favourite" component={FavouriteScreen} />
+			<Tab.Screen name="Settings" component={SettingsScreen} />
+			<Tab.Screen name="Welcome" component={WelcomeScreen} options={{ tabBarVisible: false }} />
+		  </Tab.Navigator>
 	);
   };
 
 export default App = () => {
-	// const [fontsLoaded] = useLato({
-	//     Lato_400Regular,
-	// });
-	// const [fontsLoaded2] = useOswald({
-	//     Oswald_400Regular,
-	// });
-	// if (!fontsLoaded || !fontsLoaded2) {
-	//     return null;
-	// }
 
 	return (
 		<>
@@ -208,6 +243,15 @@ export default App = () => {
 											headerShown: false,
 										}}
 									/>
+									<Stack.Screen 
+									name="TabNavigator" 
+									component={TabNavigator} 
+									options={{
+										headerShown: false,
+									}}/>
+
+
+									
 									{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}
 									{/* <Stack.Screen
 								 name="SignUpScreen"
