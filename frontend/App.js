@@ -201,6 +201,13 @@ export default App = () => {
 											),
 										})}
 									/>
+									<Stack.Screen
+										name="Home"
+										component={HomeScreen}
+										options={{
+											headerShown: false,
+										}}
+									/>
 									{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}
 									{/* <Stack.Screen
 								 name="SignUpScreen"

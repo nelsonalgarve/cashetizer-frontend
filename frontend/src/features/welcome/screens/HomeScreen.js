@@ -1,9 +1,15 @@
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import formTheme from '../themes/FormTheme';
 
-export const OptionScreen = ({ navigation }) => {
+export const HomeScreen = ({ }) => {
+    const navigation = useNavigation();
+	const handleSignUpPress = () => {
+		navigation.navigate('SignUp');
+	};
+
 	// Définissez les catégories ici
 	const categories = ['Mettre un objet en location', 'Louer un objet', 'Mes locations', 'Mes annonces'];
 
@@ -28,6 +34,7 @@ export const OptionScreen = ({ navigation }) => {
 				<Text style={styles.annonce}>Annonce sponsorisées</Text>
 
 				<View style={styles.infoBar}></View>
+                <TabNavigator />
 			</View>
 		</PaperProvider>
 	);

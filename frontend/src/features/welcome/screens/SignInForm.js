@@ -24,6 +24,9 @@ export const SignInForm = () => {
 	const testConfirmationRentScreen = () => {
 		navigation.navigate('ConfirmationRent');
 	};
+	const testGoHome = () => {
+		navigation.navigate('Home');
+	};
 	const {
 		handleSubmit,
 		control,
@@ -124,6 +127,9 @@ export const SignInForm = () => {
 					</Button>
 					<Button onPress={testConfirmationAdvertScreen}>
 					<Text> Test ConfirmationAdvertScreen </Text>
+					</Button>
+					<Button onPress={testGoHome}>
+					<Text> Test Go Home </Text>
 					</Button>
 				</ScrollView>
 			</View>
