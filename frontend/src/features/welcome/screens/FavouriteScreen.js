@@ -1,9 +1,10 @@
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function FavouriteScreen() {
 	return (
 		<View style={styles.container}>
-			<Text> Welcome to your favourite page </Text>
+			<Text>Welcome to your favourite page</Text>
 		</View>
 	);
 }

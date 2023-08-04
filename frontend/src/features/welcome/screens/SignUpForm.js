@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData, setToken, setUser } from '../../../../reducers/user';
 import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const SignUpForm = () => {
 	const dispatch = useDispatch();
@@ -32,9 +33,6 @@ export const SignUpForm = () => {
 			return;
 		}
 
-		// Adresse du backend pour Fetch POST signup
-		const signUpEndpoint = 'http://192.168.0.15:3000/users';
-
 		// Objet user à envoyer au backend
 		const requestData = {
 			username: data.username,
@@ -54,6 +52,9 @@ export const SignUpForm = () => {
 			isVendor: data.isVendor,
 			notifications: data.notifications,
 		};
+
+		// Adresse du backend pour Fetch POST signup
+		const signUpEndpoint = `${SERVER_URL}/users`;
 
 		fetch(signUpEndpoint, {
 			method: 'POST',

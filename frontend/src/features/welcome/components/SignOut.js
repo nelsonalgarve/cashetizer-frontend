@@ -6,8 +6,8 @@ import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser, selectUserData, setError, setToken, setUser } from '../../../../reducers/user';
 import { CustomTextInput } from '../components/CustomTextInput';
-
 import formTheme from '../themes/FormTheme';
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const SignOut = () => {
 	const dispatch = useDispatch();
@@ -16,7 +16,7 @@ export const SignOut = () => {
 	console.log(token);
 	const onSubmitLogout = () => {
 		// Adresse du backend pour Fetch POST logout
-		const logout = 'http://192.168.0.12:3000/users/logoutAll';
+		const logout = `${SERVER_URL}user/users/logoutAll`;
 
 		// Token récupéré depuis le reducer user
 		const bearerToken = token;

@@ -1,9 +1,10 @@
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function MyProfileScreen() {
+export default function MyProfileScreen({ navigation }) {
 	return (
 		<View style={styles.container}>
-			<Text> Welcome to your profile page </Text>
+			<Text>Welcome to your profile page</Text>
 		</View>
 	);
 }

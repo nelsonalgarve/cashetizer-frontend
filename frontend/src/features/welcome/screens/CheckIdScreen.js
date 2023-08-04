@@ -9,6 +9,7 @@ import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-
 import placeholderImage from '../../../../assets/Vacant.png';
 import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
+const SERVER_URL = process.env.SERVER_URL;
 
 export const CheckIdScreen = () => {
 	const navigation = useNavigation();
@@ -123,7 +124,7 @@ export const CheckIdScreen = () => {
 				return;
 			}
 
-			const response = await fetch('http://172.20.10.4:3000/IDCheck', {
+			const response = await fetch(`${SERVER_URL}/IDCheck`, {
 				method: 'POST',
 				body: formData,
 			});

@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { clearUser, selectUserData, setToken, setUser } from '../../../../reducers/user';
 import { SignOut } from '../components/SignOut';
 import formTheme from '../themes/FormTheme';
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const SignInForm = () => {
 	const navigation = useNavigation();
@@ -26,7 +27,7 @@ export const SignInForm = () => {
 		navigation.navigate('ConfirmationRent');
 	};
 	const testGoHome = () => {
-		navigation.navigate('Home');
+		navigation.navigate('TabNavigator');
 	};
 	const {
 		handleSubmit,
@@ -41,7 +42,7 @@ export const SignInForm = () => {
 
 	const onSubmit = (data) => {
 		// Adresse du backend pour Fetch POST login
-		const signIn = 'http://192.168.0.15:3000/users/login';
+		const signIn = `${SERVER_URL}/users/login`;
 
 		// Objet user à envoyer au backend
 		const requestData = {

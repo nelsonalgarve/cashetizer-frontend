@@ -34,6 +34,7 @@ import { createNewItem } from '../../helpers/createNewItem';
 import { fetchCategories } from '../../helpers/fetchCategories';
 import DatePicker from '../components/DatePicker';
 import { MapPicker } from '../components/MapPicker';
+const SERVER_URL = process.env.SERVER_URL;
 
 export const ItemForm = () => {
 	// GOOGLE PLACES
@@ -74,7 +75,6 @@ export const ItemForm = () => {
 	const [showCamera, setShowCamera] = useState(false);
 	const [livePhoto, setLivePhoto] = useState('');
 	const isFocused = useIsFocused();
-
 	const cameraRef = useRef(null);
 	// Filter out objects with undefined values
 
@@ -111,7 +111,7 @@ export const ItemForm = () => {
 			});
 
 			try {
-				const response = await fetch('http://172.20.10.4:3000/UploadPhotos', {
+				const response = await fetch(`${SERVER_URL}/Upload`, {
 					method: 'POST',
 					body: formData,
 				});
@@ -144,7 +144,7 @@ export const ItemForm = () => {
 	const fetchData = async () => {
 		try {
 			const data = await fetchCategories(); // Use the helper function
-			console.log('from thefetch in form', data);
+			// console.log('from thefetch in form', data)
 			setCategories(data);
 		} catch (error) {
 			// Handle the error if needed
@@ -154,7 +154,6 @@ export const ItemForm = () => {
 	const handleSelectCategories = (suggestion) => {
 		if (selectedCategory) {
 			setCategory(suggestion);
-			console.log('hello', category);
 			setSelectedCategory(null);
 		}
 	};
@@ -182,28 +181,24 @@ export const ItemForm = () => {
 		getValues,
 		reset,
 	} = useForm();
-	// PARSE L ADRESSE DANS UN OBJET
 
 	// --------------------------ENVOI DU FORMULAIRE --------------------------------
 	const onSubmit = (data) => {
 		const newItemData = {
 			...data,
-			address: myAddressParsed,
+			// address: myAddressParsed,
 			category: selectedCategory,
 			etat: selectedEtat,
 			localisation: selectedLocation.location,
-			remise: selectedRemise,
+			remise: selectedRemise.value,
+			periodes: periods,
 		};
 		console.log('newItemDataaaaa:', newItemData);
 		// Call the helper function to create a new item
 
-		createNewItem(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGJhZDQ4YTgxMTI0Njk4ZmFhNDExMzYiLCJpYXQiOjE2ODk5NjU3MDZ9.nPCaGL_D_HBdbzRUS8ftx2DsIZZQJ7zNRMxHly6TxU8',
-			newItemData
-		)
+		createNewItem(token, newItemData)
 			.then((data) => {
 				console.log('New item created:', data);
-				// Handle the response data here
 			})
 			.catch((error) => {
 				// Handle errors here
@@ -220,7 +215,7 @@ export const ItemForm = () => {
 		if (selectedLocation) {
 			const parsedAddress = parseAddress(selectedLocation.address);
 			setMyAddressParsed(parsedAddress);
-			console.log('parsed address on map pick', parsedAddress);
+			// console.log('parsed address on map pick', parsedAddress);
 		}
 	}, [selectedLocation]);
 
@@ -335,7 +330,7 @@ export const ItemForm = () => {
 					<View style={styles.rowContainer}>
 						{/* // CHAMP PRIX ---------------------------------------------------------------- */}
 						<Controller
-							name="price"
+							name="prices"
 							control={control}
 							defaultValue=""
 							rules={{ required: 'Price is required' }}
@@ -348,12 +343,12 @@ export const ItemForm = () => {
 										maxLength={6}
 										label="Prix"
 										mode="outlined"
-										error={errors && errors.price}
+										error={errors && errors.prices}
 										right={<TextInput.Icon icon="currency-eur" />}
 										keyboardType="numeric"
 										onChangeText={(text) => field.onChange(text)}
 									/>
-									{errors.price && <HelperText type="error">{errors.price.message}</HelperText>}
+									{errors.prices && <HelperText type="error">{errors.prices.message}</HelperText>}
 								</View>
 							)}
 						/>
