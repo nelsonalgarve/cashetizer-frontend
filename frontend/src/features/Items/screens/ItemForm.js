@@ -23,6 +23,7 @@ import {
 	Surface,
 	TextInput,
 } from 'react-native-paper';
+import DropDown from 'react-native-paper-dropdown';
 import SelectDropdown from 'react-native-select-dropdown';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -37,6 +38,10 @@ import { MapPicker } from '../components/MapPicker';
 const SERVER_URL = process.env.SERVER_URL;
 
 export const ItemForm = () => {
+	const [colors, setColors] = useState('');
+	const [showDropDown, setShowDropDown] = useState(false);
+	const [gender, setGender] = useState('');
+	const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
 	// GOOGLE PLACES
 	const [isMapVisible, setMapVisible] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState(null);
@@ -190,7 +195,7 @@ export const ItemForm = () => {
 			category: selectedCategory,
 			etat: selectedEtat,
 			localisation: selectedLocation.location,
-			remise: selectedRemise.value,
+			remise: selectedRemise,
 			periodes: periods,
 		};
 		console.log('newItemDataaaaa:', newItemData);
@@ -252,20 +257,23 @@ export const ItemForm = () => {
 
 	return (
 		<PaperProvider theme={formTheme}>
+			<View></View>
 			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<View style={styles.container}>
 					{/* // CHAMP CATEGORIE -------------------------------------------------------------------- */}
-					{/* <DropDownPicker
-						items={filteredCategories}
-						defaultValue={selectedCategory}
-						containerProps={{ style: { height: 40, width: 200 } }}
-						style={{ backgroundColor: '#fafafa' }}
-						itemStyle={{ justifyContent: 'flex-start' }}
-						dropDownContainerStyle={{ backgroundColor: '#fafafa' }}
-						onChangeItem={(item) => setSelectedCategory(item.value)}
-						labelProps={{ style: { fontSize: 14, color: 'black' } }}
-						selectedItemLabelProps={{ style: { color: 'red' } }}
-						arrowIconStyle={{ tintColor: 'black' }}
+					{/* <DropDown
+						label={'Colors'}
+						mode={'outlined'}
+						visible={showMultiSelectDropDown}
+						showDropDown={() => setShowMultiSelectDropDown(true)}
+						onDismiss={() => setShowMultiSelectDropDown(false)}
+						value={selectedRemise}
+						setValue={setSelectedRemise}
+						list={dataModeRemise2}
+						placeholder={'Sélectionnez une catégorie...'}
+						dropDownStyle={'ViewStyle'}
+
+						// multiSelect
 					/> */}
 					{/* //SELECTDOWN ---------------------------------------------------------------------- */}
 					{/* <SelectDropdown
@@ -281,8 +289,15 @@ export const ItemForm = () => {
 							return item.value;
 						}}
 					/> */}
-					<View style={{ width: '90%', alignSelf: 'center' }}>
-						<SelectList setSelected={setSelectedCategory} data={filteredCategories} value={selectedCategory} />
+					<View style={{ width: '100%', alignSelf: 'center' }}>
+						<SelectList
+							style={styles.selectList}
+							setSelected={setSelectedCategory}
+							onSelect={() => alert(selectedCategory.name)}
+							data={filteredCategories}
+							value={selectedCategory}
+							label={'Select'}
+						/>
 					</View>
 
 					{/* // CHAMP TITRE -------------------------------------------------------------------- */}
@@ -290,6 +305,7 @@ export const ItemForm = () => {
 						control={control}
 						render={({ field: { onChange, onBlur, value } }) => (
 							<TextInput
+								style={styles.textInput}
 								label="Titre"
 								mode="outlined"
 								onChangeText={(text) => onChange(text)}
@@ -307,11 +323,11 @@ export const ItemForm = () => {
 						control={control}
 						render={({ field: { onChange, onBlur, value } }) => (
 							<TextInput
+								style={styles.textArea}
 								label="Description"
 								mode="outlined"
 								multiline={true}
 								numberOfLines={5}
-								style={{ height: 100, paddingVertical: 10 }}
 								onChangeText={(text) => onChange(text)}
 								onBlur={onBlur}
 								value={value}
@@ -323,7 +339,7 @@ export const ItemForm = () => {
 						defaultValue=""
 					/>
 					{/* // CHAMP ETAT DE L'OBJET --------------------------------------------------------------------- */}
-					<View>
+					<View style={{ width: '100%', alignSelf: 'center' }}>
 						<SelectList setSelected={setSelectedEtat} data={dataSelectList} value={selectedEtat} />
 					</View>
 					{/* // ROW CONTAINER -------------------------------------------------------------------- */}
@@ -436,7 +452,8 @@ export const ItemForm = () => {
 									size="30"
 									icon="camera"
 									style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}
-									onPress={() => setDatePickerVisible(true)}>
+									onPress={() => setDatePickerVisible(true)}
+								>
 									Periode de disponibilité
 								</Badge>
 
@@ -456,17 +473,18 @@ export const ItemForm = () => {
 													fontSize: 12,
 													color: 'white',
 													minHeight: '100%',
-												}}>
+												}}
+											>
 												Période {index + 1}: {moment(period.start).format('L')} - {moment(period.end).format('L')}
 											</Badge>
 											<Divider />
 
 											<Button
 												icon="delete"
-												mode="elevated"
 												compact="false"
 												style={{ paddingHorizontal: 5, margin: 5 }}
-												onPress={() => deletePeriod(index)}>
+												onPress={() => deletePeriod(index)}
+											>
 												Delete
 											</Button>
 										</View>
@@ -595,13 +613,13 @@ const styles = StyleSheet.create({
 	},
 	inputInRow: {
 		flex: 1,
-		marginRight: 10,
-		marginLeft: 10,
+		marginRight: 15,
+		marginLeft: 15,
 		fontSize: 12,
 		height: 35,
 		backgroundColor: '#E8E8E8',
 	},
-	uttonsContainer: {
+	buttonsContainer: {
 		flex: 1,
 		alignContent: 'flex-end',
 		marginTop: 10,
@@ -613,7 +631,15 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		width: '100%',
 		alignSelf: 'center',
-		margin: 12,
+	},
+	textArea: {
+		height: 100,
+		paddingVertical: 10,
+		backgroundColor: '#E8E8E8',
+		paddingVertical: 1,
+		paddingHorizontal: 1,
+		fontSize: 12,
+		marginBottom: 5,
 	},
 	buttonText: {
 		color: 'white',
@@ -643,6 +669,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		fontSize: 10,
 		height: 25,
+		marginBottom: 10,
 		backgroundColor: '#E8E8E8',
 	},
 	passwordContainer: {

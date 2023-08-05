@@ -1,7 +1,10 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Provider as PaperProvider, Searchbar, TextInput } from 'react-native-paper';
+import FilterForm from '../../Items/components/FilterForm';
+import { calculateDistance } from '../../helpers/calculateDistance';
 import formTheme from '../themes/FormTheme';
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const SearchScreen = ({ navigation }) => {
 	const handleSignUpPress = () => {

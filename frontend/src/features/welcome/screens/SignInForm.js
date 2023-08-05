@@ -29,6 +29,7 @@ export const SignInForm = () => {
 	const testGoHome = () => {
 		navigation.navigate('TabNavigator');
 	};
+
 	const {
 		handleSubmit,
 		control,
@@ -168,6 +169,12 @@ export const SignInForm = () => {
 					</Button>
 					<Button onPress={testGoHome}>
 						<Text> Test Go Home </Text>
+					</Button>
+					<Button onPress={() => navigation.navigate('ItemForm')}>
+						<Text> Go to item form </Text>
+					</Button>
+					<Button onPress={() => navigation.navigate('SearchScreen')}>
+						<Text> Go to SearchScreen </Text>
 					</Button>
 					<SignOut />
 				</ScrollView>
