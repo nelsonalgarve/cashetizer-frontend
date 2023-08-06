@@ -10,6 +10,7 @@ import Autocomplete from 'react-native-autocomplete-input';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { TextInputMask } from 'react-native-masked-text';
+
 import {
 	Badge,
 	Button,
@@ -24,6 +25,7 @@ import {
 	TextInput,
 } from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
+import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,6 +36,7 @@ import { createNewItem } from '../../helpers/createNewItem';
 import { fetchCategories } from '../../helpers/fetchCategories';
 import DatePicker from '../components/DatePicker';
 import { MapPicker } from '../components/MapPicker';
+import PhotoViewerModal from '../../helpers/PhotoViewerModal';
 const SERVER_URL = process.env.SERVER_URL;
 
 export const ItemForm = () => {
@@ -77,6 +80,8 @@ export const ItemForm = () => {
 	const isFocused = useIsFocused();
 	const cameraRef = useRef(null);
 	const [photos, setPhotos] = useState([]);
+	const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
+    const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
 	// Filter out objects with undefined values
 
@@ -103,7 +108,6 @@ export const ItemForm = () => {
 
 	const takePhoto = async () => {
 		if (cameraRef.current) {
-		  // Check if the limit of 3 photos is not reached
 		  if (photos.length >= 3) {
 			showAlert("Vous êtes limités à 3 photos maximum");
 			return;
@@ -111,36 +115,50 @@ export const ItemForm = () => {
 	  
 		  const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
 		  setPhotos([...photos, photo.uri]);
-	  
-		  // Prepare the form data to send the photo to the server
-		  const formData = new FormData();
-		  formData.append('photoFromFront', {
-			uri: photo.uri,
-			name: 'photo.jpg',
-			type: 'image/jpeg',
-		  });
-
-			
-
-			try {
-				const response = await fetch('http://172.20.10.4:3000/Upload/Upload', {
-					method: 'POST',
-					body: formData,
-				});
-
-				const data = await response.json();
-
-				if (data.result && data.url) {
-					setLivePhoto(data.url);
-					console.log('Image téléchargée avec succès:', data.url);
-				} else {
-					console.log('Référence à la caméra invalide.');
-				}
-			} catch (error) {
-				console.error('Error uploading photo:', error);
-			}
+		  if (photos.length === 3) {
+			await uploadPhotos(); 
+		  }
 		}
 	};
+
+
+const uploadPhotos = async () => {
+  try {
+    for (let i = 0; i < photos.length; i++) {
+      const formData = new FormData();
+      formData.append('photoFromFront', {
+        uri: photos[i],
+        name: `photo_${i}.jpg`,
+        type: 'image/jpeg',
+      });
+
+      const response = await fetch('http://172.20.10.4:3000/Upload/Upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.result && data.urls && data.urls.length > 0) {
+        console.log(`Image ${i + 1} téléchargée avec succès:`, data.urls[data.urls.length - 1]);
+      } else {
+        console.log(`Erreur lors du téléchargement de l'image ${i + 1}. Référence à la caméra invalide.`);
+      }
+    }
+  } catch (error) {
+    console.error('Error uploading photos:', error);
+  }
+};
+
+
+
+const handleSubmit= async () => {
+	console.log('Uploading');
+  setIsButtonClicked(true); 
+  await uploadPhotos(); 
+};
+
+
 
 
 
@@ -188,7 +206,6 @@ export const ItemForm = () => {
 	};
 
 	const {
-		handleSubmit,
 		control,
 		setValue,
 		formState: { errors },
@@ -267,24 +284,49 @@ export const ItemForm = () => {
 	];
 
 	const deletePhoto = (index) => {
-		// Create a copy of the photos array
 		const updatedPhotos = [...photos];
-		// Remove the photo at the specified index
 		updatedPhotos.splice(index, 1);
-		// Update the state with the new array
 		setPhotos(updatedPhotos);
 	  };
-	
-	  const renderPhotos = () => {
-		return photos.map((photo, index) => (
-		  <View key={index} style={{ marginBottom: 10 }}>
-			<Image source={{ uri: photo }} style={{ width: 100, height: 100 }} />
-			<TouchableOpacity onPress={() => deletePhoto(index)}>
-			  <Text style={{ color: 'red', textAlign: 'center' }}>Supprimer</Text>
-			</TouchableOpacity>
-		  </View>
-		));
+	 
+	 const openPhotoViewer = (index) => {
+		setCurrentPhotoIndex(index);
+		setPhotoViewerVisible(true);
 	  };
+	
+	  
+	  const closePhotoViewer = () => {
+		setPhotoViewerVisible(false);
+	  };
+	
+	  const handleNext = () => {
+		setCurrentPhotoIndex((prevIndex) => (prevIndex === photos.length - 1 ? 0 : prevIndex + 1));
+	  };
+	
+	  const handlePrev = () => {
+		setCurrentPhotoIndex((prevIndex) => (prevIndex === 0 ? photos.length - 1 : prevIndex - 1));
+	  };
+
+
+
+/* 	 const renderPhotos = () => {
+    return photos.map((photo, index) => (
+      <TouchableOpacity key={index} onPress={() => openPhotoViewer(index)}>
+        <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginBottom: 10 }} />
+      </TouchableOpacity>
+    ));
+  }; */
+  const renderPhotos = () => {
+	return photos.map((photo, index) => (
+		<TouchableOpacity key={index} onPress={() => openPhotoViewer(index)}>
+		<Image source={{ uri: photo }} style={{ width: 100, aspectRatio: 2/3, marginBottom: 10 }} />
+		<TouchableOpacity onPress={() => deletePhoto(index)}>
+		  <Ionicons style={{ color: 'red', textAlign: 'center', marginTop:-5, marginBottom: 10 }} name="trash-bin-outline" size={20}  />
+		</TouchableOpacity>
+		</TouchableOpacity>
+	));
+  };
+
 
 	return (
 		<PaperProvider theme={formTheme}>
@@ -348,7 +390,7 @@ export const ItemForm = () => {
 						control={control}
 						render={({ field: { onChange, onBlur, value } }) => (
 							<TextInput
-								label="Description"
+								label="Décrivez votre objet ici en quelques mots"
 								mode="outlined"
 								multiline={true}
 								numberOfLines={5}
@@ -443,6 +485,7 @@ export const ItemForm = () => {
 									onChangeText={(text) => onChange(text)}
 									onBlur={onBlur}
 									value={value}
+									editable={false}
 									error={errors.name ? true : false}
 									right={<TextInput.Icon icon="camera" onPress={toggleCamera} />}
 								/>
@@ -453,10 +496,20 @@ export const ItemForm = () => {
 						/>
 								<View style={styles.photosContainer}>
       {/* Display the existing photos */}
-      {renderPhotos()}
-
-      {/* Button to take a new photo */}
+	  {renderPhotos()}
       <Button title="Prendre une photo" onPress={takePhoto} />
+
+      {/* PhotoViewerModal */}
+      <PhotoViewerModal
+        visible={photoViewerVisible}
+        photos={photos}
+        currentIndex={currentPhotoIndex}
+        onClose={closePhotoViewer}
+        onNext={handleNext}
+        onPrev={handlePrev}
+		onDelete={deletePhoto}
+		setPhotos={setPhotos} 
+      />
     </View>
 						{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
 						<Surface style={styles.surface} elevation={1} >
@@ -479,13 +532,13 @@ export const ItemForm = () => {
 							rules={{ required: '' }}
 							defaultValue="" 
 						/> */}
-							<View style={{ flex: 1, minWidth: '100%', backgroundColor: '#FFCE52', justifyContent: 'center', alignItems: 'center', paddingTop: 5, borderRadius: 50, }}>
+							<View style={{ flex: 1, marginTop: -10, minWidth: '100%', backgroundColor: '#FFCE52', justifyContent: 'center', alignItems: 'center', paddingTop: 5, borderRadius: 50, }}>
 								<Badge
 									size={30}
 									icon="calendar"
-									style={{paddingHorizontal: 5, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263',  }}
+									style={{paddingHorizontal: 5, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263', fontWeight:600 }}
 									onPress={() => setDatePickerVisible(true)}>
-									<Icon style={{ marginLeft:-10}}name="calendar" size={30} /> Periode de disponibilité
+									<Icon style={{ marginLeft:-10}}name="calendar" size={25} /> Remplissez le calendrier de disponibilité
 								</Badge>
 
 								<DatePicker isVisible={isDatePickerVisible} onClose={() => setDatePickerVisible(false)} onAddPeriod={addPeriod} />
@@ -539,17 +592,14 @@ export const ItemForm = () => {
 						{/* <MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} /> */}
 					</View>
 					<View style={{ Flex: 1, fontSize: 25 }}>
-						<View tyle={{ flex: 1, alignItems: 'center', fontSize: 25 }}>
-							<Badge size={30} style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}>
-								Localisation de votre objet
+						<View style={{ flex: 1, alignItems: 'center', fontSize: 25 }}>
+							<Badge size={30} style={{height:40, width:'100%', alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263'}} onPress={() => setMapVisible(true)} >
+							<Ionicons style={{ marginTop: 5}}name="location" size={20} />Cliquez ici pour géolocaliser votre objet
 							</Badge>
 						</View>
 					</View>
 					<MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} />
-					<View style={{ flex: 1, alignSelf: 'center' }}>
-						<IconButton icon="map" size={30} onPress={() => setMapVisible(true)} />
-					</View>
-					<View style={{ flex: 1, alignSelf: 'center' }}>
+					<View style={{ flex: 1, alignSelf: 'center' , marginTop:10 }}>
 						{selectedLocation ? (
 							<Badge size={30} style={{ paddingHorizontal: 20 }}>
 								{selectedLocation.address}
@@ -562,7 +612,7 @@ export const ItemForm = () => {
 
 				{/* // CHAMP MODE DE REMISE ---------------------------------------------------------------- */}
 				<View style={{ width: '90%', alignSelf: 'center' }}>
-					<SelectList setSelected={setSelectedRemise} data={dataModeRemise} value={selectedRemise} />
+					<SelectList setSelected={setSelectedRemise} data={dataModeRemise} value={selectedRemise} placeholder="Choisissez le(s) mode(s) de remise?"/>
 				</View>
 
 				<View style={{ flexDirection: 'row', alignSelf: 'center' }}>
@@ -605,9 +655,10 @@ export const ItemForm = () => {
 					</Text>
 				</View>
 				<View style={styles.buttonsContainer}>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
+					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit}>
 						<Text style={styles.buttonText}>Poster l'annonce</Text>
 					</Button>
+
 
 					{/* <Button mode="outlined" onPress={onReset}>
 						Mot de passe oublié ?
@@ -635,6 +686,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'space-between',
 		justifyContent: 'flex-start',
+	
 	},
 	etatContainer:{
 		marginTop: 5,
@@ -707,6 +759,12 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
 		padding:0,
    
+	},
+	photoViewerModalContainer:{
+		width: 100,
+        height: 400,
+        alignItems: 'center',
+        justifyContent: 'center',
 	},
 	passwordContainer: {
 		flexDirection: 'row',
