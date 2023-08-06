@@ -1,9 +1,12 @@
+import moment from 'moment';
+import 'moment/locale/fr';
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Card, Text } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Badge, Card, Chip, Divider, Text } from 'react-native-paper';
 import { calculateDistance } from '../../helpers/calculateDistance';
 
 export const ItemCard = ({ item, userLatitude, userLongitude }) => {
+	moment.locale('fr');
 	const distanceKm = calculateDistance(
 		userLatitude, // Replace with the user's latitude
 		userLongitude, // Replace with the user's longitude
@@ -19,30 +22,40 @@ export const ItemCard = ({ item, userLatitude, userLongitude }) => {
 		return text.substring(0, maxLength) + '...'; // adds '...' at the end
 	}
 
-	const Disponibilités = item.periodes.map((periode, index) => {
+	const Dispos = item.periodes.map((periode, index) => {
+		console.log(periode);
+		// const start = moment(periode.start).format('DD MMMM YYYY, h:mm:ss a');
+		// const end = moment(periode.end).format('DD MMMM YYYY, h:mm:ss a');
+
 		return (
-			<Text key={index} style={styles.itemDistance}>
-				Disponibilités: {item.periodes.start}
-			</Text>
+			<View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+				<Chip
+					icon="calendar-alert"
+					onPress={() => console.log('Pressed')}
+					compact="true"
+					textStyle={{ fontSize: 8 }}
+					style={styles.chipStyle}
+				>
+					Période {index + 1}: {moment(periode.start).format('L')} - {moment(periode.end).format('L')}
+				</Chip>
+			</View>
 		);
 	});
 	const date = new Date(item.periodes.start);
-	console.log('FROM ITEM CARD', item);
+	console.log('FROM ITEM CARD', item.periodes[0].start);
 	if (item) {
 		return (
 			<Card style={styles.card} mode="contained">
 				<Card.Cover source={{ uri: item.description.photos[0] }} style={styles.cardImage} />
-				<Card.Content>
+				<Card.Content style={styles.cardContent}>
 					<Text> {item.isAvailable}</Text>
 					<Text style={styles.itemName}>{item.name}</Text>
 					<Text style={styles.itemDetails}>{limitTextLength(item.description.details, 150)}</Text>
 					<Text style={styles.itemPrice}>
 						Prix/Jour: {item.prices.perDay}€ - Prix/Sem: {item.prices.perWeek}€ - Prix/Mois: {item.prices.perMonth}€
 					</Text>
-					{/* <Text style={styles.itemPrice}>
-						Prix/Jour: {item.periode}€ - Prix/Sem: {item.prices.perWeek}€ - Prix/Mois: {item.prices.perMonth}€
-					</Text> */}
-					{/* <Disponibilités /> */}
+
+					{Dispos}
 					<Text style={styles.itemDistance}>Distance: {distanceKm.toFixed(2)} km</Text>
 				</Card.Content>
 			</Card>
@@ -64,11 +77,22 @@ const styles = StyleSheet.create({
 		objectFit: 'contain',
 	},
 	itemName: {
-		fontSize: 16,
+		fontSize: 10,
 		fontWeight: 'bold',
 	},
 	itemPrice: {
-		fontSize: 14,
+		fontSize: 10,
 		color: 'gray',
+	},
+	itemDetails: {
+		fontSize: 8,
+		color: 'gray',
+	},
+	chipStyle: {
+		fontSize: 8,
+		backgroundColor: 'white',
+	},
+	cardContent: {
+		backgroundColor: 'white',
 	},
 });
