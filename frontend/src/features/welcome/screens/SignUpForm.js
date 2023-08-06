@@ -7,6 +7,7 @@ import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData, setToken, setUser } from '../../../../reducers/user';
+import GooglePlacesInput from '../../Items/components/GooglePlacesInput';
 import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
@@ -246,6 +247,7 @@ export const SignUpForm = () => {
 							rules={{ required: 'Address is required' }}
 							render={({ field }) => (
 								<View>
+									{/* <GooglePlacesInput></GooglePlacesInput> */}
 									<TextInput
 										style={styles.textInput}
 										{...field}
@@ -256,6 +258,7 @@ export const SignUpForm = () => {
 										left={<TextInput.Icon icon="map-marker" />}
 										onChangeText={(text) => field.onChange(text)}
 									/>
+
 									{errors.address && <HelperText type="error">{errors.address.message}</HelperText>}
 								</View>
 							)}

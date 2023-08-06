@@ -14,9 +14,23 @@ export const ResultScreen = ({ route }) => {
 	const categoryName = route.params.category.name;
 	// console.log(route.params);
 	const [items, setItems] = useState([]);
+
+	const [startDate, setStartDate] = useState(new Date());
 	const [endDate, setEndDate] = useState(new Date());
 	const [showStartDatePicker, setShowStartDatePicker] = useState(false);
 	const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+
+	const onChangeStartDate = (event, selectedDate) => {
+		const currentDate = selectedDate || startDate;
+		setShowStartDatePicker(false);
+		if (currentDate) setStartDate(currentDate);
+	};
+
+	const onChangeEndDate = (event, selectedDate) => {
+		const currentDate = selectedDate || endDate;
+		setShowEndDatePicker(false);
+		if (currentDate) setEndDate(currentDate);
+	};
 
 	// RECUPERERE LA POSITION ET L'AUTHORISATION d'utilisateur
 
@@ -36,29 +50,76 @@ export const ResultScreen = ({ route }) => {
 
 	// FETCH ITEMS BY CATEGORY NAME
 	useEffect(() => {
-		fetchItemsByCategory(categoryName);
+		fetchItemsByCategory(categoryName); // No date filter applied here
 	}, [categoryName]);
 
-	const fetchItemsByCategory = async (categoryName) => {
-		const encodedCategoryName = encodeURIComponent(categoryName);
+	const fetchItemsByCategory = async (categoryName, applyDateFilter = false) => {
 		try {
+			const encodedCategoryName = encodeURIComponent(categoryName);
 			const response = await fetch(`https://cashetizer-backend.vercel.app/item/items/categoryname/${encodedCategoryName}`);
-			const data = await response.json();
-			console.log('searchData', data);
+			let data = await response.json();
+
+			// If applyDateFilter is true, filter items based on the date range
+			if (applyDateFilter) {
+				data = data.filter((item) => {
+					return item.periodes.some((periode) => {
+						const itemStartDate = new Date(periode.start);
+						const itemEndDate = new Date(periode.end);
+						return itemStartDate <= endDate && itemEndDate >= startDate;
+					});
+				});
+			}
+
 			setItems(data);
 		} catch (error) {
 			console.error('Error fetching items by category:', error);
 			setItems([]);
 		}
 	};
+
+	// const fetchItemsByCategory = async (categoryName) => {
+	// 	const encodedCategoryName = encodeURIComponent(categoryName);
+	// 	try {
+	// 		const response = await fetch(`https://cashetizer-backend.vercel.app/item/items/categoryname/${encodedCategoryName}`);
+	// 		const data = await response.json();
+	// 		console.log('searchData', data);
+	// 		setItems(data);
+	// 	} catch (error) {
+	// 		console.error('Error fetching items by category:', error);
+	// 		setItems([]);
+	// 	}
+	// };
 	// console.log(items.description);
+
 	const renderItem = ({ item }) => {
 		return <ItemCard item={item} userLatitude={userLatitude} userLongitude={userLongitude} />;
 	};
 
 	return (
 		<PaperProvider theme={formTheme}>
-			{/* <RNDateTimePicker display="spinner" /> */}
+			<View style={styles.dateFilter}>
+				{/* Start Date Picker */}
+				<Button title={`Start Date: ${startDate ? startDate.toDateString() : 'Not Set'}`} onPress={() => setShowStartDatePicker(true)} />
+				{showStartDatePicker && (
+					<DateTimePicker
+						testID="startDatePicker"
+						value={startDate}
+						mode="date"
+						is24Hour={true}
+						display="default"
+						onChange={onChangeStartDate}
+					/>
+				)}
+
+				{/* End Date Picker */}
+				<Button title={`End Date: ${endDate ? endDate.toDateString() : 'Not Set'}`} onPress={() => setShowEndDatePicker(true)} />
+				{showEndDatePicker && (
+					<DateTimePicker testID="endDatePicker" value={endDate} mode="date" is24Hour={true} display="default" onChange={onChangeEndDate} />
+				)}
+				{/* Refresh items after date change */}
+				<Button title="Refresh Items" onPress={() => fetchItemsByCategory(categoryName, true)} />
+			</View>
+			{/* // LISTE DE RECHERCHE */}
 			<View style={styles.container}>
 				<FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item._id} />
 			</View>
