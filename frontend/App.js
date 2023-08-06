@@ -17,6 +17,7 @@ import { MapPicker } from './src/features/Items/components/MapPicker';
 import { ItemForm } from './src/features/Items/screens/ItemForm';
 import { ItemsScreen } from './src/features/Items/screens/ItemsScreen';
 import { ListItems } from './src/features/Items/screens/ListItems';
+import { ResultScreen } from './src/features/Items/screens/ResultScreen';
 import { SingleItem } from './src/features/Items/screens/SingleItem';
 import { SignUpForm } from './src/features/welcome//screens/SignUpForm';
 import { CheckIdScreen } from './src/features/welcome/screens/CheckIdScreen';
@@ -247,6 +248,7 @@ export default App = () => {
 											headerShown: false,
 										}}
 									/>
+									<Stack.Screen name="Results" component={ResultScreen} />
 
 									{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}
 									{/* <Stack.Screen

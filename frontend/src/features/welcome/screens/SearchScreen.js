@@ -1,12 +1,13 @@
-import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Provider as PaperProvider, Searchbar, TextInput } from 'react-native-paper';
-import FilterForm from '../../Items/components/FilterForm';
-import { calculateDistance } from '../../helpers/calculateDistance';
 import formTheme from '../themes/FormTheme';
+
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const SearchScreen = ({ navigation }) => {
+	const [categories, setCategories] = useState([]);
 	const handleSignUpPress = () => {
 		navigation.navigate('SignUp');
 	};
@@ -15,8 +16,25 @@ export const SearchScreen = ({ navigation }) => {
 		navigation.navigate('SignIn');
 	};
 
-	// Définissez les catégories ici
-	const categories = ['Bricolage', 'Sport', 'Musique', 'Multimédia'];
+	const fetchCategories = async () => {
+		try {
+			const response = await fetch(`${SERVER_URL}/category/categories/sorted-by-items`);
+			const data = await response.json();
+			setCategories(data);
+		} catch (error) {
+			console.error('Error fetching categories:', error);
+		}
+	};
+
+	useEffect(() => {
+		fetchCategories();
+	}, [categories]);
+
+	const handleCategoryPress = (category) => {
+		// Navigate to the ResultScreen and pass the selected category as a parameter
+		// console.log('category in search', category);
+		navigation.navigate('Results', { category });
+	};
 
 	return (
 		<PaperProvider theme={formTheme}>
@@ -24,20 +42,20 @@ export const SearchScreen = ({ navigation }) => {
 				<View style={styles.imageContainer}>
 					<Image source={require('../../../../assets/LogoCash.png')} style={styles.image} />
 				</View>
-				{/* Barre de recherche */}
+
 				<View>
 					<TextInput style={styles.textInput} label="Rechercher" mode="outlined" Left={<TextInput.Icon icon="search" />} />
 				</View>
 
-				{/* Affichage des boutons de catégorie */}
-				<View style={styles.buttonCategorie}>
+				<ScrollView contentContainerStyle={styles.buttonCategorie}>
 					{categories.map((category, index) => (
-						<TouchableOpacity key={index} style={styles.button}>
-							<Text style={styles.buttonText}>{category}</Text>
+						<TouchableOpacity key={index} style={styles.button} onPress={() => handleCategoryPress(category)}>
+							<Text style={styles.buttonText}>
+								{category.name} ({category.itemCount})
+							</Text>
 						</TouchableOpacity>
 					))}
-				</View>
-
+				</ScrollView>
 				<View style={styles.infoBar}></View>
 			</View>
 		</PaperProvider>
@@ -61,14 +79,10 @@ const styles = StyleSheet.create({
 		maxWidth: '100%',
 	},
 	buttonCategorie: {
-		position: 'absolute',
-		bottom: '40%', // Ajustez cette valeur pour déplacer les boutons vers le bas
-		width: '100%',
+		flexGrow: 1,
+		paddingBottom: 20,
 		alignItems: 'center',
-		justifyContent: 'center',
-		height: 200, // hauteur des boutons
 	},
-
 	button: {
 		backgroundColor: '#155263',
 		paddingVertical: 12,
@@ -76,45 +90,24 @@ const styles = StyleSheet.create({
 		borderRadius: 50,
 		marginVertical: 8,
 		alignItems: 'center',
-		width: 200, //largeur des boutons
+		width: 300,
 	},
 	buttonText: {
 		color: '#FFCE52',
 		textAlign: 'center',
 		fontSize: 18,
 	},
-
-	buttonsContainer: {
-		position: 'absolute',
-		bottom: 0,
-		left: 0,
-		right: 0,
-		paddingBottom: 20,
-		flexDirection: 'row',
-		justifyContent: 'center',
-	},
-
-	buttonOutlined: {
-		margin: 10,
-		backgroundColor: '#FFCE52',
-		borderWidth: 1,
-		width: '45%',
-		margin: 12,
-		bottom: '10%',
-	},
-
 	infoBar: {
 		backgroundColor: '#155263',
 		paddingVertical: 8,
 		paddingHorizontal: 16,
 		position: 'absolute',
-		bottom: '0%', // Ajustez cette valeur pour déplacer les boutons vers le bas
+		bottom: 0,
 		width: '100%',
 		height: 100,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
-
 	textInput: {
 		marginTop: 110,
 		paddingVertical: 1,
@@ -124,3 +117,5 @@ const styles = StyleSheet.create({
 		backgroundColor: '#E8E8E8',
 	},
 });
+
+export default SearchScreen;

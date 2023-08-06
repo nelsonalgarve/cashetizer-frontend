@@ -35,6 +35,7 @@ import { createNewItem } from '../../helpers/createNewItem';
 import { fetchCategories } from '../../helpers/fetchCategories';
 import DatePicker from '../components/DatePicker';
 import { MapPicker } from '../components/MapPicker';
+import { MultichoiceField } from '../components/MultichoiceField';
 const SERVER_URL = process.env.SERVER_URL;
 
 export const ItemForm = () => {
@@ -146,14 +147,13 @@ export const ItemForm = () => {
 		setCameraType((prevCameraType) => (prevCameraType === CameraType.front ? CameraType.back : CameraType.front));
 	};
 
+	// FETCH TOUTES LES CATEGORIES DEPUIS LE BACKEND IMPORT DU HELPER fetchCategories()
 	const fetchData = async () => {
 		try {
-			const data = await fetchCategories(); // Use the helper function
-			// console.log('from thefetch in form', data)
+			const data = await fetchCategories();
+
 			setCategories(data);
-		} catch (error) {
-			// Handle the error if needed
-		}
+		} catch (error) {}
 	};
 
 	const handleSelectCategories = (suggestion) => {
@@ -293,7 +293,7 @@ export const ItemForm = () => {
 						<SelectList
 							style={styles.selectList}
 							setSelected={setSelectedCategory}
-							onSelect={() => alert(selectedCategory.name)}
+							// onSelect={() => alert(selectedCategory)}
 							data={filteredCategories}
 							value={selectedCategory}
 							label={'Select'}
@@ -345,6 +345,9 @@ export const ItemForm = () => {
 					{/* // ROW CONTAINER -------------------------------------------------------------------- */}
 					<View style={styles.rowContainer}>
 						{/* // CHAMP PRIX ---------------------------------------------------------------- */}
+						{/* <View>
+							<MultichoiceField control={control} />
+						</View> */}
 						<Controller
 							name="prices"
 							control={control}
@@ -427,7 +430,7 @@ export const ItemForm = () => {
 							defaultValue=""
 						/>
 						{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
-						<Surface style={styles.surface} elevation={1}>
+						<Surface style={styles.surface} elevation={0}>
 							{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
 							{/* <Controller
 							control={control}

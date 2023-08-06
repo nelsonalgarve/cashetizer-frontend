@@ -129,6 +129,7 @@ export const SignUpForm = () => {
 										maxLength={32}
 										label="Nom d'utilisateur"
 										mode="outlined"
+										autoCapitalize="none"
 										error={errors.username}
 										left={<TextInput.Icon icon="account" />}
 										onChangeText={(text) => field.onChange(text)}
@@ -201,6 +202,7 @@ export const SignUpForm = () => {
 										maxLength={50}
 										label="Email"
 										mode="outlined"
+										autoCapitalize="none"
 										error={errors.email}
 										left={<TextInput.Icon icon="email" />}
 										onChangeText={(text) => field.onChange(text)}

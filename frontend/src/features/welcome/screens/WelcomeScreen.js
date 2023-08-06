@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import * as Location from 'expo-location';
+import React, { useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Button, Card, List, Provider as PaperProvider, Searchbar, TextInput } from 'react-native-paper';
+import { Button, Card, Provider as PaperProvider } from 'react-native-paper';
 import FilterForm from '../../Items/components/FilterForm';
 import { calculateDistance } from '../../helpers/calculateDistance';
 import formTheme from '../themes/FormTheme';
+
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
-// Replace with the user's actual latitude
-const userLatitude = 37.7749;
-const userLongitude = -122.4194;
 
 const API_URL = `${SERVER_URL}/item/items/filter`;
 
@@ -15,11 +14,41 @@ export const WelcomeScreen = ({ navigation }) => {
 	const [filteredItems, setFilteredItems] = useState([]);
 	const [isVisibleCategory, setIsVisibleCategory] = useState(true);
 	const [isFlatListVisible, setIsFlatListVisible] = useState(true);
+	const [userLocation, setUserLocation] = useState(null);
+	const [userLatitude, setUserLatitude] = useState(null);
+	const [userLongitude, setUserLongitude] = useState(null);
 
 	const hideFlatList = () => {
 		setIsFlatListVisible(false);
 	};
+	// RECUPERERE LA POSITION ET L'AUTHORISATION d'utilisateur
 
+	useEffect(() => {
+		(async () => {
+			const { status } = await Location.requestForegroundPermissionsAsync();
+
+			if (status === 'granted') {
+				const location = await Location.getCurrentPositionAsync({});
+				console.log(location);
+				setUserLatitude(location.coords.latitude);
+				setUserLongitude(location.coords.longitude);
+				console.log(location.coords.latitude);
+			}
+		})();
+	}, []);
+
+	// REINITIALISE LA PAGE AU CHARGEMENT DU COMPOSANT
+	// useEffect(() => {
+	// 	const unsubscribe = navigation.addListener('focus', () => {
+	// 		setIsVisibleCategory(true);
+	// 		setIsFlatListVisible(false);
+	// 		setFilteredItems([]);
+	// 	});
+
+	// 	return unsubscribe;
+	// }, [navigation]);
+
+	// FETCH AU BACKEND TOUS LES ITEMS FILTRES PAR LE CHAMP DE RECHERCHE ----
 	const handleFilter = async (filterValue) => {
 		try {
 			const response = await fetch(`${API_URL}?keyword=${filterValue}`);
@@ -111,11 +140,11 @@ export const WelcomeScreen = ({ navigation }) => {
 						/>
 					</View>
 				)}
-				{isFlatListVisible && (
+				{/* {isFlatListVisible && (
 					<TouchableOpacity style={styles.closeButton} onPress={hideFlatList}>
 						<Text style={styles.closeButtonText}>Close</Text>
 					</TouchableOpacity>
-				)}
+				)} */}
 				{/* <View>
 					<TextInput style={styles.textInput} label="Rechercher" mode="outlined" Left={<TextInput.Icon icon="search" />} />
 				</View> */}
@@ -132,21 +161,16 @@ export const WelcomeScreen = ({ navigation }) => {
 						)}
 					</View>
 				</View>
-
-				<View style={styles.buttonsContainer}>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignUpPress}>
-						S'inscrire
-					</Button>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignInPress}>
-						Se connecter
-					</Button>
-				</View>
-				{/* <View>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handlePressItemForm}>
-						<Text>Items</Text>
-					</Button>
-				</View> */}
-
+				{isVisibleCategory && (
+					<View style={styles.buttonsContainer}>
+						<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignUpPress}>
+							S'inscrire
+						</Button>
+						<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignInPress}>
+							Se connecter
+						</Button>
+					</View>
+				)}
 				<View style={styles.infoBar}>
 					<Text style={styles.infoText}>Louez malin. Gagnez des € en chemin.</Text>
 				</View>

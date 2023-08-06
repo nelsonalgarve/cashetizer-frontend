@@ -107,6 +107,7 @@ export const SignInForm = () => {
 									value={field.value}
 									maxLength={50}
 									label="Email"
+									autoCapitalize="none"
 									mode="outlined"
 									error={errors.email}
 									left={<TextInput.Icon icon="email" />}

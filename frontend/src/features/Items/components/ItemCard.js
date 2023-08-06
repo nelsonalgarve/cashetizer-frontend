@@ -1,99 +1,61 @@
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import { Card } from 'react-native-paper';
-import { SvgXml } from 'react-native-svg';
-import { styled } from 'styled-components/native';
-import star from '../../../../assets/star';
+import { StyleSheet } from 'react-native';
+import { Card, Text } from 'react-native-paper';
+import { calculateDistance } from '../../helpers/calculateDistance';
 
-const Info = styled.View`
-	padding: ${(props) => props.theme.space[2]};
-`;
-const Address = styled.Text`
-	font-family: ${(props) => props.theme.fonts.body};
-	font-size: ${(props) => props.theme.fontSizes.caption};
-	padding: ${(props) => props.theme.space[2]};
-	font-weight: ${(props) => props.theme.fontWeights.regular};
-`;
-
-const Title = styled.Text`
-	font-family: ${(props) => props.theme.fonts.heading};
-	padding: ${(props) => props.theme.space[2]};
-	font-weight: ${(props) => props.theme.fontWeights.bold};
-	font-size: ${(props) => props.theme.fontSizes.title};
-	color: ${(props) => props.theme.colors.text.primary};
-`;
-
-const Description = styled.Text`
-	font-family: ${(props) => props.theme.fonts.body};
-	padding: ${(props) => props.theme.space[2]};
-	font-weight: ${(props) => props.theme.fontWeights.regular};
-	font-size: ${(props) => props.theme.fontSizes.button};
-	color: ${(props) => props.theme.colors.text.secondary};
-`;
-
-const Rating = styled.View`
-	flex-direction: row;
-	padding: ${(props) => props.theme.space[2]};
-`;
-
-const Section = styled.View`
-	flex-direction: row;
-	align-items: center;
-	bakground-color: ${(props) => props.theme.colors.text.success};
-`;
-
-const SectionEnd = styled.View`
-	flex: 1;
-	flex-direction: row;
-	justify-content: flex-end;
-`;
-const ItemCards = styled(Card)`
-	background-color: ${(props) => props.theme.colors.brand.secondary};
-`;
-
-const ItemCardCover = styled(Card.Cover)`
-	padding: ${(props) => props.theme.space[2]};
-	background-color: ${(props) => props.theme.colors.brand.secondary};
-`;
-const DispoText = styled.Text`
-	font-family: ${(props) => props.theme.fonts.body};
-	padding: ${(props) => props.theme.space[0]};
-	font-weight: ${(props) => props.theme.fontWeights.regular};
-	font-size: ${(props) => props.theme.fontSizes.caption};
-	color: ${(props) => props.theme.colors.text.success};
-`;
-
-export const ItemCard = (props) => {
-	console.log(props.item.description.details);
-	const ratingArray = Array.from(new Array(Math.ceil(props.item.rating)));
-	return (
-		<ItemCards>
-			<ItemCardCover source={{ uri: props.item.description.photos[0] }} />
-			<Info>
-				<Title>{props.item.name}</Title>
-				<Section>
-					<Rating>
-						{ratingArray.map((index) => (
-							<SvgXml key={index} xml={star} width={20} height={20} />
-						))}
-					</Rating>
-					<SectionEnd>
-						{props.item.isAvailable && (
-							<>
-								<DispoText>
-									<Text>Disponible</Text>
-								</DispoText>
-								<View>
-									<SvgXml xml={star} width={20} height={20} color={'blue'} />
-								</View>
-							</>
-						)}
-					</SectionEnd>
-				</Section>
-				<Address>A 1 km</Address>
-			</Info>
-			<Description>{props.item.description.details}</Description>
-			<Address>Prix/Jour 45 $</Address>
-		</ItemCards>
+export const ItemCard = ({ item, userLatitude, userLongitude }) => {
+	const distanceKm = calculateDistance(
+		userLatitude, // Replace with the user's latitude
+		userLongitude, // Replace with the user's longitude
+		item.localisation.latitude, // Replace with the item's latitude
+		item.localisation.longitude // Replace with the item's longitude
 	);
+	// Perform a conditional check to ensure the 'item' object and 'prices' property exist
+	function limitTextLength(text, maxLength) {
+		if (text.length <= maxLength) {
+			return text;
+		}
+
+		return text.substring(0, maxLength) + '...'; // adds '...' at the end
+	}
+	console.log(item.description.photos[0]);
+	if (item) {
+		return (
+			<Card style={styles.card} mode="contained">
+				<Card.Cover source={{ uri: item.description.photos[0] }} style={styles.cardImage} />
+				<Card.Content>
+					<Text> {item.isAvailable}</Text>
+					<Text style={styles.itemName}>{item.name}</Text>
+					<Text style={styles.itemDetails}>{limitTextLength(item.description.details, 150)}</Text>
+					<Text style={styles.itemPrice}>
+						Prix/Jour: {item.prices.perDay}€ - Prix/Sem: {item.prices.perWeek}€ - Prix/Mois: {item.prices.perMonth}€
+					</Text>
+					<Text style={styles.itemDistance}>Distance: {distanceKm.toFixed(2)} km</Text>
+				</Card.Content>
+			</Card>
+		);
+	} else {
+		return null;
+	}
 };
+const styles = StyleSheet.create({
+	card: {
+		marginBottom: 16,
+		backgroundColor: '#E8E8E8',
+		borderRadius: 0,
+		marginVertical: 0,
+	},
+	cardImage: {
+		// width: '100%',
+		// height: 150, // or whatever height you want
+		objectFit: 'contain',
+	},
+	itemName: {
+		fontSize: 16,
+		fontWeight: 'bold',
+	},
+	itemPrice: {
+		fontSize: 14,
+		color: 'gray',
+	},
+});
