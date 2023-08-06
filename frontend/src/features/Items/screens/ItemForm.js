@@ -5,7 +5,7 @@ import CheckBox from 'expo-checkbox';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -76,11 +76,16 @@ export const ItemForm = () => {
 	const [livePhoto, setLivePhoto] = useState('');
 	const isFocused = useIsFocused();
 	const cameraRef = useRef(null);
+	const [photos, setPhotos] = useState([]);
+
 	// Filter out objects with undefined values
 
 	// A DEPLACER DANS LE HELPER CategoriesAutocomplete
 	const filteredCategories = categories.filter((category) => category.value !== undefined);
-
+	const showAlert = (message) => {
+		alert(message);
+	  };
+	
 	useEffect(() => {
 		fetchData();
 	}, []);
@@ -98,20 +103,27 @@ export const ItemForm = () => {
 
 	const takePhoto = async () => {
 		if (cameraRef.current) {
-			const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
-			setLivePhoto(photo.uri);
-			setShowCamera(false);
+		  // Check if the limit of 3 photos is not reached
+		  if (photos.length >= 3) {
+			showAlert("Vous êtes limités à 3 photos maximum");
+			return;
+		  }
+	  
+		  const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+		  setPhotos([...photos, photo.uri]);
+	  
+		  // Prepare the form data to send the photo to the server
+		  const formData = new FormData();
+		  formData.append('photoFromFront', {
+			uri: photo.uri,
+			name: 'photo.jpg',
+			type: 'image/jpeg',
+		  });
 
-			// Prepare the form data to send the photo to the server
-			const formData = new FormData();
-			formData.append('photoFromFront', {
-				uri: photo.uri,
-				name: 'photo.jpg',
-				type: 'image/jpeg',
-			});
+			
 
 			try {
-				const response = await fetch(`${SERVER_URL}/Upload`, {
+				const response = await fetch('http://172.20.10.4:3000/Upload/Upload', {
 					method: 'POST',
 					body: formData,
 				});
@@ -129,6 +141,8 @@ export const ItemForm = () => {
 			}
 		}
 	};
+
+
 
 	const toggleCamera = () => {
 		setShowCamera((prevShowCamera) => !prevShowCamera);
@@ -221,10 +235,11 @@ export const ItemForm = () => {
 
 	// AUTOCOMPLETE A A DEPLACER ICI
 	const data = [
-		{ name: 'Très usé', id: '1' },
-		{ name: 'Usé', id: '2' },
-		{ name: 'Bon état', id: '3' },
-		{ name: 'Neuf', id: '4' },
+		{ name: 'Neuf', id: '1' },
+		{ name: 'Bon état', id: '2' },
+		{ name: 'Acceptable', id: '3' },
+		{ name: 'Usé', id: '4' },
+		{ name: 'Très usé', id: '5' },
 	];
 
 	const findItem = (query) => {
@@ -237,10 +252,11 @@ export const ItemForm = () => {
 	};
 
 	const dataSelectList = [
-		{ key: 'bad', value: 'Très usé' },
-		{ key: 'used', value: 'Usé' },
-		{ key: 'good', value: 'Bon état' },
 		{ key: 'new', value: 'Neuf' },
+		{ key: 'good', value: 'Bon état' },
+		{ key: 'ok', value: 'Acceptable' },
+		{ key: 'used', value: 'Usé' },
+		{ key: 'veryused', value: 'Très usé' },
 	];
 
 	const dataModeRemise = [
@@ -250,11 +266,31 @@ export const ItemForm = () => {
 		// { key: '4', value: 'Neuf' },
 	];
 
+	const deletePhoto = (index) => {
+		// Create a copy of the photos array
+		const updatedPhotos = [...photos];
+		// Remove the photo at the specified index
+		updatedPhotos.splice(index, 1);
+		// Update the state with the new array
+		setPhotos(updatedPhotos);
+	  };
+	
+	  const renderPhotos = () => {
+		return photos.map((photo, index) => (
+		  <View key={index} style={{ marginBottom: 10 }}>
+			<Image source={{ uri: photo }} style={{ width: 100, height: 100 }} />
+			<TouchableOpacity onPress={() => deletePhoto(index)}>
+			  <Text style={{ color: 'red', textAlign: 'center' }}>Supprimer</Text>
+			</TouchableOpacity>
+		  </View>
+		));
+	  };
+
 	return (
 		<PaperProvider theme={formTheme}>
 			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<View style={styles.container}>
-					{/* // CHAMP CATEGORIE -------------------------------------------------------------------- */}
+	{/* // CHAMP CATEGORIE -------------------------------------------------------------------- */}
 					{/* <DropDownPicker
 						items={filteredCategories}
 						defaultValue={selectedCategory}
@@ -281,8 +317,13 @@ export const ItemForm = () => {
 							return item.value;
 						}}
 					/> */}
-					<View style={{ width: '90%', alignSelf: 'center' }}>
-						<SelectList setSelected={setSelectedCategory} data={filteredCategories} value={selectedCategory} />
+					<View style={{ width: '100%', alignSelf: 'center' }}>
+  					<SelectList 
+					setSelected={setSelectedCategory}
+    				data={filteredCategories}
+    				value={selectedCategory}
+    				placeholder="Choisissez une catégorie"
+  					/>
 					</View>
 
 					{/* // CHAMP TITRE -------------------------------------------------------------------- */}
@@ -323,8 +364,8 @@ export const ItemForm = () => {
 						defaultValue=""
 					/>
 					{/* // CHAMP ETAT DE L'OBJET --------------------------------------------------------------------- */}
-					<View>
-						<SelectList setSelected={setSelectedEtat} data={dataSelectList} value={selectedEtat} />
+					<View style={styles.etatContainer}>
+						<SelectList setSelected={setSelectedEtat} data={dataSelectList} value={selectedEtat} placeholder="Dans quel état est votre objet?"/>
 					</View>
 					{/* // ROW CONTAINER -------------------------------------------------------------------- */}
 					<View style={styles.rowContainer}>
@@ -410,8 +451,15 @@ export const ItemForm = () => {
 							rules={{ required: 'Vous devez poster au moins une photo de votre objet' }}
 							defaultValue=""
 						/>
+								<View style={styles.photosContainer}>
+      {/* Display the existing photos */}
+      {renderPhotos()}
+
+      {/* Button to take a new photo */}
+      <Button title="Prendre une photo" onPress={takePhoto} />
+    </View>
 						{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
-						<Surface style={styles.surface} elevation={1}>
+						<Surface style={styles.surface} elevation={1} >
 							{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
 							{/* <Controller
 							control={control}
@@ -431,19 +479,19 @@ export const ItemForm = () => {
 							rules={{ required: '' }}
 							defaultValue="" 
 						/> */}
-							<View style={{ flex: 1, minWidth: '100%', justifyContent: 'center', alignItems: 'center', paddingTop: 10 }}>
+							<View style={{ flex: 1, minWidth: '100%', backgroundColor: '#FFCE52', justifyContent: 'center', alignItems: 'center', paddingTop: 5, borderRadius: 50, }}>
 								<Badge
-									size="30"
-									icon="camera"
-									style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}
+									size={30}
+									icon="calendar"
+									style={{paddingHorizontal: 5, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263',  }}
 									onPress={() => setDatePickerVisible(true)}>
-									Periode de disponibilité
+									<Icon style={{ marginLeft:-10}}name="calendar" size={30} /> Periode de disponibilité
 								</Badge>
 
 								<DatePicker isVisible={isDatePickerVisible} onClose={() => setDatePickerVisible(false)} onAddPeriod={addPeriod} />
 								<ScrollView style={{ marginTop: 20, width: '80%' }}>
 									{periods.map((period, index) => (
-										<View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+										<View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, }}>
 											<Divider />
 											<Badge
 												icon="camera"
@@ -465,9 +513,8 @@ export const ItemForm = () => {
 												icon="delete"
 												mode="elevated"
 												compact="false"
-												style={{ paddingHorizontal: 5, margin: 5 }}
+												style={{ paddingHorizontal: 0, }}
 												onPress={() => deletePeriod(index)}>
-												Delete
 											</Button>
 										</View>
 									))}
@@ -493,7 +540,7 @@ export const ItemForm = () => {
 					</View>
 					<View style={{ Flex: 1, fontSize: 25 }}>
 						<View tyle={{ flex: 1, alignItems: 'center', fontSize: 25 }}>
-							<Badge size="30" style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}>
+							<Badge size={30} style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}>
 								Localisation de votre objet
 							</Badge>
 						</View>
@@ -504,7 +551,7 @@ export const ItemForm = () => {
 					</View>
 					<View style={{ flex: 1, alignSelf: 'center' }}>
 						{selectedLocation ? (
-							<Badge size="30" style={{ paddingHorizontal: 20 }}>
+							<Badge size={30} style={{ paddingHorizontal: 20 }}>
 								{selectedLocation.address}
 							</Badge>
 						) : (
@@ -589,6 +636,9 @@ const styles = StyleSheet.create({
 		alignItems: 'space-between',
 		justifyContent: 'flex-start',
 	},
+	etatContainer:{
+		marginTop: 5,
+	},
 	pickerSelect: {
 		height: 150,
 		fontSize: 8,
@@ -638,12 +688,25 @@ const styles = StyleSheet.create({
 		marginLeft: 8,
 		fontSize: 14,
 	},
-
+	surface:{
+		backgroundColor: 'transparent',
+	},
 	selectList: {
 		flex: 1,
 		fontSize: 10,
 		height: 25,
 		backgroundColor: '#E8E8E8',
+	},
+	photosContainer:{
+		marginTop: 10,
+		marginLeft: 30,
+		width: '100%',
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent:'center',
+        borderColor: '#ccc',
+		padding:0,
+   
 	},
 	passwordContainer: {
 		flexDirection: 'row',

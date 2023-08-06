@@ -47,7 +47,7 @@ export const ConfirmationAccountScreen = () => {
 						vous pouvez faire vérifier votre compte. 
 					</Text>
 				</View>
-				<Button style={styles.buttonOutlined} mode="outlined" onPress={handleNotificationPermission}>
+				<Button style={styles.buttonOutlined} mode="outlined" >
 					<Text style={styles.buttonText}>Je fais vérifier mon compte</Text>
 				</Button>
 

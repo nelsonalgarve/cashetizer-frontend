@@ -124,8 +124,8 @@ export const CheckIdScreen = () => {
 				return;
 			}
 
-			const response = await fetch(`${SERVER_URL}/IDCheck`, {
-				method: 'POST',
+			const response = await fetch('http://172.20.10.4:3000/checkId/IDCheck', {
+				method: 'POST',   
 				body: formData,
 			});
 
