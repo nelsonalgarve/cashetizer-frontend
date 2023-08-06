@@ -117,7 +117,7 @@ export const ItemForm = () => {
 			});
 
 			try {
-				const response = await fetch(`${SERVER_URL}/Upload`, {
+				const response = await fetch(`https://cashetizer-backend.vercel.app/Upload`, {
 					method: 'POST',
 					body: formData,
 				});

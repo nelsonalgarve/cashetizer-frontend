@@ -1,10 +1,12 @@
+import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
 import { Card, PaperProvider } from 'react-native-paper';
 import { formTheme } from '../../../../src/infrastructure/theme/themePaper';
-import { ItemCard } from '../components/ItemCard'; // Import the ItemCard component
-const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
+import { ItemCard } from '../components/ItemCard';
+
+const EXPO_PUBLIC_SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const ResultScreen = ({ route }) => {
 	const [userLatitude, setUserLatitude] = useState(null);
@@ -12,6 +14,9 @@ export const ResultScreen = ({ route }) => {
 	const categoryName = route.params.category.name;
 	// console.log(route.params);
 	const [items, setItems] = useState([]);
+	const [endDate, setEndDate] = useState(new Date());
+	const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+	const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
 	// RECUPERERE LA POSITION ET L'AUTHORISATION d'utilisateur
 
@@ -29,6 +34,7 @@ export const ResultScreen = ({ route }) => {
 		})();
 	}, []);
 
+	// FETCH ITEMS BY CATEGORY NAME
 	useEffect(() => {
 		fetchItemsByCategory(categoryName);
 	}, [categoryName]);
@@ -36,9 +42,9 @@ export const ResultScreen = ({ route }) => {
 	const fetchItemsByCategory = async (categoryName) => {
 		const encodedCategoryName = encodeURIComponent(categoryName);
 		try {
-			const response = await fetch(`${SERVER_URL}/item/items/categoryname/${encodedCategoryName}`);
+			const response = await fetch(`https://cashetizer-backend.vercel.app/item/items/categoryname/${encodedCategoryName}`);
 			const data = await response.json();
-			// console.log('searchData', data);
+			console.log('searchData', data);
 			setItems(data);
 		} catch (error) {
 			console.error('Error fetching items by category:', error);
@@ -52,6 +58,7 @@ export const ResultScreen = ({ route }) => {
 
 	return (
 		<PaperProvider theme={formTheme}>
+			{/* <RNDateTimePicker display="spinner" /> */}
 			<View style={styles.container}>
 				<FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item._id} />
 			</View>

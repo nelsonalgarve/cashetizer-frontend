@@ -51,7 +51,7 @@ export const WelcomeScreen = ({ navigation }) => {
 	// FETCH AU BACKEND TOUS LES ITEMS FILTRES PAR LE CHAMP DE RECHERCHE ----
 	const handleFilter = async (filterValue) => {
 		try {
-			const response = await fetch(`${API_URL}?keyword=${filterValue}`);
+			const response = await fetch(`https://cashetizer-backend.vercel.app/item/items/filter?keyword=${filterValue}`);
 			console.log(filterValue);
 			const data = await response.json();
 			setIsVisibleCategory(false);

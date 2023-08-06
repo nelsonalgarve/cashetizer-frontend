@@ -18,7 +18,16 @@ export const ItemCard = ({ item, userLatitude, userLongitude }) => {
 
 		return text.substring(0, maxLength) + '...'; // adds '...' at the end
 	}
-	console.log(item.description.photos[0]);
+
+	const Disponibilités = item.periodes.map((periode, index) => {
+		return (
+			<Text key={index} style={styles.itemDistance}>
+				Disponibilités: {item.periodes.start}
+			</Text>
+		);
+	});
+	const date = new Date(item.periodes.start);
+	console.log('FROM ITEM CARD', item);
 	if (item) {
 		return (
 			<Card style={styles.card} mode="contained">
@@ -30,6 +39,10 @@ export const ItemCard = ({ item, userLatitude, userLongitude }) => {
 					<Text style={styles.itemPrice}>
 						Prix/Jour: {item.prices.perDay}€ - Prix/Sem: {item.prices.perWeek}€ - Prix/Mois: {item.prices.perMonth}€
 					</Text>
+					{/* <Text style={styles.itemPrice}>
+						Prix/Jour: {item.periode}€ - Prix/Sem: {item.prices.perWeek}€ - Prix/Mois: {item.prices.perMonth}€
+					</Text> */}
+					{/* <Disponibilités /> */}
 					<Text style={styles.itemDistance}>Distance: {distanceKm.toFixed(2)} km</Text>
 				</Card.Content>
 			</Card>

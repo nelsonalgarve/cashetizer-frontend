@@ -3,7 +3,7 @@ const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const fetchCategories = async () => {
 	try {
-		const response = await fetch(`${SERVER_URL}/category/categories`);
+		const response = await fetch(`https://cashetizer-backend.vercel.app/category/categories`);
 		if (!response.ok) {
 			throw new Error('Network response was not ok');
 		}
