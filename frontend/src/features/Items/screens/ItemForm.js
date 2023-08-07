@@ -509,6 +509,7 @@ export const ItemForm = () => {
 								onPrev={handlePrev}
 								onDelete={deletePhoto}
 								setPhotos={setPhotos}
+								showDeleteIcon={true}
 							/>
 						</View>
 						{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}

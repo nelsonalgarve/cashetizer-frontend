@@ -3,11 +3,12 @@ import React, {useState} from 'react';
 import { ScrollView, Image, TouchableOpacity, KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
 import { Modal, Portal, Button, Provider as PaperProvider } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import PhotoViewerModal from '../../helpers/PhotoViewerModal';
 
 export const SingleProductScreen = () => {
 	const navigation = useNavigation();
-	const WelcomeScreen = () => {
-		navigation.navigate('Welcome');
+	const SignInScreen = () => {
+		navigation.navigate('SignIn');
 	};
         const fakeItem = {
           ownerId: '12345',
@@ -58,11 +59,34 @@ export const SingleProductScreen = () => {
     selectedPeriod.start,
     selectedPeriod.end
   );
+  const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+
+  const openPhotoViewer = (index) => {
+    setSelectedPhotoIndex(index);
+    setPhotoViewerVisible(true);
+  };
+
+  const closePhotoViewer = () => {
+    setPhotoViewerVisible(false);
+  };
+
 
 	return (
         <PaperProvider>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
           <View style={styles.container}>
+          <Modal visible={photoViewerVisible} transparent={true}>
+        <PhotoViewerModal
+          visible={photoViewerVisible}
+          photos={fakeItem.photos}
+          currentIndex={selectedPhotoIndex}
+          onClose={closePhotoViewer}
+          onNext={() => setSelectedPhotoIndex(selectedPhotoIndex + 1)}
+          onPrev={() => setSelectedPhotoIndex(selectedPhotoIndex - 1)}
+          showDeleteIcon={false} 
+        />
+      </Modal>
             <View style={styles.greyRectangle}>
               <Text style={styles.name}>{fakeItem.name} à {totalCost}€</Text>
               <View style={styles.periodesContainer}>
@@ -73,15 +97,17 @@ export const SingleProductScreen = () => {
                   </Text>
                 ))}
               </View>
-              <Button style={styles.buttonOutlined} mode="outlined" onPress={() => console.log("He clicked valider")}>
+              <Button style={styles.buttonOutlined} mode="outlined" onPress={SignInScreen}>
                 <Text style={styles.buttonText}>Valider la location</Text>
               </Button>
             </View>
             <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
               <View style={styles.contentContainer}>
                 <View style={styles.imageContainer}>
-                        
-                    <Image source={require('../../../../assets/fakeImage.jpg')} style={styles.image} />
+                <TouchableOpacity onPress={() => openPhotoViewer(0)}>
+                <Image source={require('../../../../assets/fakeImage.jpg')} style={styles.image} />
+      </TouchableOpacity>      
+                   
 
                     {/* <Image source={{ uri: fakeItem.photos[0] }} style={styles.image} /> */}
 					

@@ -315,6 +315,16 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 5,
     },
+    periodeContainer: {
+      flexDirection: 'row', // Les éléments Text seront alignés horizontalement
+      alignItems: 'center', // Les éléments Text seront centrés verticalement
+      marginBottom: 5, // Ajoute un espace entre chaque période
+    },
+    periode: {
+      flexDirection: 'column', // Les éléments Text seront alignés horizontalement
+      color: '#555',
+      marginLeft: 10,
+    },
 	textInput: {
 		paddingVertical: 1,
 		paddingHorizontal: 1,
