@@ -122,11 +122,11 @@ export const WelcomeScreen = ({ navigation }) => {
 		<PaperProvider theme={formTheme}>
 			<View style={styles.container}>
 				<View style={styles.imageContainer}>
-					<Image source={require('../../../../assets/LogoCash.png')} style={styles.image} />
+					<Image source={require('../../../../assets/logoWelcome.png')} style={styles.image} />
 				</View>
 
 				<View style={styles.filterContainer}>
-					<FilterForm onFilter={handleFilter} />
+				<FilterForm style={styles.filterForm} onFilter={handleFilter} />
 				</View>
 
 				{isFlatListVisible && (
@@ -171,9 +171,12 @@ export const WelcomeScreen = ({ navigation }) => {
 						</Button>
 					</View>
 				)}
-				<View style={styles.infoBar}>
-					<Text style={styles.infoText}>Louez malin. Gagnez des € en chemin.</Text>
-				</View>
+				<View style={styles.greenRectangle}>
+				<Text style={styles.rectangleText}>
+				Louez malin.{'\n'}
+				Gagnez des € en chemin!{' '}
+				</Text>
+			</View>
 			</View>
 		</PaperProvider>
 	);
@@ -189,6 +192,23 @@ const styles = StyleSheet.create({
 		backgroundColor: '#E8E8E8',
 		borderRadius: 0,
 		marginVertical: 0,
+	},
+	greenRectangle: {
+		weight: 40,
+		backgroundColor: '#155263',
+		paddingVertical: 2,
+		paddingHorizontal: 20,
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		right: 0,
+	},
+	rectangleText: {
+		color: 'white',
+		textAlign: 'center',
+		fontSize: 20,
+		fontWeight: 'bold',
+	
 	},
 	itemName: {
 		fontSize: 16,
@@ -212,6 +232,7 @@ const styles = StyleSheet.create({
 		left: 0,
 		right: 0,
 		bottom: '80%',
+		marginTop: -15,
 	},
 	image: {
 		flex: 1,
@@ -220,13 +241,16 @@ const styles = StyleSheet.create({
 	filterContainer: {
 		flex: 1,
 	},
+	filterForm: {
+		marginTop: -15,
+	},
 	buttonCategorie: {
 		position: 'absolute',
 		bottom: '40%', // Ajustez cette valeur pour déplacer les boutons vers le bas
 		width: '100%',
 		alignItems: 'center',
 		justifyContent: 'center',
-		height: 200, // hauteur des boutons
+		height: 400, // hauteur des boutons
 	},
 	categoriesContainer: {
 		flex: 2,
@@ -234,17 +258,21 @@ const styles = StyleSheet.create({
 
 	button: {
 		backgroundColor: '#155263',
+		color: 'white',
 		paddingVertical: 12,
 		paddingHorizontal: 24,
 		borderRadius: 50,
 		marginVertical: 8,
 		alignItems: 'center',
-		width: 200, //largeur des boutons
+		justifyContent: 'center',
+		height: 60,
+		width: 300, //largeur des boutons
 	},
 	buttonText: {
-		color: '#FFCE52',
+		color: 'white',
 		textAlign: 'center',
 		fontSize: 18,
+		fontWeight: '500',
 	},
 
 	buttonsContainer: {

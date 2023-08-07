@@ -50,13 +50,17 @@ const FilterForm = ({ onFilter }) => {
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: '#E8E8E8',
+		backgroundColor: 'transparent',
 		paddingHorizontal: 16,
-		marginTop: 16,
+		marginTop: -0,
 	},
 	searchbar: {
 		marginBottom: 16,
 		backgroundColor: '#E8E8E8',
+		marginTop: -18,
+		width: '120%',
+		alignSelf: 'center',
+
 	},
 });
 
