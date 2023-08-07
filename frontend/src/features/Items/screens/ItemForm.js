@@ -455,8 +455,7 @@ export const ItemForm = () => {
 									size="30"
 									icon="camera"
 									style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}
-									onPress={() => setDatePickerVisible(true)}
-								>
+									onPress={() => setDatePickerVisible(true)}>
 									Periode de disponibilité
 								</Badge>
 
@@ -476,8 +475,7 @@ export const ItemForm = () => {
 													fontSize: 12,
 													color: 'white',
 													minHeight: '100%',
-												}}
-											>
+												}}>
 												Période {index + 1}: {moment(period.start).format('L')} - {moment(period.end).format('L')}
 											</Badge>
 											<Divider />
@@ -486,8 +484,7 @@ export const ItemForm = () => {
 												icon="delete"
 												compact="false"
 												style={{ paddingHorizontal: 5, margin: 5 }}
-												onPress={() => deletePeriod(index)}
-											>
+												onPress={() => deletePeriod(index)}>
 												Delete
 											</Button>
 										</View>
