@@ -1,26 +1,37 @@
 import moment from 'moment';
 import 'moment/locale/fr';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Badge, Card, Chip, Divider, Text } from 'react-native-paper';
+import { Badge, Button, Card, Chip, Divider, Text } from 'react-native-paper';
 import { calculateDistance } from '../../helpers/calculateDistance';
+import { SingleItem } from '../screens/SingleItem';
 
-export const ItemCard = ({ item, userLatitude, userLongitude }) => {
-	moment.locale('fr');
-	const distanceKm = calculateDistance(
-		userLatitude, // Replace with the user's latitude
-		userLongitude, // Replace with the user's longitude
-		item.localisation.latitude, // Replace with the item's latitude
-		item.localisation.longitude // Replace with the item's longitude
-	);
-	// Perform a conditional check to ensure the 'item' object and 'prices' property exist
-	function limitTextLength(text, maxLength) {
-		if (text.length <= maxLength) {
-			return text;
-		}
-
-		return text.substring(0, maxLength) + '...'; // adds '...' at the end
+function limitTextLength(text, maxLength) {
+	if (text.length <= maxLength) {
+		return text;
 	}
+
+	return text.substring(0, maxLength) + '...'; // adds '...' at the end
+}
+
+export const ItemCard = ({ item, userLatitude, userLongitude, navigation }) => {
+	const [distanceKm, setDistanceKm] = useState(0);
+
+	const toSingleItemPage = () => {
+		navigation.navigate('SingleProduct', {
+			item: item,
+			userLatitude: userLatitude,
+			userLongitude: userLongitude,
+			distanceKm: distanceKm,
+		});
+	};
+
+	moment.locale('fr');
+
+	useEffect(() => {
+		setDistanceKm(calculateDistance(userLatitude, userLongitude, item.localisation.latitude, item.localisation.longitude));
+	}),
+		[];
 
 	const Dispos = item.periodes.map((periode, index) => {
 		console.log(periode);
@@ -32,10 +43,9 @@ export const ItemCard = ({ item, userLatitude, userLongitude }) => {
 				<Chip
 					icon="calendar-alert"
 					onPress={() => console.log('Pressed')}
-					compact="true"
+					compact={true}
 					textStyle={{ fontSize: 8 }}
-					style={styles.chipStyle}
-				>
+					style={styles.chipStyle}>
 					Période {index + 1}: {moment(periode.start).format('L')} - {moment(periode.end).format('L')}
 				</Chip>
 			</View>
@@ -54,9 +64,16 @@ export const ItemCard = ({ item, userLatitude, userLongitude }) => {
 					<Text style={styles.itemPrice}>
 						Prix/Jour: {item.prices.perDay}€ - Prix/Sem: {item.prices.perWeek}€ - Prix/Mois: {item.prices.perMonth}€
 					</Text>
-
 					{Dispos}
 					<Text style={styles.itemDistance}>Distance: {distanceKm.toFixed(2)} km</Text>
+					<View style={styles.buttonsInRow}>
+						<Button icon="camera" mode="contained" onPress={toSingleItemPage}>
+							Press me
+						</Button>
+						<Button icon="camera" mode="contained" onPress={() => console.log('Consulter')}>
+							Press me
+						</Button>
+					</View>
 				</Card.Content>
 			</Card>
 		);
@@ -65,6 +82,12 @@ export const ItemCard = ({ item, userLatitude, userLongitude }) => {
 	}
 };
 const styles = StyleSheet.create({
+	buttonsInRow: {
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'space-evenly',
+		marginTop: 10,
+	},
 	card: {
 		marginBottom: 16,
 		backgroundColor: '#E8E8E8',

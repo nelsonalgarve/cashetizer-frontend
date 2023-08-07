@@ -1,4 +1,4 @@
-const createNewItem = async (token, formData) => {
+const createNewItem = async (token, formData, payload) => {
 	const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 	try {
 		console.log('token from createNewItem handler', token);

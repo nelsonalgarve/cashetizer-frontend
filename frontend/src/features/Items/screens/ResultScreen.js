@@ -1,4 +1,5 @@
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Modal, Button as RNButton, StyleSheet, Text, View } from 'react-native';
@@ -9,6 +10,7 @@ import { ItemCard } from '../components/ItemCard';
 const EXPO_PUBLIC_SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const ResultScreen = ({ route }) => {
+	const navigation = useNavigation();
 	const [userLatitude, setUserLatitude] = useState(null);
 	const [userLongitude, setUserLongitude] = useState(null);
 	const categoryName = route.params.category.name;
@@ -37,7 +39,7 @@ export const ResultScreen = ({ route }) => {
 		if (currentDate) setEndDate(currentDate);
 	};
 
-	// RECUPERERE LA POSITION ET L'AUTHORISATION d'utilisateur
+	// RECUPERERE LA POSITION ET L'AUTORISATION d'utilisateur
 
 	useEffect(() => {
 		(async () => {
@@ -61,7 +63,7 @@ export const ResultScreen = ({ route }) => {
 	const fetchItemsByCategory = async (categoryName, applyDateFilter = false) => {
 		try {
 			const encodedCategoryName = encodeURIComponent(categoryName);
-			const response = await fetch(`https://cashetizer-backend.vercel.app/item/items/categoryname/${encodedCategoryName}`);
+			const response = await fetch(`http://192.168.0.15:3000/item/items/categoryname/${encodedCategoryName}`);
 			let data = await response.json();
 
 			// If applyDateFilter is true, filter items based on the date range
@@ -101,9 +103,9 @@ export const ResultScreen = ({ route }) => {
 	// 	}
 	// };
 	// console.log(items.description);
-
+	console.log(items);
 	const renderItem = ({ item }) => {
-		return <ItemCard item={item} userLatitude={userLatitude} userLongitude={userLongitude} />;
+		return <ItemCard item={item} userLatitude={userLatitude} userLongitude={userLongitude} navigation={navigation} />;
 	};
 
 	return (
@@ -119,8 +121,7 @@ export const ResultScreen = ({ route }) => {
 						buttonColor="#FFCE52"
 						// rippleColor="green"
 						icon="calendar-range"
-						onPress={() => setCurrentPicker('start')}
-					>
+						onPress={() => setCurrentPicker('start')}>
 						{`Du: ${formatDate(startDate)}`}
 					</Button>
 
@@ -132,8 +133,7 @@ export const ResultScreen = ({ route }) => {
 						textColor="#155263"
 						// rippleColor="green"
 						icon="calendar-range"
-						onPress={() => setCurrentPicker('end')}
-					>
+						onPress={() => setCurrentPicker('end')}>
 						{`Au: ${formatDate(endDate)}`}
 					</Button>
 				</View>
@@ -146,8 +146,7 @@ export const ResultScreen = ({ route }) => {
 							textColor="#155263"
 							mode="outlined"
 							compact="true"
-							onPress={() => setDateTolerance((prev) => Math.max(0, prev - 1))}
-						></Button>
+							onPress={() => setDateTolerance((prev) => Math.max(0, prev - 1))}></Button>
 						<Text>+/- {dateTolerance} jour(s)</Text>
 						<Button
 							textColor="#155263"
@@ -155,8 +154,7 @@ export const ResultScreen = ({ route }) => {
 							style={{ minWidth: '20%' }}
 							mode="outlined"
 							compact="true"
-							onPress={() => setDateTolerance((prev) => prev + 1)}
-						></Button>
+							onPress={() => setDateTolerance((prev) => prev + 1)}></Button>
 					</View>
 					<View>
 						<Button
@@ -167,8 +165,7 @@ export const ResultScreen = ({ route }) => {
 							buttonColor="#FFCE52"
 							// rippleColor="green"
 							icon="filter"
-							onPress={() => fetchItemsByCategory(categoryName, true)}
-						>
+							onPress={() => fetchItemsByCategory(categoryName, true)}>
 							Filtrer
 						</Button>
 					</View>
@@ -181,8 +178,7 @@ export const ResultScreen = ({ route }) => {
 				visible={currentPicker !== null}
 				onRequestClose={() => {
 					setCurrentPicker(null);
-				}}
-			>
+				}}>
 				<View style={styles.centeredView}>
 					<View style={styles.modalView}>
 						{currentPicker === 'start' && (

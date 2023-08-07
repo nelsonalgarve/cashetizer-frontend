@@ -44,7 +44,6 @@ export const SignInForm = () => {
 	const onSubmit = (data) => {
 		// Adresse du backend pour Fetch POST login
 		const signIn = `https://cashetizer-backend.vercel.app/users/login`;
-		// navigation.navigate('TabNavigator');
 
 		// Objet user à envoyer au backend
 		const requestData = {
@@ -69,6 +68,7 @@ export const SignInForm = () => {
 					// affichage du reducer user
 					console.log('userfromreducer', user);
 					console.log('tokenFormReducer', token);
+					testGoHome();
 				} else {
 					console.log('Error', data.message || 'Signin failed');
 				}
@@ -177,6 +177,9 @@ export const SignInForm = () => {
 					</Button>
 					<Button onPress={() => navigation.navigate('SearchScreen')}>
 						<Text> Go to SearchScreen </Text>
+					</Button>
+					<Button onPress={() => navigation.navigate('SingleProduct')}>
+						<Text> Go to SingleProduct </Text>
 					</Button>
 					<SignOut />
 				</ScrollView>

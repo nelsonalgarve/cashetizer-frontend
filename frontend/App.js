@@ -30,6 +30,7 @@ import MyProfileScreen from './src/features/welcome/screens/MyProfileScreen';
 import { SearchScreen } from './src/features/welcome/screens/SearchScreen';
 import SettingsScreen from './src/features/welcome/screens/SettingsScreen';
 import { SignInForm } from './src/features/welcome/screens/SignInForm';
+import { SingleProductScreen } from './src/features/welcome/screens/SingleProductScreen';
 import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
 import { theme } from './src/infrastructure/theme';
 import themePaper from './src/infrastructure/theme/themePaper';
@@ -93,8 +94,7 @@ const TabNavigator = () => {
 			tabBarStyle={{
 				paddingHorizontal: 0,
 				paddingVertical: 0,
-			}}
-		>
+			}}>
 			<Tab.Screen name="Home" component={HomeScreen} />
 			<Tab.Screen name="MyProfile" component={MyProfileScreen} />
 			<Tab.Screen name="Favourite" component={FavouriteScreen} />
@@ -124,8 +124,7 @@ export default App = () => {
 										},
 										headerTintColor: '#fff',
 										headerTitleAlign: 'center',
-									}}
-								>
+									}}>
 									<Stack.Screen
 										name="Welcome"
 										component={WelcomeScreen}
@@ -249,6 +248,14 @@ export default App = () => {
 										}}
 									/>
 									<Stack.Screen name="Results" component={ResultScreen} />
+
+									<Stack.Screen
+										name="SingleProduct"
+										component={SingleProductScreen}
+										options={{
+											headerShown: false,
+										}}
+									/>
 
 									{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}
 									{/* <Stack.Screen

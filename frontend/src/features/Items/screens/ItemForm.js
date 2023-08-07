@@ -212,7 +212,6 @@ export const ItemForm = () => {
 	// --------------------------ENVOI DU FORMULAIRE --------------------------------
 
 	const onSubmit = async (data) => {
-		console.log('photos', photos);
 		try {
 			const formData = new FormData();
 
@@ -228,23 +227,25 @@ export const ItemForm = () => {
 			} else {
 				console.log('pas de photos:', photos);
 			}
-
+			console.log('photos----------------------------------------------', photos);
 			// Récupère les données du formulaire------------------------------
 			console.log('data----------------', getValues());
 			/// A faire attribuer
-			const { name, category, etat, localisation, remise, periodes } = getValues();
+			const { name, description, prices, caution } = getValues();
+
 			const payload = {
 				// ...data,
 
 				// name: data,
-				name: getValues().name,
+				name,
+				description,
 				category: selectedCategory,
 				etat: selectedEtat,
 				localisation: selectedLocation.location,
 				remise: selectedRemise,
 				periodes: periods,
 			};
-
+			console.log('formData-----------------------------', formData);
 			delete payload.photos;
 
 			for (const key in payload) {
@@ -252,7 +253,8 @@ export const ItemForm = () => {
 			}
 
 			//token provisoire pour tests
-			const token = '$2a$08$Hx7InbxIvGPkUNOJdUVOVu65L.3WbAFEWGdLC1iCW9.7TJPFjNJWC';
+			const token =
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGNlY2YxNDgxMjkyY2ViZGU5MTY0ZWMiLCJpYXQiOjE2OTE0MDU1NTB9.YysXb_yWgFkcLdLiDt6BuUWXLY7HGCa3ibPMsOXwFuw';
 
 			// Submit main payload
 			createNewItem(token, formData)
@@ -620,7 +622,7 @@ export const ItemForm = () => {
 
 					{/* // CHAMP MAP --------------------------------------------------------------------- */}
 
-					<Controller
+					{/* <Controller
 						name="adress"
 						control={control}
 						defaultValue=""
@@ -641,7 +643,7 @@ export const ItemForm = () => {
 								<Text style={{ alignSelf: 'center', fontSize: 20, fontWeight: 600, color: '#155263', marginTop: 5 }}> Ou </Text>
 							</View>
 						)}
-					/>
+					/> */}
 					<View style={{ flex: 1 }}>
 						{/* Button to open the MapPicker */}
 						<Button title="Select Location" onPress={() => setMapVisible(true)} />
