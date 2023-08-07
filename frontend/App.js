@@ -33,6 +33,7 @@ import { SignInForm } from './src/features/welcome/screens/SignInForm';
 import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
 import { theme } from './src/infrastructure/theme';
 import themePaper from './src/infrastructure/theme/themePaper';
+import { SingleProductScreen } from './src/features/welcome/screens/SingleProductScreen';
 const store = configureStore({
 	reducer: { user },
 });
@@ -249,6 +250,13 @@ export default App = () => {
 										}}
 									/>
 									<Stack.Screen name="Results" component={ResultScreen} />
+									<Stack.Screen
+										name="SingleProduct"
+										component={SingleProductScreen}
+										options={{
+											headerShown: false,
+										}}
+									/>
 
 									{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}
 									{/* <Stack.Screen

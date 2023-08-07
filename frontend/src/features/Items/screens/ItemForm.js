@@ -40,6 +40,7 @@ import { MapPicker } from '../components/MapPicker';
 const SERVER_URL = process.env.SERVER_URL;
 
 export const ItemForm = () => {
+	const navigation = useNavigation();
 	// GOOGLE PLACES
 	const [isMapVisible, setMapVisible] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState(null);
@@ -149,11 +150,11 @@ export const ItemForm = () => {
 		}
 	};
 
-	const handleSubmit = async () => {
+	/* const handleSubmit = async () => {
 		console.log('Uploading');
 		setIsButtonClicked(true);
 		await uploadPhotos();
-	};
+	}; */
 
 	const toggleCamera = () => {
 		setShowCamera((prevShowCamera) => !prevShowCamera);
@@ -207,7 +208,7 @@ export const ItemForm = () => {
 	} = useForm();
 
 	// --------------------------ENVOI DU FORMULAIRE --------------------------------
-	const onSubmit = (data) => {
+	const onSubmit = async (data) => {
 		const newItemData = {
 			...data,
 			// address: myAddressParsed,
@@ -217,8 +218,11 @@ export const ItemForm = () => {
 			remise: selectedRemise.value,
 			periodes: periods,
 		};
+
 		console.log('newItemDataaaaa:', newItemData);
 		// Call the helper function to create a new item
+
+		await uploadPhotos();
 
 		createNewItem(token, newItemData)
 			.then((data) => {
@@ -695,7 +699,7 @@ export const ItemForm = () => {
 					</Text>
 				</View>
 				<View style={styles.buttonsContainer}>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit}>
+					<Button style={styles.buttonOutlined} mode="outlined" onPress={onSubmit}>
 						<Text style={styles.buttonText}>Poster l'annonce</Text>
 					</Button>
 

@@ -68,10 +68,8 @@ export const ConfirmationAccountScreen = () => {
 				<View style={styles.textContainer}>
 					<Text style={styles.text}>
 						Vous pouvez dès à présent {'\n'}
-						commencer à
-						{/* louer à petits prix {'\n'}
-						ou à  */}
-						générer un revenu {'\n'}
+						commencer à louer à petits prix {'\n'}
+						ou à générer un revenu {'\n'}
 						en mettant vos produits en location!!
 					</Text>
 				</View>

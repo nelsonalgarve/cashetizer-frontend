@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
 	searchbar: {
 		marginBottom: 16,
 		backgroundColor: '#E8E8E8',
+		marginTop: -16,
 	},
 });
 
