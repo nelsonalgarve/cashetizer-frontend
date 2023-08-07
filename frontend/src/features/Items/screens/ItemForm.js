@@ -249,7 +249,8 @@ export const ItemForm = () => {
 
 	// AUTOCOMPLETE A A DEPLACER ICI
 	const data = [
-		{ name: 'Neuf', id: '1' },
+		{ name: 'Neuf', id: '0' },
+		{ name: 'Excellent', id: '1' },
 		{ name: 'Bon état', id: '2' },
 		{ name: 'Acceptable', id: '3' },
 		{ name: 'Usé', id: '4' },
@@ -323,7 +324,8 @@ export const ItemForm = () => {
 
 	return (
 		<PaperProvider theme={formTheme}>
-			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+			<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+							<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<View style={styles.container}>
 					{/* // CHAMP CATEGORIE -------------------------------------------------------------------- */}
 					{/* <DropDownPicker
@@ -708,6 +710,8 @@ export const ItemForm = () => {
 					</Button> */}
 				</View>
 			</ScrollView>
+			</KeyboardAvoidingView>
+
 		</PaperProvider>
 	);
 };

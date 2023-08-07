@@ -1,7 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import React, {useState} from 'react';
-import { Image, KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
+import { Image, TouchableOpacity, KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
 import { Button, Provider as PaperProvider } from 'react-native-paper';
+import { Ionicons } from '@expo/vector-icons';
 
 export const SingleProductScreen = () => {
 	const navigation = useNavigation();
@@ -10,10 +11,10 @@ export const SingleProductScreen = () => {
 	};
         const fakeItem = {
           ownerId: '12345',
-          name: 'Un produit',
-          description: 'Le meilleur produit au monde',
-          etat: 'Excellent',
-          photos: ['../../../../assets/fakeImage.jpg'],
+          name: "Fond Photo 'Les Mignons'",
+          description: "Transformez vos photos en chef-d'œuvre avec ce fond photo unique en son genre. Donnez à vos clichés une touche très artistique et plus professionnelle en utilisant notre magnifique fond 'Les Mignons'.",
+          photos: ['/Users/meon/Downloads/Cashetizer/cashetizer-frontend/frontend/assets/fakeImage.jpg'],
+          etat: "Excellent",
           prices: {
             day: 15,
             week: 90,
@@ -44,7 +45,7 @@ export const SingleProductScreen = () => {
           const handlePeriodChange = (index) => {
           setSelectedPeriodIndex(index);
           };
-
+        const numberOfStars = "3"
   
         const selectedPeriod = fakeItem.periodes[selectedPeriodIndex];
   const totalCost = calculateTotalCost(
@@ -65,56 +66,69 @@ export const SingleProductScreen = () => {
           {periode.start} à {periode.end}
         </Text>
       ))}
-      <Button style={styles.buttonOutlined} mode="outlined" onPress={WelcomeScreen}>
-							<Text style={styles.buttonText}>Je valide la location</Text>
+      <Button style={styles.buttonOutlined} mode="outlined" onPress={() => console.log("He clicked valider")}>
+							<Text style={styles.buttonText}>Valider la location</Text>
 						</Button>
 				</View>
-					<View style={styles.textContainer}>
-                    <Image source={{ uri: fakeItem.photos[0] }} style={styles.image} />
-					<View>
+                
+					<View style={styles.imageContainer}>
+                        
+                    <Image source={require('../../../../assets/fakeImage.jpg')} style={styles.image} />
 
-                    </View>
-						<Text style={styles.title}> {'\n'}{'\n'}{'\n'}{'\n'} Félicitations ! </Text>
-						<Text style={styles.text}>
-							Votre annonce est complète.{'\n'}
-							{'\n'}
-							Elle sera publiée d'ici peu.{'\n'}
-							{'\n'}
-							Vous recevrez une notification
-							{'\n'}et un email une fois votre compte confirmé.{'\n'}
-							{'\n'}
-							Pensez à vérifier votre boite email
-							{'\n'}et à activer les notifications.
-						</Text>
+                    {/* <Image source={{ uri: fakeItem.photos[0] }} style={styles.image} /> */}
+					
+                    
+                    
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: -130 }}>
+  <View>
+    <Text style={{ color:"black", fontWeight:600 }}>36 évaluations</Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      {Array.from({ length: numberOfStars }).map((_, index) => (
+        <Ionicons
+          key={index}
+          name={'star'}
+          size={25}
+          color={'gold'}
+        />
+      ))}
+    </View>
+  </View>
+  <View style={{ marginTop: -10 }}>
+    <Text>À 1 km</Text>
+    <Text style={{ color:"green", fontWeight:500 }} >Disponible</Text>
+  </View>
+</View>
+<Text style={styles.description}>{fakeItem.description}</Text>
+
+<View style={styles.infoContainer}>
+  <View style={styles.infoRow}>
+    <Text style={styles.infoLabel}>État:</Text>
+    <Text style={styles.infoText}>{fakeItem.etat}</Text>
+  </View>
+  <View style={styles.infoRow}>
+    <Text style={styles.infoLabel}>Caution:</Text>
+    <Text style={styles.infoText}>{fakeItem.caution}€</Text>
+  </View>
+  <View style={styles.infoRow}>
+    <Text style={styles.infoLabel}>Mode de remise:</Text>
+    <Text style={styles.infoText}>En personne</Text>
+  </View>
+  <View style={styles.infoRow}>
+    <Text style={styles.infoLabel}>Vendeur:</Text>
+    <TouchableOpacity onPress={() => console.log("Nelson clicked")}><Text style={styles.linkText}>Nelson {fakeItem.ownerId}</Text></TouchableOpacity>
+  </View>
+  <View style={styles.infoRow}>
+    <Text style={styles.infoLabel}>Localisation:</Text>
+    <TouchableOpacity onPress={() => console.log("Nelson lives in Paris")}>
+    <Text style={styles.infoText}>  <Ionicons name={'location'} color={'#FFCE52'}size={20}/> Paris</Text>
+    </TouchableOpacity>
+  </View>
+</View>		
 					</View>
-					<View style={styles.buttonsContainer}>
-						<Button style={styles.buttonOutlined} mode="outlined">
-							<Text style={styles.buttonText}>J'active les notifications</Text>
-						</Button>
-
-						<View style={styles.textContainer}>
-							<Text style={styles.text}>
-								En attendant vous pouvez{'\n'}
-								en profiter pour louer à petits prix {'\n'}
-								ou à générer un revenu {'\n'}
-								en mettant d’autres produits en location!!
-							</Text>
-						</View>
-
-						<Button style={styles.buttonOutlined} mode="outlined" onPress={WelcomeScreen}>
-							<Text style={styles.buttonText}>J'y vais de suite!</Text>
-						</Button>
-					</View>
+					
 				</View>
-				<View style={[styles.imageContainer, { zIndex: -1 }]}>
-					<Image source={require('../../../../assets/LogoShortUp.png')} style={styles.image} />
-				</View>
-				<View style={styles.greenRectangle}>
-					<Text style={styles.rectangleText}>
-						Economies futées,{'\n'}
-						Des revenus assurés !
-					</Text>
-				</View>
+				
+				
 			</KeyboardAvoidingView>
 		</PaperProvider>
 	);
@@ -125,30 +139,34 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
     greyRectangle: {
-		backgroundColor: '#ECECEC',
+		backgroundColor: '#E2E2E2',
 		position: 'absolute',
 		top: 0, // Changed from 'bottom: 0'
 		left: 0,
 		right: 0,
 		marginTop: 0,
-        height : "30%",
+        height : "20%",
 		alignContent: 'flex-start',
+        alignItems: 'center',
+        justifyContent: 'center',
 	},
     name: {
         fontSize: 24,
         fontWeight: 'bold',
         marginTop: 16,
         alignSelf: 'center',
+        color: '#155263',
       },
 
 	imageContainer: {
-		width: '100%',
-		marginBottom: -18,
+		width: '85%',
+		marginTop: 30,
+        alignSelf: 'center',
 	},
 	image: {
 		width: '100%',
 		resizeMode: 'contain',
-		height: 215,
+		
 	},
 	textContainer: {
 		alignItems: 'center',
@@ -162,6 +180,10 @@ const styles = StyleSheet.create({
 		marginBottom: 10,
 		color: '#155263',
 	},
+    description: {
+        textAlign: 'justify',
+        
+      },
   
 	greenRectangle: {
 		weight: 40,
@@ -184,7 +206,39 @@ const styles = StyleSheet.create({
 		marginTop: 25,
 		marginBottom: 10,
 	},
-	text: {
+    linkText: {
+        color: 'blue', 
+        textDecorationLine: 'underline', 
+        fontSize: 16, 
+    },
+	infoContainer: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 5,
+        marginTop: 10,
+      },
+      infoRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 8,
+      },
+      infoLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'right',
+      },
+      infoText: {
+        fontSize: 16,
+        color: '#555',
+        marginLeft: 10,
+      },
+      infoClickableText: {
+        color: 'blue',
+        textDecorationLine: 'underline',
+      },
+      text: {
 		fontSize: 16,
 		marginTop: 10,
 		textAlign: 'center',
@@ -197,11 +251,17 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		marginTop: 60,
 	},
+    buttonsContainer: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginTop: 60,
+	},
 	buttonText: {
 		color: 'white',
 		textAlign: 'center',
 		fontWeight: 'bold',
-		fontSize: 16,
+		fontSize: 22,
 	},
 	buttonOutlined: {
 		backgroundColor: '#FFCE52',
@@ -229,6 +289,13 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 		margin: 12,
 	},
+    periodes:{
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: 'black',
+        textAlign: 'center',
+        marginTop: 5,
+    },
 	textInput: {
 		paddingVertical: 1,
 		paddingHorizontal: 1,
