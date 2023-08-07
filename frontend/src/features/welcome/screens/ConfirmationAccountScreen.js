@@ -75,7 +75,7 @@ export const ConfirmationAccountScreen = () => {
 						en mettant vos produits en location!!
 					</Text>
 				</View>
-				<Button style={styles.buttonOutlined} mode="outlined" onPress={WelcomeScreen}>
+				<Button style={styles.buttonOutlined} mode="outlined" onPress={() => navigation.navigate('ItemForm')}>
 					<Text style={styles.buttonText}>Je commence l'aventure</Text>
 				</Button>
 			</View>
