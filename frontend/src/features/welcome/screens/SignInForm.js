@@ -44,7 +44,7 @@ export const SignInForm = () => {
 	const onSubmit = (data) => {
 		// Adresse du backend pour Fetch POST login
 		const signIn = `https://cashetizer-backend.vercel.app/users/login`;
-		navigation.navigate('TabNavigator');
+		// navigation.navigate('TabNavigator');
 
 		// Objet user à envoyer au backend
 		const requestData = {

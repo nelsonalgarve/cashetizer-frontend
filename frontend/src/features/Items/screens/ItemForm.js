@@ -94,7 +94,7 @@ export const ItemForm = () => {
 	useEffect(() => {
 		fetchData();
 	}, []);
-
+	// USER PERMISSIONS
 	useEffect(() => {
 		const requestCameraPermission = async () => {
 			const { status } = await Camera.requestCameraPermissionsAsync();
@@ -106,6 +106,7 @@ export const ItemForm = () => {
 		}
 	}, [isFocused]);
 
+	// TAKE PHOTO setPhotos[img1.jpg, img2.jpg]------------------------------------
 	const takePhoto = async () => {
 		if (cameraRef.current) {
 			if (photos.length >= 3) {
@@ -115,39 +116,40 @@ export const ItemForm = () => {
 
 			const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
 			setPhotos([...photos, photo.uri]);
-			if (photos.length === 3) {
-				await uploadPhotos();
-			}
+			// if (photos.length === 3) {
+			// 	// await uploadPhotos();?
+			// }
 		}
 	};
 
-	const uploadPhotos = async () => {
-		try {
-			for (let i = 0; i < photos.length; i++) {
-				const formData = new FormData();
-				formData.append('photoFromFront', {
-					uri: photos[i],
-					name: `photo_${i}.jpg`,
-					type: 'image/jpeg',
-				});
+	// UPLOAD PHOTO ------------------------------------
+	// const uploadPhotos = async () => {
+	// 	try {
+	// 		for (let i = 0; i < photos.length; i++) {
+	// 			const formData = new FormData();
+	// 			formData.append('photoFromFront', {
+	// 				uri: photos[i],
+	// 				name: `photo_${i}.jpg`,
+	// 				type: 'image/jpeg',
+	// 			});
 
-				const response = await fetch('http://172.20.10.4:3000/Upload/Upload', {
-					method: 'POST',
-					body: formData,
-				});
+	// 			const response = await fetch('http://192.168.0.15:3000/Upload/Upload', {
+	// 				method: 'POST',
+	// 				body: formData,
+	// 			});
 
-				const data = await response.json();
+	// 			const data = await response.json();
 
-				if (data.result && data.urls && data.urls.length > 0) {
-					console.log(`Image ${i + 1} téléchargée avec succès:`, data.urls[data.urls.length - 1]);
-				} else {
-					console.log(`Erreur lors du téléchargement de l'image ${i + 1}. Référence à la caméra invalide.`);
-				}
-			}
-		} catch (error) {
-			console.error('Error uploading photos:', error);
-		}
-	};
+	// 			if (data.result && data.urls && data.urls.length > 0) {
+	// 				console.log(`Image ${i + 1} téléchargée avec succès:`, data.urls[data.urls.length - 1]);
+	// 			} else {
+	// 				console.log(`Erreur lors du téléchargement de l'image ${i + 1}. Référence à la caméra invalide.`);
+	// 			}
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('Error uploading photos:', error);
+	// 	}
+	// };
 
 	const handleSubmit = async () => {
 		console.log('Uploading');
@@ -208,19 +210,44 @@ export const ItemForm = () => {
 
 	// --------------------------ENVOI DU FORMULAIRE --------------------------------
 	const onSubmit = (data) => {
-		const newItemData = {
-			...data,
-			// address: myAddressParsed,
-			category: selectedCategory,
-			etat: selectedEtat,
-			localisation: selectedLocation.location,
-			remise: selectedRemise.value,
-			periodes: periods,
-		};
-		console.log('newItemDataaaaa:', newItemData);
-		// Call the helper function to create a new item
 
-		createNewItem(token, newItemData)
+		try {
+			const formData = new FormData();
+	
+			// Append photos to formData
+			photos.forEach((photo, i) => {
+				formData.append('photoFromFront', {
+					uri: photo,
+					name: `photo_${i}.jpg`,
+					type: 'image/jpeg',
+				});
+			});
+	
+			// Append other data to formData
+			formData.append('data', JSON.stringify({
+				...data,
+				category: selectedCategory,
+				etat: selectedEtat,
+				localisation: selectedLocation.location,
+				remise: selectedRemise.value,
+				periodes: periods,
+			}));
+		// const newItemData = {
+		// 	...data,
+		// 	// address: myAddressParsed,
+		// 	category: selectedCategory,
+		// 	etat: selectedEtat,
+		// 	localisation: selectedLocation.location,
+		// 	remise: selectedRemise.value,
+		// 	periodes: periods,
+		// };
+		// console.log('newItemDataaaaa:', newItemData);
+
+		// CALL THE HELPER WITH THE NEW ITEM DATA AND THE USER TOKEN
+		//token provisoire pour tests
+		token = '$2a$08$Hx7InbxIvGPkUNOJdUVOVu65L.3WbAFEWGdLC1iCW9.7TJPFjNJWC';
+
+		createNewItem(token, newFormData)
 			.then((data) => {
 				console.log('New item created:', data);
 			})
@@ -695,7 +722,7 @@ export const ItemForm = () => {
 					</Text>
 				</View>
 				<View style={styles.buttonsContainer}>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit}>
+					<Button style={styles.buttonOutlined} mode="outlined" onPress={onSubmit}>
 						<Text style={styles.buttonText}>Poster l'annonce</Text>
 					</Button>
 
