@@ -76,6 +76,7 @@ export const SignUpForm = () => {
 					// affichage du reducer user
 					console.log('userfromreducer', user);
 					console.log('tokenFormReducer', token);
+					navigation.navigate('ConfirmationAccount');
 				} else {
 					console.log('Error', data.message || 'Sign-up failed');
 				}

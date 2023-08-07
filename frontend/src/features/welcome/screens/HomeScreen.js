@@ -5,8 +5,11 @@ import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper
 import formTheme from '../themes/FormTheme';
 
 export const HomeScreen = ({ nav }) => {
-	const handleSignUpPress = () => {
-		navigation.navigate('SignUp');
+	const handleRent = () => {
+		navigation.navigate('SearchScreen');
+	};
+	const handleAddRent = () => {
+		navigation.navigate('CheckId');
 	};
 
 	// Définissez les catégories ici
@@ -21,11 +24,23 @@ export const HomeScreen = ({ nav }) => {
 
 				{/* Affichage des boutons de catégorie */}
 				<View style={styles.buttonCategorie}>
-					{categories.map((category, index) => (
+				<TouchableOpacity key={index} style={styles.button} onPress={handleAddRent}> 
+							<Text style={styles.buttonText}>Mettre un objet en location</Text>
+						</TouchableOpacity>
+						<TouchableOpacity key={index} style={styles.button} onPress={handleRent}> 
+							<Text style={styles.buttonText}>Louer un objet</Text>
+						</TouchableOpacity>
+						<TouchableOpacity key={index} style={styles.button}>
+							<Text style={styles.buttonText}>Mes locations</Text>
+						</TouchableOpacity>
+						<TouchableOpacity key={index} style={styles.button}>
+							<Text style={styles.buttonText}>Mes annonces</Text>
+						</TouchableOpacity>
+					{/* {categories.map((category, index) => (
 						<TouchableOpacity key={index} style={styles.button}>
 							<Text style={styles.buttonText}>{category}</Text>
 						</TouchableOpacity>
-					))}
+					))} */}
 				</View>
 
 				<View style={styles.yellowBar}></View>
