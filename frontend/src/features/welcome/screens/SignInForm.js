@@ -182,6 +182,9 @@ export const SignInForm = () => {
 					<Button onPress={() => navigation.navigate('SingleProduct')}>
 						<Text> Go to SingleProduct </Text>
 					</Button>
+					<Button onPress={() => navigation.navigate('ProductForm')}>
+						<Text> Go to ProductForm </Text>
+					</Button>
 					<SignOut />
 				</ScrollView>
 			</View>

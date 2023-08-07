@@ -28,6 +28,7 @@ import FavouriteScreen from './src/features/welcome/screens/FavouriteScreen';
 import { HomeScreen } from './src/features/welcome/screens/HomeScreen';
 import MyProfileScreen from './src/features/welcome/screens/MyProfileScreen';
 import { SearchScreen } from './src/features/welcome/screens/SearchScreen';
+import { ProductFormScreen } from './src/features/welcome/screens/ProductFormScreen';
 import SettingsScreen from './src/features/welcome/screens/SettingsScreen';
 import { SignInForm } from './src/features/welcome/screens/SignInForm';
 import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
@@ -253,6 +254,13 @@ export default App = () => {
 									<Stack.Screen
 										name="SingleProduct"
 										component={SingleProductScreen}
+										options={{
+											headerShown: false,
+										}}
+									/>
+									<Stack.Screen
+										name="ProductForm"
+										component={ProductFormScreen}
 										options={{
 											headerShown: false,
 										}}

@@ -1,10 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
 import React, {useState} from 'react';
 import { ScrollView, Image, TouchableOpacity, KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
-import { Modal, Portal, Button, Provider as PaperProvider } from 'react-native-paper';
+import { Button, Provider as PaperProvider } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 
-export const SingleProductScreen = () => {
+export const ProductFormScreen = () => {
 	const navigation = useNavigation();
 	const WelcomeScreen = () => {
 		navigation.navigate('Welcome');
@@ -46,40 +46,33 @@ export const SingleProductScreen = () => {
           setSelectedPeriodIndex(index);
           };
         const numberOfStars = "3"
-        const [isModalVisible, setModalVisible] = useState(false);
-        const toggleModal = () => {
-            setModalVisible(!isModalVisible);
-          };
-          
   
         const selectedPeriod = fakeItem.periodes[selectedPeriodIndex];
   const totalCost = calculateTotalCost(
-    fakeItem.prices.day, 
+    fakeItem.prices.day, // Prix par jour en fonction de la période
     selectedPeriod.start,
     selectedPeriod.end
   );
 
 	return (
-        <PaperProvider>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-          <View style={styles.container}>
-            <View style={styles.greyRectangle}>
-              <Text style={styles.name}>{fakeItem.name} à {totalCost}€</Text>
-              <View style={styles.periodesContainer}>
+		<PaperProvider>
+			<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+				<View style={styles.container}>
+                <View style={styles.greyRectangle}>
+                <Text style={styles.name}>Vous louez : </Text>
+                <Text style={styles.name}>{fakeItem.name} à {totalCost}€</Text>
                 <Text style={styles.periodes}>Périodes de location:</Text>
-                {fakeItem.periodes.map((periode, index) => (
-                  <Text key={index} style={styles.periode}>
-                    {periode.start} à {periode.end}
-                  </Text>
-                ))}
-              </View>
-              <Button style={styles.buttonOutlined} mode="outlined" onPress={() => console.log("He clicked valider")}>
-                <Text style={styles.buttonText}>Valider la location</Text>
-              </Button>
-            </View>
-            <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-              <View style={styles.contentContainer}>
-                <View style={styles.imageContainer}>
+      {fakeItem.periodes.map((periode, index) => (
+        <Text key={index} style={styles.periode}>
+          {periode.start} à {periode.end}
+        </Text>
+      ))}
+      <Button style={styles.buttonOutlined} mode="outlined" onPress={() => console.log("He clicked valider")}>
+							<Text style={styles.buttonText}>Valider la location</Text>
+						</Button>
+				</View>
+                <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+					<View style={styles.imageContainer}>
                         
                     <Image source={require('../../../../assets/fakeImage.jpg')} style={styles.image} />
 
@@ -110,26 +103,23 @@ export const SingleProductScreen = () => {
 
 <View style={styles.infoContainer}>
 <View style={styles.infoRow}>
-  <Text style={styles.infoLabel}>Prix:</Text>
-  <Text style={styles.infoText}>
-    {fakeItem.prices.day}€ par jour{' '}
-    <Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal} />
-  </Text>
-</View>
-<Portal>
-  <Modal visible={isModalVisible} onDismiss={toggleModal} contentContainerStyle={styles.modalContainer}>
-  <Text style={styles.modalTitle}>Plus je loue, moins je paye 😀</Text>
-  <Text style={styles.modalText}>Prix par jour: {fakeItem.prices.day}€</Text>
-  <Text style={styles.modalText}>Prix par semaine: {fakeItem.prices.week}€</Text>
-    <Text style={styles.modalText}>Prix par mois: {fakeItem.prices.month}€</Text>
-    <Button style={{ marginTop:20, alignItems: 'center', backgroundColor: '#155263', color:"white" }} mode="outlined" onPress={toggleModal}>
-     <Text style={{ fontWeight:600, color:"white" }}> Fermer</Text> 
-    </Button>
-  </Modal>
-</Portal>
-
-
-<View style={styles.infoRow}>
+<Text style={styles.infoLabel}>Périodes de location:</Text>
+  {fakeItem.periodes.map((periode, index) => (
+    <View key={index} style={styles.periodeContainer}>
+      <Text style={styles.periode}>
+        {periode.start}
+      </Text>
+      <Text style={styles.periode}>
+        à
+      </Text>
+      <Text style={styles.periode}>
+        {periode.end}
+      </Text>
+    </View>
+  ))}
+    <Text style={styles.infoText}></Text>
+  </View>
+  <View style={styles.infoRow}>
     <Text style={styles.infoLabel}>État:</Text>
     <Text style={styles.infoText}>{fakeItem.etat}</Text>
   </View>
@@ -153,12 +143,13 @@ export const SingleProductScreen = () => {
   </View>
 </View>		
 
-</View>
-          </View>
-        </ScrollView>
-      </View>
-    </KeyboardAvoidingView>
-  </PaperProvider>
+					</View>
+					</ScrollView>
+				</View>
+				
+				
+			</KeyboardAvoidingView>
+		</PaperProvider>
 	);
 };
 
@@ -166,37 +157,18 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
-    modalTitle:{
-        color: '#155263',
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    modalText:{
-        fontSize: 14,
-        fontWeight: '600',
-    },
-    modalContainer:{
-        backgroundColor: 'white',
-        borderRadius: 10,
-        padding: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-  
-    },
     greyRectangle: {
-        backgroundColor: '#E2E2E2',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        marginTop: 0,
-        height: "20%",
-        alignContent: 'flex-start',
+		backgroundColor: '#E2E2E2',
+		position: 'absolute',
+		top: 0, // Changed from 'bottom: 0'
+		left: 0,
+		right: 0,
+		marginTop: 0,
+        height : "20%",
+		alignContent: 'flex-start',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 1, 
-      },
+	},
     name: {
         fontSize: 24,
         fontWeight: 'bold',
@@ -350,8 +322,4 @@ const styles = StyleSheet.create({
 		height: 35,
 		backgroundColor: '#E8E8E8',
 	},
-    scrollContainer: {
-            flex: 1,
-            marginTop: 10,
-    },
 });
