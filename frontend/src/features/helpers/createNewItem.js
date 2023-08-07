@@ -1,15 +1,14 @@
-const createNewItem = async (token, newItemData) => {
+const createNewItem = async (token, formData) => {
 	const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 	try {
 		console.log('token from createNewItem handler', token);
 
-		const response = await fetch(`https://cashetizer-backend.vercel.app/item/items`, {
+		const response = await fetch(`http://192.168.0.15:3000/item/items`, {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`,
 			},
-			body: JSON.stringify(newItemData),
+			body: formData,
 		});
 
 		if (!response.ok) {

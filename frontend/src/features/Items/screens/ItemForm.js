@@ -79,6 +79,8 @@ export const ItemForm = () => {
 	const [livePhoto, setLivePhoto] = useState('');
 	const isFocused = useIsFocused();
 	const cameraRef = useRef(null);
+
+	// USESTATE PHOTOS
 	const [photos, setPhotos] = useState([]);
 	const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
 	const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
@@ -94,7 +96,7 @@ export const ItemForm = () => {
 	useEffect(() => {
 		fetchData();
 	}, []);
-	// USER PERMISSIONS
+
 	useEffect(() => {
 		const requestCameraPermission = async () => {
 			const { status } = await Camera.requestCameraPermissionsAsync();
@@ -106,7 +108,6 @@ export const ItemForm = () => {
 		}
 	}, [isFocused]);
 
-	// TAKE PHOTO setPhotos[img1.jpg, img2.jpg]------------------------------------
 	const takePhoto = async () => {
 		if (cameraRef.current) {
 			if (photos.length >= 3) {
@@ -116,13 +117,12 @@ export const ItemForm = () => {
 
 			const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
 			setPhotos([...photos, photo.uri]);
-			// if (photos.length === 3) {
-			// 	// await uploadPhotos();?
-			// }
+			if (photos.length === 3) {
+				await uploadPhotos();
+			}
 		}
 	};
-
-	// UPLOAD PHOTO ------------------------------------
+	// UPLOAD PHOTOS TO THE FETCH ROUTE
 	// const uploadPhotos = async () => {
 	// 	try {
 	// 		for (let i = 0; i < photos.length; i++) {
@@ -133,7 +133,7 @@ export const ItemForm = () => {
 	// 				type: 'image/jpeg',
 	// 			});
 
-	// 			const response = await fetch('http://192.168.0.15:3000/Upload/Upload', {
+	// 			const response = await fetch('http://172.20.10.4:3000/Upload/Upload', {
 	// 				method: 'POST',
 	// 				body: formData,
 	// 			});
@@ -200,6 +200,7 @@ export const ItemForm = () => {
 		reset();
 	};
 
+	// useForm hook RECUPERE LES DONNÉES DU FORMULAIRE
 	const {
 		control,
 		setValue,
@@ -209,52 +210,84 @@ export const ItemForm = () => {
 	} = useForm();
 
 	// --------------------------ENVOI DU FORMULAIRE --------------------------------
-	const onSubmit = (data) => {
 
+	const onSubmit = async (data) => {
+		console.log('photos', photos);
 		try {
 			const formData = new FormData();
-	
-			// Append photos to formData
-			photos.forEach((photo, i) => {
-				formData.append('photoFromFront', {
-					uri: photo,
-					name: `photo_${i}.jpg`,
-					type: 'image/jpeg',
-				});
-			});
-	
-			// Append other data to formData
-			formData.append('data', JSON.stringify({
-				...data,
+
+			// VERIFIE SI ARRAY PHOTOS EXISTE
+			if (photos && Array.isArray(photos)) {
+				for (let i = 0; i < photos.length; i++) {
+					formData.append('photoFromFront', {
+						uri: photos[i],
+						name: `photo_${i}.jpg`,
+						type: 'image/jpeg',
+					});
+				}
+			} else {
+				console.log('pas de photos:', photos);
+			}
+
+			// Récupère les données du formulaire------------------------------
+			console.log('data----------------', getValues());
+			/// A faire attribuer
+			const { name, category, etat, localisation, remise, periodes } = getValues();
+			const payload = {
+				// ...data,
+
+				// name: data,
+				name: getValues().name,
 				category: selectedCategory,
 				etat: selectedEtat,
 				localisation: selectedLocation.location,
-				remise: selectedRemise.value,
+				remise: selectedRemise,
 				periodes: periods,
-			}));
-		// const newItemData = {
-		// 	...data,
-		// 	// address: myAddressParsed,
-		// 	category: selectedCategory,
-		// 	etat: selectedEtat,
-		// 	localisation: selectedLocation.location,
-		// 	remise: selectedRemise.value,
-		// 	periodes: periods,
-		// };
-		// console.log('newItemDataaaaa:', newItemData);
+			};
 
-		// CALL THE HELPER WITH THE NEW ITEM DATA AND THE USER TOKEN
-		//token provisoire pour tests
-		token = '$2a$08$Hx7InbxIvGPkUNOJdUVOVu65L.3WbAFEWGdLC1iCW9.7TJPFjNJWC';
+			delete payload.photos;
 
-		createNewItem(token, newFormData)
-			.then((data) => {
-				console.log('New item created:', data);
-			})
-			.catch((error) => {
-				// Handle errors here
-			});
+			for (const key in payload) {
+				formData.append(key, typeof payload[key] === 'object' ? JSON.stringify(payload[key]) : payload[key]);
+			}
+
+			//token provisoire pour tests
+			const token = '$2a$08$Hx7InbxIvGPkUNOJdUVOVu65L.3WbAFEWGdLC1iCW9.7TJPFjNJWC';
+
+			// Submit main payload
+			createNewItem(token, formData)
+				.then((data) => {
+					console.log('New item created:', data);
+				})
+				.catch((error) => {
+					console.error('Error in createNewItem:', error);
+				});
+		} catch (error) {
+			console.error('Error in onSubmit:', error);
+		}
 	};
+
+	// const onSubmit = (data) => {
+	// 	const newItemData = {
+	// 		...data,
+	// 		// address: myAddressParsed,
+	// 		category: selectedCategory,
+	// 		etat: selectedEtat,
+	// 		localisation: selectedLocation.location,
+	// 		remise: selectedRemise.value,
+	// 		periodes: periods,
+	// 	};
+	// 	console.log('newItemDataaaaa:', newItemData);
+	// 	// Call the helper function to create a new item
+
+	// 	createNewItem(token, newItemData)
+	// 		.then((data) => {
+	// 			console.log('New item created:', data);
+	// 		})
+	// 		.catch((error) => {
+	// 			// Handle errors here
+	// 		});
+	// };
 
 	//Set The Location from the map
 	const handleLocationSelected = (location, address) => {
@@ -348,33 +381,6 @@ export const ItemForm = () => {
 		<PaperProvider theme={formTheme}>
 			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<View style={styles.container}>
-					{/* // CHAMP CATEGORIE -------------------------------------------------------------------- */}
-					{/* <DropDownPicker
-						items={filteredCategories}
-						defaultValue={selectedCategory}
-						containerProps={{ style: { height: 40, width: 200 } }}
-						style={{ backgroundColor: '#fafafa' }}
-						itemStyle={{ justifyContent: 'flex-start' }}
-						dropDownContainerStyle={{ backgroundColor: '#fafafa' }}
-						onChangeItem={(item) => setSelectedCategory(item.value)}
-						labelProps={{ style: { fontSize: 14, color: 'black' } }}
-						selectedItemLabelProps={{ style: { color: 'red' } }}
-						arrowIconStyle={{ tintColor: 'black' }}
-					/> */}
-					{/* //SELECTDOWN ---------------------------------------------------------------------- */}
-					{/* <SelectDropdown
-						data={filteredCategories}
-						onSelect={(selectedItem, index) => {
-							setSelectedCategory(selectedItem);
-							console.log(selectedItem, index);
-						}}
-						buttonTextAfterSelection={(selectedItem, index) => {
-							return selectedItem.value;
-						}}
-						rowTextForSelection={(item, index) => {
-							return item.value;
-						}}
-					/> */}
 					<View style={{ width: '100%', alignSelf: 'center' }}>
 						<SelectList
 							setSelected={setSelectedCategory}
@@ -506,7 +512,7 @@ export const ItemForm = () => {
 									onChangeText={(text) => onChange(text)}
 									onBlur={onBlur}
 									value={value}
-									editable={false}
+									editable={true}
 									error={errors.name ? true : false}
 									right={<TextInput.Icon icon="camera" onPress={toggleCamera} />}
 								/>
