@@ -1,7 +1,7 @@
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Modal, Button as RNButton, StyleSheet, Text, View } from 'react-native';
 import { Button, Card, PaperProvider } from 'react-native-paper';
 import { formTheme } from '../../../../src/infrastructure/theme/themePaper';
 import { ItemCard } from '../components/ItemCard';
@@ -19,7 +19,11 @@ export const ResultScreen = ({ route }) => {
 	const [endDate, setEndDate] = useState(new Date());
 	const [showStartDatePicker, setShowStartDatePicker] = useState(false);
 	const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-	const [dateTolerance, setDateTolerance] = useState(0); // Default tolerance is 0 days
+	const [dateTolerance, setDateTolerance] = useState(0);
+	const [currentPicker, setCurrentPicker] = useState(null);
+	const formatDate = (date) => {
+		return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+	};
 
 	const onChangeStartDate = (event, selectedDate) => {
 		const currentDate = selectedDate || startDate;
@@ -108,68 +112,61 @@ export const ResultScreen = ({ route }) => {
 				{/* Start Date Picker */}
 				<View style={styles.dateFilterRow}>
 					<Button
+						style={{ minWidth: '49%' }}
 						mode="outlined"
 						compact="true"
-						buttonColor="#ccc"
-						rippleColor="green"
-						icon="calendar"
-						onPress={() => setShowStartDatePicker(true)}
+						textColor="#155263"
+						buttonColor="#FFCE52"
+						// rippleColor="green"
+						icon="calendar-range"
+						onPress={() => setCurrentPicker('start')}
 					>
-						{`Du: ${
-							startDate ? startDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Non défini'
-						}`}
+						{`Du: ${formatDate(startDate)}`}
 					</Button>
-					{showStartDatePicker && (
-						<DateTimePicker
-							testID="startDatePicker"
-							value={startDate}
-							mode="date"
-							is24Hour={true}
-							display="default"
-							onChange={onChangeStartDate}
-						/>
-					)}
 
-					{/* End Date Picker */}
 					<Button
+						style={{ minWidth: '49%' }}
 						mode="outlined"
 						compact="true"
-						buttonColor="#ccc"
-						rippleColor="green"
-						icon="calendar"
-						onPress={() => setShowEndDatePicker(true)}
+						buttonColor="#FFCE52"
+						textColor="#155263"
+						// rippleColor="green"
+						icon="calendar-range"
+						onPress={() => setCurrentPicker('end')}
 					>
-						{`Au ${endDate ? endDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Non défini'}`}
+						{`Au: ${formatDate(endDate)}`}
 					</Button>
-					{showEndDatePicker && (
-						<DateTimePicker
-							testID="endDatePicker"
-							value={endDate}
-							mode="date"
-							is24Hour={true}
-							display="default"
-							onChange={onChangeEndDate}
-						/>
-					)}
 				</View>
 				{/* Refresh items after date change */}
 				<View style={styles.dateFilterRow2}>
 					<View style={styles.rangePrecision}>
-						<Button mode="outlined" compact="true" onPress={() => setDateTolerance((prev) => Math.max(0, prev - 1))}>
-							-
-						</Button>
-						<Text>Précision {dateTolerance} days</Text>
-						<Button mode="outlined" compact="true" onPress={() => setDateTolerance((prev) => prev + 1)}>
-							+
-						</Button>
+						<Button
+							style={{ minWidth: '20%' }}
+							icon="calendar-minus"
+							textColor="#155263"
+							mode="outlined"
+							compact="true"
+							onPress={() => setDateTolerance((prev) => Math.max(0, prev - 1))}
+						></Button>
+						<Text>+/- {dateTolerance} jour(s)</Text>
+						<Button
+							textColor="#155263"
+							icon="calendar-plus"
+							style={{ minWidth: '20%' }}
+							mode="outlined"
+							compact="true"
+							onPress={() => setDateTolerance((prev) => prev + 1)}
+						></Button>
 					</View>
 					<View>
 						<Button
+							textColor="#155263"
+							style={{ minWidth: '49%' }}
 							mode="outlined"
 							compact="true"
-							buttonColor="#ccc"
-							rippleColor="green"
-							icon="calendar"
+							buttonColor="#FFCE52"
+							// rippleColor="green"
+							icon="filter"
 							onPress={() => fetchItemsByCategory(categoryName, true)}
 						>
 							Filtrer
@@ -177,6 +174,42 @@ export const ResultScreen = ({ route }) => {
 					</View>
 				</View>
 			</View>
+			{/* Modal for DateTimePicker */}
+			<Modal
+				animationType="slide"
+				transparent={true}
+				visible={currentPicker !== null}
+				onRequestClose={() => {
+					setCurrentPicker(null);
+				}}
+			>
+				<View style={styles.centeredView}>
+					<View style={styles.modalView}>
+						{currentPicker === 'start' && (
+							<DateTimePicker
+								testID="startDatePicker"
+								value={startDate}
+								mode="date"
+								is24Hour={true}
+								display="default"
+								onChange={onChangeStartDate}
+							/>
+						)}
+						{currentPicker === 'end' && (
+							<DateTimePicker
+								testID="endDatePicker"
+								value={endDate}
+								mode="date"
+								is24Hour={true}
+								display="default"
+								onChange={onChangeEndDate}
+							/>
+						)}
+						<RNButton title="Done" onPress={() => setCurrentPicker(null)} />
+					</View>
+				</View>
+			</Modal>
+
 			{/* // LISTE DE RECHERCHE */}
 			<View style={styles.container}>
 				<FlatList data={items} renderItem={renderItem} keyExtractor={(item) => item._id} />
@@ -189,6 +222,28 @@ const styles = StyleSheet.create({
 		flex: 7,
 		backgroundColor: '#F1F1F1',
 		padding: 10, // added padding
+	},
+	modalView: {
+		width: '40%', // use 80% of screen width
+		height: '20%', // use 40% of screen height
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 20,
+		alignItems: 'center',
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 4,
+		elevation: 5,
+	},
+
+	centeredView: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 	card: {
 		marginBottom: 16,
@@ -232,6 +287,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		width: '50%', // take up 70% of the container width
+		// width: '50%', // take up 70% of the container width
+		marginRight: 10,
 	},
 });
