@@ -578,7 +578,28 @@ const handleSubmit= async () => {
 
 					{/* // CHAMP MAP --------------------------------------------------------------------- */}
 
-					<View style={{ flex: 1 }}>
+					<Controller
+							name="adress"
+							control={control}
+							defaultValue=""
+							render={({ field }) => (
+								<View style={{ flex: 1 }}>
+									<TextInput
+										style={styles.textInput}
+										{...field}
+										value={field.value}
+										maxLength={6}
+										label="Veuillez saisir l'adresse où se situe votre bien"
+										mode="outlined"
+										error={errors && errors.caution}
+										right={<TextInput.Icon icon="map" />}
+										onChangeText={(text) => field.onChange(text)}
+									/>
+									{errors.caution && <HelperText type="error">{errors.caution.message}</HelperText>}
+									<Text style={{alignSelf: 'center', fontSize: 20, fontWeight: 600, color: '#155263', marginTop: 5}}> Ou </Text>
+									</View>
+							)}
+						/><View style={{ flex: 1 }}>
 						{/* Button to open the MapPicker */}
 						<Button title="Select Location" onPress={() => setMapVisible(true)} />
 						{/* Show the selected location */}
@@ -591,7 +612,8 @@ const handleSubmit= async () => {
 						{/* The MapPicker component */}
 						{/* <MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} /> */}
 					</View>
-					<View style={{ Flex: 1, fontSize: 25 }}>
+					<View style={{ Flex: 1, fontSize: 25, marginTop: -30 }}>
+		
 						<View style={{ flex: 1, alignItems: 'center', fontSize: 25 }}>
 							<Badge size={30} style={{height:40, width:'100%', alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263'}} onPress={() => setMapVisible(true)} >
 							<Ionicons style={{ marginTop: 5}}name="location" size={20} />Cliquez ici pour géolocaliser votre objet
