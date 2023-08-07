@@ -11,7 +11,7 @@ import formTheme from '../themes/FormTheme';
 export const ConfirmationAccountScreen = () => {
 	const navigation = useNavigation();
 	const WelcomeScreen = () => {
-		navigation.navigate('Welcome');
+		navigation.navigate('TabNavigator');
 	};
 	const handleNotificationPermission = async () => {
 		const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -68,12 +68,14 @@ export const ConfirmationAccountScreen = () => {
 				<View style={styles.textContainer}>
 					<Text style={styles.text}>
 						Vous pouvez dès à présent {'\n'}
-						commencer à louer à petits prix {'\n'}
-						ou à générer un revenu {'\n'}
+						commencer à
+						{/* louer à petits prix {'\n'}
+						ou à  */}
+						générer un revenu {'\n'}
 						en mettant vos produits en location!!
 					</Text>
 				</View>
-				<Button style={styles.buttonOutlined} mode="outlined" onPress={WelcomeScreen}>
+				<Button style={styles.buttonOutlined} mode="outlined" onPress={() => navigation.navigate('ItemForm')}>
 					<Text style={styles.buttonText}>Je commence l'aventure</Text>
 				</Button>
 			</View>

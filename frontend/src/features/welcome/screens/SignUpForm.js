@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import CheckBox from 'expo-checkbox';
 import React, { useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
@@ -13,6 +14,7 @@ import formTheme from '../themes/FormTheme';
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const SignUpForm = () => {
+	const navigation = useNavigation();
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.value);
 	const token = useSelector((state) => state.user.token);
@@ -76,6 +78,7 @@ export const SignUpForm = () => {
 					// affichage du reducer user
 					console.log('userfromreducer', user);
 					console.log('tokenFormReducer', token);
+					navigation.navigate('ConfirmationAccount');
 				} else {
 					console.log('Error', data.message || 'Sign-up failed');
 				}

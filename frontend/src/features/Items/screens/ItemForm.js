@@ -5,11 +5,13 @@ import CheckBox from 'expo-checkbox';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { Controller, useController, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Autocomplete from 'react-native-autocomplete-input';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { TextInputMask } from 'react-native-masked-text';
+
+import { Ionicons } from '@expo/vector-icons';
 import {
 	Badge,
 	Button,
@@ -23,26 +25,21 @@ import {
 	Surface,
 	TextInput,
 } from 'react-native-paper';
-import DropDown from 'react-native-paper-dropdown';
 import SelectDropdown from 'react-native-select-dropdown';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData, setToken, setUser } from '../../../../reducers/user';
 import formTheme from '../../../features/welcome/themes/FormTheme';
+import PhotoViewerModal from '../../helpers/PhotoViewerModal';
 import { parseAddress } from '../../helpers/addressHelper';
 import { createNewItem } from '../../helpers/createNewItem';
 import { fetchCategories } from '../../helpers/fetchCategories';
 import DatePicker from '../components/DatePicker';
 import { MapPicker } from '../components/MapPicker';
-import { MultichoiceField } from '../components/MultichoiceField';
 const SERVER_URL = process.env.SERVER_URL;
 
 export const ItemForm = () => {
-	const [colors, setColors] = useState('');
-	const [showDropDown, setShowDropDown] = useState(false);
-	const [gender, setGender] = useState('');
-	const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
 	// GOOGLE PLACES
 	const [isMapVisible, setMapVisible] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState(null);
@@ -82,10 +79,17 @@ export const ItemForm = () => {
 	const [livePhoto, setLivePhoto] = useState('');
 	const isFocused = useIsFocused();
 	const cameraRef = useRef(null);
+	const [photos, setPhotos] = useState([]);
+	const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
+	const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+
 	// Filter out objects with undefined values
 
 	// A DEPLACER DANS LE HELPER CategoriesAutocomplete
 	const filteredCategories = categories.filter((category) => category.value !== undefined);
+	const showAlert = (message) => {
+		alert(message);
+	};
 
 	useEffect(() => {
 		fetchData();
@@ -104,36 +108,51 @@ export const ItemForm = () => {
 
 	const takePhoto = async () => {
 		if (cameraRef.current) {
+			if (photos.length >= 3) {
+				showAlert('Vous êtes limités à 3 photos maximum');
+				return;
+			}
+
 			const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
-			setLivePhoto(photo.uri);
-			setShowCamera(false);
+			setPhotos([...photos, photo.uri]);
+			if (photos.length === 3) {
+				await uploadPhotos();
+			}
+		}
+	};
 
-			// Prepare the form data to send the photo to the server
-			const formData = new FormData();
-			formData.append('photoFromFront', {
-				uri: photo.uri,
-				name: 'photo.jpg',
-				type: 'image/jpeg',
-			});
+	const uploadPhotos = async () => {
+		try {
+			for (let i = 0; i < photos.length; i++) {
+				const formData = new FormData();
+				formData.append('photoFromFront', {
+					uri: photos[i],
+					name: `photo_${i}.jpg`,
+					type: 'image/jpeg',
+				});
 
-			try {
-				const response = await fetch(`https://cashetizer-backend.vercel.app/Upload`, {
+				const response = await fetch('http://172.20.10.4:3000/Upload/Upload', {
 					method: 'POST',
 					body: formData,
 				});
 
 				const data = await response.json();
 
-				if (data.result && data.url) {
-					setLivePhoto(data.url);
-					console.log('Image téléchargée avec succès:', data.url);
+				if (data.result && data.urls && data.urls.length > 0) {
+					console.log(`Image ${i + 1} téléchargée avec succès:`, data.urls[data.urls.length - 1]);
 				} else {
-					console.log('Référence à la caméra invalide.');
+					console.log(`Erreur lors du téléchargement de l'image ${i + 1}. Référence à la caméra invalide.`);
 				}
-			} catch (error) {
-				console.error('Error uploading photo:', error);
 			}
+		} catch (error) {
+			console.error('Error uploading photos:', error);
 		}
+	};
+
+	const handleSubmit = async () => {
+		console.log('Uploading');
+		setIsButtonClicked(true);
+		await uploadPhotos();
 	};
 
 	const toggleCamera = () => {
@@ -147,13 +166,14 @@ export const ItemForm = () => {
 		setCameraType((prevCameraType) => (prevCameraType === CameraType.front ? CameraType.back : CameraType.front));
 	};
 
-	// FETCH TOUTES LES CATEGORIES DEPUIS LE BACKEND IMPORT DU HELPER fetchCategories()
 	const fetchData = async () => {
 		try {
-			const data = await fetchCategories();
-
+			const data = await fetchCategories(); // Use the helper function
+			// console.log('from thefetch in form', data)
 			setCategories(data);
-		} catch (error) {}
+		} catch (error) {
+			// Handle the error if needed
+		}
 	};
 
 	const handleSelectCategories = (suggestion) => {
@@ -179,7 +199,6 @@ export const ItemForm = () => {
 	};
 
 	const {
-		handleSubmit,
 		control,
 		setValue,
 		formState: { errors },
@@ -195,7 +214,7 @@ export const ItemForm = () => {
 			category: selectedCategory,
 			etat: selectedEtat,
 			localisation: selectedLocation.location,
-			remise: selectedRemise,
+			remise: selectedRemise.value,
 			periodes: periods,
 		};
 		console.log('newItemDataaaaa:', newItemData);
@@ -226,10 +245,11 @@ export const ItemForm = () => {
 
 	// AUTOCOMPLETE A A DEPLACER ICI
 	const data = [
-		{ name: 'Très usé', id: '1' },
-		{ name: 'Usé', id: '2' },
-		{ name: 'Bon état', id: '3' },
-		{ name: 'Neuf', id: '4' },
+		{ name: 'Neuf', id: '1' },
+		{ name: 'Bon état', id: '2' },
+		{ name: 'Acceptable', id: '3' },
+		{ name: 'Usé', id: '4' },
+		{ name: 'Très usé', id: '5' },
 	];
 
 	const findItem = (query) => {
@@ -242,10 +262,11 @@ export const ItemForm = () => {
 	};
 
 	const dataSelectList = [
-		{ key: 'bad', value: 'Très usé' },
-		{ key: 'used', value: 'Usé' },
-		{ key: 'good', value: 'Bon état' },
 		{ key: 'new', value: 'Neuf' },
+		{ key: 'good', value: 'Bon état' },
+		{ key: 'ok', value: 'Acceptable' },
+		{ key: 'used', value: 'Usé' },
+		{ key: 'veryused', value: 'Très usé' },
 	];
 
 	const dataModeRemise = [
@@ -255,25 +276,63 @@ export const ItemForm = () => {
 		// { key: '4', value: 'Neuf' },
 	];
 
+	const deletePhoto = (index) => {
+		const updatedPhotos = [...photos];
+		updatedPhotos.splice(index, 1);
+		setPhotos(updatedPhotos);
+	};
+
+	const openPhotoViewer = (index) => {
+		setCurrentPhotoIndex(index);
+		setPhotoViewerVisible(true);
+	};
+
+	const closePhotoViewer = () => {
+		setPhotoViewerVisible(false);
+	};
+
+	const handleNext = () => {
+		setCurrentPhotoIndex((prevIndex) => (prevIndex === photos.length - 1 ? 0 : prevIndex + 1));
+	};
+
+	const handlePrev = () => {
+		setCurrentPhotoIndex((prevIndex) => (prevIndex === 0 ? photos.length - 1 : prevIndex - 1));
+	};
+
+	/* 	 const renderPhotos = () => {
+    return photos.map((photo, index) => (
+      <TouchableOpacity key={index} onPress={() => openPhotoViewer(index)}>
+        <Image source={{ uri: photo }} style={{ width: 100, height: 100, marginBottom: 10 }} />
+      </TouchableOpacity>
+    ));
+  }; */
+	const renderPhotos = () => {
+		return photos.map((photo, index) => (
+			<TouchableOpacity key={index} onPress={() => openPhotoViewer(index)}>
+				<Image source={{ uri: photo }} style={{ width: 100, aspectRatio: 2 / 3, marginBottom: 10 }} />
+				<TouchableOpacity onPress={() => deletePhoto(index)}>
+					<Ionicons style={{ color: 'red', textAlign: 'center', marginTop: -5, marginBottom: 10 }} name="trash-bin-outline" size={20} />
+				</TouchableOpacity>
+			</TouchableOpacity>
+		));
+	};
+
 	return (
 		<PaperProvider theme={formTheme}>
-			<View></View>
 			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<View style={styles.container}>
 					{/* // CHAMP CATEGORIE -------------------------------------------------------------------- */}
-					{/* <DropDown
-						label={'Colors'}
-						mode={'outlined'}
-						visible={showMultiSelectDropDown}
-						showDropDown={() => setShowMultiSelectDropDown(true)}
-						onDismiss={() => setShowMultiSelectDropDown(false)}
-						value={selectedRemise}
-						setValue={setSelectedRemise}
-						list={dataModeRemise2}
-						placeholder={'Sélectionnez une catégorie...'}
-						dropDownStyle={'ViewStyle'}
-
-						// multiSelect
+					{/* <DropDownPicker
+						items={filteredCategories}
+						defaultValue={selectedCategory}
+						containerProps={{ style: { height: 40, width: 200 } }}
+						style={{ backgroundColor: '#fafafa' }}
+						itemStyle={{ justifyContent: 'flex-start' }}
+						dropDownContainerStyle={{ backgroundColor: '#fafafa' }}
+						onChangeItem={(item) => setSelectedCategory(item.value)}
+						labelProps={{ style: { fontSize: 14, color: 'black' } }}
+						selectedItemLabelProps={{ style: { color: 'red' } }}
+						arrowIconStyle={{ tintColor: 'black' }}
 					/> */}
 					{/* //SELECTDOWN ---------------------------------------------------------------------- */}
 					{/* <SelectDropdown
@@ -291,12 +350,10 @@ export const ItemForm = () => {
 					/> */}
 					<View style={{ width: '100%', alignSelf: 'center' }}>
 						<SelectList
-							style={styles.selectList}
 							setSelected={setSelectedCategory}
-							// onSelect={() => alert(selectedCategory)}
 							data={filteredCategories}
 							value={selectedCategory}
-							label={'Select'}
+							placeholder="Choisissez une catégorie"
 						/>
 					</View>
 
@@ -305,7 +362,6 @@ export const ItemForm = () => {
 						control={control}
 						render={({ field: { onChange, onBlur, value } }) => (
 							<TextInput
-								style={styles.textInput}
 								label="Titre"
 								mode="outlined"
 								onChangeText={(text) => onChange(text)}
@@ -323,11 +379,11 @@ export const ItemForm = () => {
 						control={control}
 						render={({ field: { onChange, onBlur, value } }) => (
 							<TextInput
-								style={styles.textArea}
-								label="Description"
+								label="Décrivez votre objet ici en quelques mots"
 								mode="outlined"
 								multiline={true}
 								numberOfLines={5}
+								style={{ height: 100, paddingVertical: 10 }}
 								onChangeText={(text) => onChange(text)}
 								onBlur={onBlur}
 								value={value}
@@ -339,15 +395,17 @@ export const ItemForm = () => {
 						defaultValue=""
 					/>
 					{/* // CHAMP ETAT DE L'OBJET --------------------------------------------------------------------- */}
-					<View style={{ width: '100%', alignSelf: 'center' }}>
-						<SelectList setSelected={setSelectedEtat} data={dataSelectList} value={selectedEtat} />
+					<View style={styles.etatContainer}>
+						<SelectList
+							setSelected={setSelectedEtat}
+							data={dataSelectList}
+							value={selectedEtat}
+							placeholder="Dans quel état est votre objet?"
+						/>
 					</View>
 					{/* // ROW CONTAINER -------------------------------------------------------------------- */}
 					<View style={styles.rowContainer}>
 						{/* // CHAMP PRIX ---------------------------------------------------------------- */}
-						{/* <View>
-							<MultichoiceField control={control} />
-						</View> */}
 						<Controller
 							name="prices"
 							control={control}
@@ -421,6 +479,7 @@ export const ItemForm = () => {
 									onChangeText={(text) => onChange(text)}
 									onBlur={onBlur}
 									value={value}
+									editable={false}
 									error={errors.name ? true : false}
 									right={<TextInput.Icon icon="camera" onPress={toggleCamera} />}
 								/>
@@ -429,8 +488,25 @@ export const ItemForm = () => {
 							rules={{ required: 'Vous devez poster au moins une photo de votre objet' }}
 							defaultValue=""
 						/>
+						<View style={styles.photosContainer}>
+							{/* Display the existing photos */}
+							{renderPhotos()}
+							<Button title="Prendre une photo" onPress={takePhoto} />
+
+							{/* PhotoViewerModal */}
+							<PhotoViewerModal
+								visible={photoViewerVisible}
+								photos={photos}
+								currentIndex={currentPhotoIndex}
+								onClose={closePhotoViewer}
+								onNext={handleNext}
+								onPrev={handlePrev}
+								onDelete={deletePhoto}
+								setPhotos={setPhotos}
+							/>
+						</View>
 						{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
-						<Surface style={styles.surface} elevation={0}>
+						<Surface style={styles.surface} elevation={1}>
 							{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
 							{/* <Controller
 							control={control}
@@ -450,13 +526,29 @@ export const ItemForm = () => {
 							rules={{ required: '' }}
 							defaultValue="" 
 						/> */}
-							<View style={{ flex: 1, minWidth: '100%', justifyContent: 'center', alignItems: 'center', paddingTop: 10 }}>
+							<View
+								style={{
+									flex: 1,
+									marginTop: -10,
+									minWidth: '100%',
+									backgroundColor: '#FFCE52',
+									justifyContent: 'center',
+									alignItems: 'center',
+									paddingTop: 5,
+									borderRadius: 50,
+								}}>
 								<Badge
-									size="30"
-									icon="camera"
-									style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}
+									size={30}
+									icon="calendar"
+									style={{
+										paddingHorizontal: 5,
+										alignSelf: 'center',
+										backgroundColor: '#FFCE52',
+										color: '#155263',
+										fontWeight: 600,
+									}}
 									onPress={() => setDatePickerVisible(true)}>
-									Periode de disponibilité
+									<Icon style={{ marginLeft: -10 }} name="calendar" size={25} /> Remplissez le calendrier de disponibilité
 								</Badge>
 
 								<DatePicker isVisible={isDatePickerVisible} onClose={() => setDatePickerVisible(false)} onAddPeriod={addPeriod} />
@@ -482,11 +574,10 @@ export const ItemForm = () => {
 
 											<Button
 												icon="delete"
+												mode="elevated"
 												compact="false"
-												style={{ paddingHorizontal: 5, margin: 5 }}
-												onPress={() => deletePeriod(index)}>
-												Delete
-											</Button>
+												style={{ paddingHorizontal: 0 }}
+												onPress={() => deletePeriod(index)}></Button>
 										</View>
 									))}
 								</ScrollView>
@@ -496,6 +587,28 @@ export const ItemForm = () => {
 
 					{/* // CHAMP MAP --------------------------------------------------------------------- */}
 
+					<Controller
+						name="adress"
+						control={control}
+						defaultValue=""
+						render={({ field }) => (
+							<View style={{ flex: 1 }}>
+								<TextInput
+									style={styles.textInput}
+									{...field}
+									value={field.value}
+									maxLength={6}
+									label="Veuillez saisir l'adresse où se situe votre bien"
+									mode="outlined"
+									error={errors && errors.caution}
+									right={<TextInput.Icon icon="map" />}
+									onChangeText={(text) => field.onChange(text)}
+								/>
+								{errors.caution && <HelperText type="error">{errors.caution.message}</HelperText>}
+								<Text style={{ alignSelf: 'center', fontSize: 20, fontWeight: 600, color: '#155263', marginTop: 5 }}> Ou </Text>
+							</View>
+						)}
+					/>
 					<View style={{ flex: 1 }}>
 						{/* Button to open the MapPicker */}
 						<Button title="Select Location" onPress={() => setMapVisible(true)} />
@@ -509,20 +622,21 @@ export const ItemForm = () => {
 						{/* The MapPicker component */}
 						{/* <MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} /> */}
 					</View>
-					<View style={{ Flex: 1, fontSize: 25 }}>
-						<View tyle={{ flex: 1, alignItems: 'center', fontSize: 25 }}>
-							<Badge size="30" style={{ paddingHorizontal: 10, alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}>
-								Localisation de votre objet
+					<View style={{ Flex: 1, fontSize: 25, marginTop: -30 }}>
+						<View style={{ flex: 1, alignItems: 'center', fontSize: 25 }}>
+							<Badge
+								size={30}
+								style={{ height: 40, width: '100%', alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}
+								onPress={() => setMapVisible(true)}>
+								<Ionicons style={{ marginTop: 5 }} name="location" size={20} />
+								Cliquez ici pour géolocaliser votre objet
 							</Badge>
 						</View>
 					</View>
 					<MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} />
-					<View style={{ flex: 1, alignSelf: 'center' }}>
-						<IconButton icon="map" size={30} onPress={() => setMapVisible(true)} />
-					</View>
-					<View style={{ flex: 1, alignSelf: 'center' }}>
+					<View style={{ flex: 1, alignSelf: 'center', marginTop: 10 }}>
 						{selectedLocation ? (
-							<Badge size="30" style={{ paddingHorizontal: 20 }}>
+							<Badge size={30} style={{ paddingHorizontal: 20 }}>
 								{selectedLocation.address}
 							</Badge>
 						) : (
@@ -533,7 +647,12 @@ export const ItemForm = () => {
 
 				{/* // CHAMP MODE DE REMISE ---------------------------------------------------------------- */}
 				<View style={{ width: '90%', alignSelf: 'center' }}>
-					<SelectList setSelected={setSelectedRemise} data={dataModeRemise} value={selectedRemise} />
+					<SelectList
+						setSelected={setSelectedRemise}
+						data={dataModeRemise}
+						value={selectedRemise}
+						placeholder="Choisissez le(s) mode(s) de remise?"
+					/>
 				</View>
 
 				<View style={{ flexDirection: 'row', alignSelf: 'center' }}>
@@ -576,7 +695,7 @@ export const ItemForm = () => {
 					</Text>
 				</View>
 				<View style={styles.buttonsContainer}>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
+					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit}>
 						<Text style={styles.buttonText}>Poster l'annonce</Text>
 					</Button>
 
@@ -607,19 +726,22 @@ const styles = StyleSheet.create({
 		alignItems: 'space-between',
 		justifyContent: 'flex-start',
 	},
+	etatContainer: {
+		marginTop: 5,
+	},
 	pickerSelect: {
 		height: 150,
 		fontSize: 8,
 	},
 	inputInRow: {
 		flex: 1,
-		marginRight: 15,
-		marginLeft: 15,
+		marginRight: 10,
+		marginLeft: 10,
 		fontSize: 12,
 		height: 35,
 		backgroundColor: '#E8E8E8',
 	},
-	buttonsContainer: {
+	uttonsContainer: {
 		flex: 1,
 		alignContent: 'flex-end',
 		marginTop: 10,
@@ -631,15 +753,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		width: '100%',
 		alignSelf: 'center',
-	},
-	textArea: {
-		height: 100,
-		paddingVertical: 10,
-		backgroundColor: '#E8E8E8',
-		paddingVertical: 1,
-		paddingHorizontal: 1,
-		fontSize: 12,
-		marginBottom: 5,
+		margin: 12,
 	},
 	buttonText: {
 		color: 'white',
@@ -664,13 +778,30 @@ const styles = StyleSheet.create({
 		marginLeft: 8,
 		fontSize: 14,
 	},
-
+	surface: {
+		backgroundColor: 'transparent',
+	},
 	selectList: {
 		flex: 1,
 		fontSize: 10,
 		height: 25,
-		marginBottom: 10,
 		backgroundColor: '#E8E8E8',
+	},
+	photosContainer: {
+		marginTop: 10,
+		marginLeft: 30,
+		width: '100%',
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		borderColor: '#ccc',
+		padding: 0,
+	},
+	photoViewerModalContainer: {
+		width: 100,
+		height: 400,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	passwordContainer: {
 		flexDirection: 'row',
