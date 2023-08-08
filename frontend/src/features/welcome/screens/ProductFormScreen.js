@@ -1,14 +1,21 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import CheckBox from 'expo-checkbox';
 import React, { useState } from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-
 import { Button, Modal, Provider as PaperProvider, Portal } from 'react-native-paper';
-import PhotoViewerModal from '../../helpers/PhotoViewerModal';
+import { useSelector } from 'react-redux';
 
-export const SingleProductScreen = ({ route }) => {
-	console.log('photos---------------------', route.params.item.localisation);
+export const ProductFormScreen = ({ route }) => {
+	const navigation = useNavigation();
+	const SignInScreen = () => {
+		navigation.navigate('SignIn');
+	};
+
+	const user = useSelector((state) => state.user.value);
+
+	console.log(user);
+
 	const item = {
 		name: route.params.item.name,
 		ownerId: route.params.item.ownerId._id,
@@ -21,39 +28,8 @@ export const SingleProductScreen = ({ route }) => {
 		category: route.params.item.category.name,
 		distance: route.params.distanceKm,
 		localisation: route.params.item.localisation,
+		description: route.params.item.description.details,
 	};
-
-	// FROM ITEM CARD
-	// const [item, setItem] = useState(route.params);
-	// console.log(item.periodes);
-
-	// // const periodes = item.periodes.map((item) => {
-	// // 	{
-	// // 		start: item.periode.start;
-	// // 		end: item.periode.end;
-	// // 	}
-	// });
-	// console.log('useState ---------------------------', item);
-	const navigation = useNavigation();
-
-	const SignInScreen = () => {
-		navigation.navigate('SignIn');
-	};
-	const fakeItem = {
-		ownerId: '12345',
-		name: item.name,
-		// description: item.item.description,
-
-		photos: [item.photos],
-		etat: item.etat,
-		prices: item.prices,
-		caution: item.caution,
-		category: item.category.name,
-		localisation: 'Paris, France',
-		periodes: [item.periodes],
-	};
-
-	console.log(item.periodes);
 
 	const periodes = item.periodes.map((periode, index) => {
 		const startDate = new Date(periode.start).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -61,10 +37,30 @@ export const SingleProductScreen = ({ route }) => {
 
 		return (
 			<Text key={index} style={styles.periode}>
-				{startDate} à {endDate}
+				{startDate} au {endDate}
 			</Text>
 		);
 	});
+
+	const fakeItem = {
+		ownerId: item.Username,
+		name: item.name,
+		description: item.description,
+		photos: ['/Users/meon/Downloads/Cashetizer/cashetizer-frontend/frontend/assets/fakeImage.jpg'],
+		etat: 'Excellent',
+		prices: {
+			day: 15,
+			week: 90,
+			month: 300,
+		},
+		caution: 50,
+		category: 'Electronics',
+		localisation: 'Paris, France',
+		periodes: [
+			{ start: '2023-08-01', end: '2023-08-07' },
+			{ start: '2023-08-10', end: '2023-08-20' },
+		],
+	};
 
 	const calculateDays = (startDate, endDate) => {
 		const start = new Date(startDate);
@@ -78,7 +74,10 @@ export const SingleProductScreen = ({ route }) => {
 		return pricePerDay * days;
 	};
 	const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(0);
-
+	const [acceptedTerms, setAcceptedTerms] = useState(false);
+	const toggleTermsAcceptance = () => {
+		setAcceptedTerms(!acceptedTerms);
+	};
 	const handlePeriodChange = (index) => {
 		setSelectedPeriodIndex(index);
 	};
@@ -89,7 +88,7 @@ export const SingleProductScreen = ({ route }) => {
 	};
 
 	const selectedPeriod = fakeItem.periodes[selectedPeriodIndex];
-	const totalCost = calculateTotalCost(item.prices.perDay, selectedPeriod.start, selectedPeriod.end);
+	const totalCost = calculateTotalCost(fakeItem.prices.day, selectedPeriod.start, selectedPeriod.end);
 	const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
 	const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
 
@@ -101,22 +100,28 @@ export const SingleProductScreen = ({ route }) => {
 	const closePhotoViewer = () => {
 		setPhotoViewerVisible(false);
 	};
+	const openPrivacyPolicyPage = () => {
+		console.log('openPrivacyPolicyPage');
+	};
+	const openTermsPage = () => {
+		console.log('openTermsage');
+	};
 
 	return (
 		<PaperProvider>
 			<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
 				<View style={styles.container}>
-					<Modal visible={photoViewerVisible} transparent={true}>
-						<PhotoViewerModal
-							visible={photoViewerVisible}
-							photos={item.photos}
-							currentIndex={selectedPhotoIndex}
-							onClose={closePhotoViewer}
-							onNext={() => setSelectedPhotoIndex(selectedPhotoIndex + 1)}
-							onPrev={() => setSelectedPhotoIndex(selectedPhotoIndex - 1)}
-							showDeleteIcon={false}
-						/>
-					</Modal>
+					{/*  <Modal visible={photoViewerVisible} transparent={true}>
+        <PhotoViewerModal
+          visible={photoViewerVisible}
+          photos={fakeItem.photos}
+          currentIndex={selectedPhotoIndex}
+          onClose={closePhotoViewer}
+          onNext={() => setSelectedPhotoIndex(selectedPhotoIndex + 1)}
+          onPrev={() => setSelectedPhotoIndex(selectedPhotoIndex - 1)}
+          showDeleteIcon={false} 
+        />
+      </Modal> */}
 					<View style={styles.greyRectangle}>
 						<Text style={styles.name}>
 							{fakeItem.name} à {totalCost}€
@@ -124,24 +129,22 @@ export const SingleProductScreen = ({ route }) => {
 						<View style={styles.periodesContainer}>
 							<Text style={styles.periodes}>Périodes de location:</Text>
 							{periodes}
+							{/* {fakeItem.periodes.map((periode, index) => (
+								<Text key={index} style={styles.periode}>
+									{periode.start} à {periode.end}
+								</Text>
+							))} */}
 						</View>
-						<Button style={styles.buttonOutlined} mode="outlined" onPress={SignInScreen}>
-							<Text style={styles.buttonText}>Valider la location</Text>
-						</Button>
+						{/*  <Button style={styles.buttonOutlined} mode="outlined" onPress={SignInScreen}>
+                <Text style={styles.buttonText}>Valider la location</Text>
+              </Button> */}
 					</View>
 					<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 						<View style={styles.contentContainer}>
 							<View style={styles.imageContainer}>
-								<TouchableOpacity onPress={() => openPhotoViewer(0)}>
-									<Image
-										source={{
-											uri: item.photos[0],
-											width: 200,
-											height: 200,
-										}}
-										style={styles.image}
-									/>
-								</TouchableOpacity>
+								{/* <TouchableOpacity onPress={() => openPhotoViewer(0)}>
+                <Image source={require('../../../../assets/fakeImage.jpg')} style={styles.image} />
+      </TouchableOpacity> */}
 
 								{/* <Image source={{ uri: fakeItem.photos[0] }} style={styles.image} /> */}
 
@@ -154,27 +157,34 @@ export const SingleProductScreen = ({ route }) => {
 											))}
 										</View>
 									</View>
-									<View style={{ marginTop: -10 }}>
-										<Text>À {Number(item.distance).toFixed(2)} km</Text>
-										<Text style={{ color: 'green', fontWeight: 500 }}>Disponible</Text>
-									</View>
 								</View>
-								<Text style={styles.description}>{fakeItem.description}</Text>
 
 								<View style={styles.infoContainer}>
 									<View style={styles.infoRow}>
-										<Text style={styles.infoLabel}>Prix:</Text>
+										<Text style={styles.infoLabel}>Locataire:</Text>
+										<Text style={styles.infoText}>Aicha Ahamada</Text>
+									</View>
+									<View style={styles.infoRow}>
+										<Text style={styles.infoLabel}>Durée de location:</Text>
 										<Text style={styles.infoText}>
-											{item.prices.perDay}€ par jour{' '}
-											<Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal} />
+											{calculateDays(selectedPeriod.start, selectedPeriod.end)}{' '}
+											{calculateDays(selectedPeriod.start, selectedPeriod.end) <= 1 ? 'jour' : 'jours'}
 										</Text>
 									</View>
+									<View style={styles.infoRow}>
+										<Text style={styles.infoLabel}>Prix par jour :</Text>
+										<Text style={styles.infoText}>{fakeItem.prices.day}€ </Text>
+									</View>
+
 									<Portal>
 										<Modal visible={isModalVisible} onDismiss={toggleModal} contentContainerStyle={styles.modalContainer}>
-											<Text style={styles.modalTitle}>Plus je loue, moins je paye 😀</Text>
-											<Text style={styles.modalText}>Prix par jour: {item.prices.perDay}€</Text>
-											<Text style={styles.modalText}>Prix par semaine: {fakeItem.prices.week}€</Text>
-											<Text style={styles.modalText}>Prix par mois: {fakeItem.prices.month}€</Text>
+											<Text style={styles.modalTitle}>Protégez comme la prunelle de vos yeux </Text>
+											<Text style={styles.modalText}>
+												Une usure normale est acceptable mais un dommage du bien d'autrui demande compensation. C'est pourquoi
+												cette caution vous sera restitué lors de l'inspection du retour de matériel, entre vous et le
+												propriétaire.
+											</Text>
+
 											<Button
 												style={{ marginTop: 20, alignItems: 'center', backgroundColor: '#155263', color: 'white' }}
 												mode="outlined"
@@ -185,24 +195,25 @@ export const SingleProductScreen = ({ route }) => {
 									</Portal>
 
 									<View style={styles.infoRow}>
-										<Text style={styles.infoLabel}>État:</Text>
-										<Text style={styles.infoText}>{fakeItem.etat}</Text>
+										<Text style={styles.infoLabel}>Prix total:</Text>
+										<Text style={styles.infoText}>{totalCost}€</Text>
 									</View>
+
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Caution:</Text>
-										<Text style={styles.infoText}>{fakeItem.caution}€</Text>
+										<Text style={styles.infoText}>
+											{fakeItem.caution}€{' '}
+											<Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal} />
+										</Text>
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Mode de remise:</Text>
 										<Text style={styles.infoText}>En personne</Text>
 									</View>
 									<View style={styles.infoRow}>
-										<Text style={styles.infoLabel}>Vendeur:</Text>
-										<TouchableOpacity onPress={() => console.log('Nelson clicked')}>
-											<Text style={styles.linkText}>{item.ownerUSername} </Text>
-										</TouchableOpacity>
+										<Text style={styles.infoLabel}>Loueur:</Text>
+										<Text style={styles.infoText}>Nelson {fakeItem.ownerId}</Text>
 									</View>
-
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Localisation:</Text>
 										<TouchableOpacity onPress={() => console.log('Nelson lives in Paris')}>
@@ -213,24 +224,34 @@ export const SingleProductScreen = ({ route }) => {
 										</TouchableOpacity>
 									</View>
 								</View>
-								<View style={{ flex: 1 }}>
-									{/* <MapView
-										style={{ flex: 1, width: '100%', height: 200 }}
-										initialRegion={{
-											latitude: 48.8566,
-											longitude: 2.3522,
-											latitudeDelta: 0.0922,
-											longitudeDelta: 0.0421,
-										}}>
-										<MapView.Marker
-											coordinate={{ latitude: 48.8566, longitude: 2.3522 }}
-											title={item.name}
-											description={item.localisation}
-										/>
-									</MapView> */}
-								</View>
 							</View>
 						</View>
+
+						<View style={styles.checkboxContainer}>
+							<CheckBox value={acceptedTerms} onValueChange={toggleTermsAcceptance} />
+							<Text style={styles.checkboxLabel}>
+								{" J'accepte les "}
+								<TouchableOpacity onPress={openTermsPage}>
+									<Text style={styles.clickableText}>conditions de location</Text>
+								</TouchableOpacity>
+								{' et le '}
+								<TouchableOpacity onPress={openPrivacyPolicyPage}>
+									<Text style={styles.clickableText}>réglement d'utilisation</Text>
+								</TouchableOpacity>
+								{'de Cashetizer industry.'}
+							</Text>
+						</View>
+						<View style={styles.buttonContainer}>
+							<Button style={[styles.buttonOutlined, styles.paypalButton]} mode="outlined" onPress={SignInScreen}>
+								<Image source={require('../../../../assets/paypalLogo.png')} style={styles.paypalLogo} />
+							</Button>
+							<Button style={[styles.buttonOutlined, styles.cbButton]} mode="outlined" onPress={SignInScreen}>
+								<Image source={require('../../../../assets/LogoCB.png')} style={styles.paypalLogo} />
+							</Button>
+						</View>
+						<Button style={styles.buttonOutlined} mode="outlined" onPress={SignInScreen}>
+							<Text style={styles.buttonText}>Confirmer la location</Text>
+						</Button>
 					</ScrollView>
 				</View>
 			</KeyboardAvoidingView>
@@ -241,6 +262,21 @@ export const SingleProductScreen = ({ route }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+	},
+	clickableText: {
+		color: 'blue',
+		textDecorationLine: 'underline',
+	},
+	checkboxContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		margin: 20,
+		marginBottom: 10,
+	},
+	checkboxLabel: {
+		margin: 5,
+		marginRight: 10,
+		fontSize: 14,
 	},
 	modalTitle: {
 		color: '#155263',
@@ -270,7 +306,6 @@ const styles = StyleSheet.create({
 		alignContent: 'flex-start',
 		alignItems: 'center',
 		justifyContent: 'center',
-		zIndex: 1,
 	},
 	name: {
 		fontSize: 24,
@@ -282,11 +317,11 @@ const styles = StyleSheet.create({
 
 	imageContainer: {
 		width: '85%',
-		marginTop: 30,
+		marginTop: 0,
 		alignSelf: 'center',
 	},
 	image: {
-		width: '100%',
+		width: '20%',
 		resizeMode: 'contain',
 	},
 	textContainer: {
@@ -335,7 +370,7 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 		borderRadius: 10,
 		padding: 5,
-		marginTop: 10,
+		marginTop: 240,
 	},
 	infoRow: {
 		flexDirection: 'row',
@@ -365,23 +400,18 @@ const styles = StyleSheet.create({
 		color: '#155263',
 		fontWeight: '400',
 	},
+
 	buttonsContainer: {
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		marginTop: 60,
-	},
-	buttonsContainer: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		marginTop: 60,
+		marginTop: 40,
 	},
 	buttonText: {
 		color: 'white',
 		textAlign: 'center',
 		fontWeight: 'bold',
-		fontSize: 22,
+		fontSize: 20,
 	},
 	buttonOutlined: {
 		backgroundColor: '#FFCE52',
@@ -390,6 +420,29 @@ const styles = StyleSheet.create({
 		width: '80%',
 		alignSelf: 'center',
 		margin: 10,
+	},
+	paypalButton: {
+		backgroundColor: 'white',
+		borderColor: '#155263',
+		width: '40%',
+	},
+	cbButton: {
+		backgroundColor: '#155263',
+		borderColor: '#155263',
+		width: '40%',
+	},
+
+	paypalLogo: {
+		width: 90,
+		height: 50,
+		// resizeMode: 'contain',
+	},
+
+	buttonContainer: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingHorizontal: 20,
+		marginTop: 10,
 	},
 	buttonGreenOutlined: {
 		margin: 10,

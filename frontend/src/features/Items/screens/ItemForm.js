@@ -244,6 +244,8 @@ export const ItemForm = () => {
 				localisation: selectedLocation.location,
 				remise: selectedRemise,
 				periodes: periods,
+				prices: prices,
+				caution: caution,
 			};
 			console.log('formData-----------------------------', formData);
 			delete payload.photos;
@@ -538,29 +540,13 @@ export const ItemForm = () => {
 								onPrev={handlePrev}
 								onDelete={deletePhoto}
 								setPhotos={setPhotos}
+								showDeleteIcon={true}
 							/>
 						</View>
 						{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
 						<Surface style={styles.surface} elevation={1}>
 							{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
-							{/* <Controller
-							control={control}
-							render={({ field: { onChange, onBlur, value } }) => (
-								<TextInput
-									style={styles.textInput}
-									label="Calendrier"
-									mode="outlined"
-									onChangeText={(text) => onChange(text)}
-									onBlur={onBlur}
-									value={value}
-									error={errors.name ? true : false}
-									left={<TextInput.Icon icon="calendar" onPress={() => setDatePickerVisible(true)} />}
-								/>
-							)}
-							name="calendrier"
-							rules={{ required: '' }}
-							defaultValue="" 
-						/> */}
+
 							<View
 								style={{
 									flex: 1,
@@ -580,43 +566,42 @@ export const ItemForm = () => {
 										alignSelf: 'center',
 										backgroundColor: '#FFCE52',
 										color: '#155263',
-										fontWeight: 600,
+										fontWeight: 500,
 									}}
 									onPress={() => setDatePickerVisible(true)}>
-									<Icon style={{ marginLeft: -10 }} name="calendar" size={25} /> Remplissez le calendrier de disponibilité
+									<Icon name="calendar" size={20} /> Remplissez le calendrier de disponibilité
 								</Badge>
 
 								<DatePicker isVisible={isDatePickerVisible} onClose={() => setDatePickerVisible(false)} onAddPeriod={addPeriod} />
-								<ScrollView style={{ marginTop: 20, width: '80%' }}>
-									{periods.map((period, index) => (
-										<View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-											<Divider />
-											<Badge
-												icon="camera"
-												size="35"
-												style={{
-													paddingHorizontal: 5,
-													alignSelf: 'center',
-													// backgroundColor: '#FFCE52',
-													color: '#155263',
-													fontSize: 12,
-													color: 'white',
-													minHeight: '100%',
-												}}>
-												Période {index + 1}: {moment(period.start).format('L')} - {moment(period.end).format('L')}
-											</Badge>
-											<Divider />
-
-											<Button
-												icon="delete"
-												mode="elevated"
-												compact="false"
-												style={{ paddingHorizontal: 0 }}
-												onPress={() => deletePeriod(index)}></Button>
-										</View>
-									))}
-								</ScrollView>
+								<ScrollView style={{ marginTop: 20, width: '80%' }}></ScrollView>
 							</View>
+							{periods.map((period, index) => (
+								<View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+									<Divider />
+									<Badge
+										icon="camera"
+										size="30"
+										style={{
+											paddingHorizontal: 5,
+											alignSelf: 'center',
+											// backgroundColor: '#FFCE52',
+
+											fontSize: 12,
+											color: 'white',
+											minHeight: '100%',
+										}}>
+										Période {index + 1}: {moment(period.start).format('L')} - {moment(period.end).format('L')}
+									</Badge>
+									<Divider />
+
+									<Button
+										icon="delete"
+										mode="oulined"
+										compact="false"
+										style={{ paddingHorizontal: 0 }}
+										onPress={() => deletePeriod(index)}></Button>
+								</View>
+							))}
 						</Surface>
 					</View>
 
@@ -648,12 +633,12 @@ export const ItemForm = () => {
 						{/* Button to open the MapPicker */}
 						<Button title="Select Location" onPress={() => setMapVisible(true)} />
 						{/* Show the selected location */}
-						{selectedLocation && (
-							<View>
-								<Text>Latitude: {selectedLocation.location.latitude}</Text>
-								<Text>Longitude: {selectedLocation.location.longitude}</Text>
-							</View>
-						)}
+						{/* {selectedLocation && (
+							// <View>
+							// 	<Text>Latitude: {selectedLocation.location.latitude}</Text>
+							// 	<Text>Longitude: {selectedLocation.location.longitude}</Text>
+							// </View>
+						)} */}
 						{/* The MapPicker component */}
 						{/* <MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} /> */}
 					</View>
@@ -661,7 +646,14 @@ export const ItemForm = () => {
 						<View style={{ flex: 1, alignItems: 'center', fontSize: 25 }}>
 							<Badge
 								size={30}
-								style={{ height: 40, width: '100%', alignSelf: 'center', backgroundColor: '#FFCE52', color: '#155263' }}
+								style={{
+									height: 40,
+									width: '100%',
+									alignSelf: 'center',
+									backgroundColor: '#FFCE52',
+									color: '#155263',
+									fontWeight: 500,
+								}}
 								onPress={() => setMapVisible(true)}>
 								<Ionicons style={{ marginTop: 5 }} name="location" size={20} />
 								Cliquez ici pour géolocaliser votre objet
@@ -671,7 +663,7 @@ export const ItemForm = () => {
 					<MapPicker isVisible={isMapVisible} onLocationSelected={handleLocationSelected} onClose={() => setMapVisible(false)} />
 					<View style={{ flex: 1, alignSelf: 'center', marginTop: 10 }}>
 						{selectedLocation ? (
-							<Badge size={30} style={{ paddingHorizontal: 20 }}>
+							<Badge size={30} style={{ paddingHorizontal: 20, fontSize: 13 }}>
 								{selectedLocation.address}
 							</Badge>
 						) : (

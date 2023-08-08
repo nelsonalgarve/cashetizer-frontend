@@ -27,6 +27,7 @@ import { ConfirmationRentScreen } from './src/features/welcome/screens/Confirmat
 import FavouriteScreen from './src/features/welcome/screens/FavouriteScreen';
 import { HomeScreen } from './src/features/welcome/screens/HomeScreen';
 import MyProfileScreen from './src/features/welcome/screens/MyProfileScreen';
+import { ProductFormScreen } from './src/features/welcome/screens/ProductFormScreen';
 import { SearchScreen } from './src/features/welcome/screens/SearchScreen';
 import SettingsScreen from './src/features/welcome/screens/SettingsScreen';
 import { SignInForm } from './src/features/welcome/screens/SignInForm';
@@ -248,13 +249,25 @@ export default App = () => {
 										}}
 									/>
 									<Stack.Screen name="Results" component={ResultScreen} />
-
 									<Stack.Screen
 										name="SingleProduct"
 										component={SingleProductScreen}
 										options={{
 											headerShown: false,
 										}}
+									/>
+									<Stack.Screen
+										name="ProductForm"
+										component={ProductFormScreen}
+										options={({ navigation }) => ({
+											title: 'Finalisation!',
+											headerLeft: () => '',
+											headerRight: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('TabNavigator')} style={styles.backButton}>
+													<Ionicons name="home-outline" size={30} color="white" />
+												</TouchableOpacity>
+											),
+										})}
 									/>
 
 									{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}

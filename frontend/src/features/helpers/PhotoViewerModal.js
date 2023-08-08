@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Modal, Text, TouchableOpacity, View } from 'react-native';
 
-const PhotoViewerModal = ({ visible, photos, currentIndex, onClose, onNext, onPrev, onDelete, setPhotos }) => {
+const PhotoViewerModal = ({ visible, photos, currentIndex, onClose, onNext, onPrev, onDelete, setPhotos, showDeleteIcon = true }) => {
 	const currentPhoto = photos[currentIndex];
 
 	const handleDelete = () => {
@@ -30,7 +30,7 @@ const PhotoViewerModal = ({ visible, photos, currentIndex, onClose, onNext, onPr
 						<View style={{ flex: 1 }} />
 					)}
 
-					{photos.length >= 1 && (
+					{showDeleteIcon && photos.length >= 1 && (
 						<TouchableOpacity style={{ marginHorizontal: 20, alignSelf: 'center' }} onPress={handleDelete}>
 							<Ionicons name="trash-bin-outline" size={25} color="white" />
 						</TouchableOpacity>

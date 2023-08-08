@@ -23,6 +23,17 @@ export const ItemCard = ({ item, userLatitude, userLongitude, navigation }) => {
 			userLatitude: userLatitude,
 			userLongitude: userLongitude,
 			distanceKm: distanceKm,
+			// periodes: item.periodes,
+		});
+	};
+
+	const toProductForm = () => {
+		navigation.navigate('ProductForm', {
+			item: item,
+			userLatitude: userLatitude,
+			userLongitude: userLongitude,
+			distanceKm: distanceKm,
+			// periodes: item.periodes,
 		});
 	};
 
@@ -70,7 +81,7 @@ export const ItemCard = ({ item, userLatitude, userLongitude, navigation }) => {
 						<Button icon="camera" mode="contained" onPress={toSingleItemPage}>
 							Press me
 						</Button>
-						<Button icon="camera" mode="contained" onPress={() => console.log('Consulter')}>
+						<Button icon="camera" mode="contained" onPress={toProductForm}>
 							Press me
 						</Button>
 					</View>
@@ -81,41 +92,3 @@ export const ItemCard = ({ item, userLatitude, userLongitude, navigation }) => {
 		return null;
 	}
 };
-const styles = StyleSheet.create({
-	buttonsInRow: {
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'space-evenly',
-		marginTop: 10,
-	},
-	card: {
-		marginBottom: 16,
-		backgroundColor: '#E8E8E8',
-		borderRadius: 0,
-		marginVertical: 0,
-	},
-	cardImage: {
-		// width: '100%',
-		// height: 150, // or whatever height you want
-		objectFit: 'contain',
-	},
-	itemName: {
-		fontSize: 10,
-		fontWeight: 'bold',
-	},
-	itemPrice: {
-		fontSize: 10,
-		color: 'gray',
-	},
-	itemDetails: {
-		fontSize: 8,
-		color: 'gray',
-	},
-	chipStyle: {
-		fontSize: 8,
-		backgroundColor: 'white',
-	},
-	cardContent: {
-		backgroundColor: 'white',
-	},
-});
