@@ -261,9 +261,15 @@ export default App = () => {
 									<Stack.Screen
 										name="ProductForm"
 										component={ProductFormScreen}
-										options={{
-											headerShown: false,
-										}}
+										options={({ navigation }) => ({
+											title: 'Finalisation!',
+											headerLeft: () => '',
+											headerRight: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('TabNavigator')} style={styles.backButton}>
+													<Ionicons name="home-outline" size={30} color="white" />
+												</TouchableOpacity>
+											),
+										})}
 									/>
 
 									{/* <Stack.Screen name='ItemsList' component={ListItems} /> */}

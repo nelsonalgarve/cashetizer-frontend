@@ -1,13 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
 import React, {useState} from 'react';
 import { ScrollView, Image, TouchableOpacity, KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native';
-import { Button, Provider as PaperProvider } from 'react-native-paper';
+import { Modal, Portal, Button, Provider as PaperProvider } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import PhotoViewerModal from '../../helpers/PhotoViewerModal';
+import CheckBox from 'expo-checkbox';
 
 export const ProductFormScreen = () => {
 	const navigation = useNavigation();
-	const WelcomeScreen = () => {
-		navigation.navigate('Welcome');
+	const SignInScreen = () => {
+		navigation.navigate('SignIn');
 	};
         const fakeItem = {
           ownerId: '12345',
@@ -41,40 +43,77 @@ export const ProductFormScreen = () => {
             return pricePerDay * days;
           };
         const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(0);
-
+        const [acceptedTerms, setAcceptedTerms] = useState(false);
+        const toggleTermsAcceptance = () => {
+          setAcceptedTerms(!acceptedTerms);
+        };
           const handlePeriodChange = (index) => {
           setSelectedPeriodIndex(index);
           };
         const numberOfStars = "3"
+        const [isModalVisible, setModalVisible] = useState(false);
+        const toggleModal = () => {
+            setModalVisible(!isModalVisible);
+          };
+          
   
         const selectedPeriod = fakeItem.periodes[selectedPeriodIndex];
   const totalCost = calculateTotalCost(
-    fakeItem.prices.day, // Prix par jour en fonction de la période
+    fakeItem.prices.day, 
     selectedPeriod.start,
     selectedPeriod.end
   );
+  const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+
+  const openPhotoViewer = (index) => {
+    setSelectedPhotoIndex(index);
+    setPhotoViewerVisible(true);
+  };
+
+  const closePhotoViewer = () => {
+    setPhotoViewerVisible(false);
+  };
+   const openPrivacyPolicyPage =() => { console.log('openPrivacyPolicyPage');};
+   const openTermsPage =() => { console.log('openTermsage');}; 
 
 	return (
-		<PaperProvider>
-			<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-				<View style={styles.container}>
-                <View style={styles.greyRectangle}>
-                <Text style={styles.name}>Vous louez : </Text>
-                <Text style={styles.name}>{fakeItem.name} à {totalCost}€</Text>
+        <PaperProvider>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+          <View style={styles.container}>
+         {/*  <Modal visible={photoViewerVisible} transparent={true}>
+        <PhotoViewerModal
+          visible={photoViewerVisible}
+          photos={fakeItem.photos}
+          currentIndex={selectedPhotoIndex}
+          onClose={closePhotoViewer}
+          onNext={() => setSelectedPhotoIndex(selectedPhotoIndex + 1)}
+          onPrev={() => setSelectedPhotoIndex(selectedPhotoIndex - 1)}
+          showDeleteIcon={false} 
+        />
+      </Modal> */}
+            <View style={styles.greyRectangle}>
+              
+              <Text style={styles.name}>{fakeItem.name} à {totalCost}€</Text>
+              <View style={styles.periodesContainer}>
                 <Text style={styles.periodes}>Périodes de location:</Text>
-      {fakeItem.periodes.map((periode, index) => (
-        <Text key={index} style={styles.periode}>
-          {periode.start} à {periode.end}
-        </Text>
-      ))}
-      <Button style={styles.buttonOutlined} mode="outlined" onPress={() => console.log("He clicked valider")}>
-							<Text style={styles.buttonText}>Valider la location</Text>
-						</Button>
-				</View>
-                <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-					<View style={styles.imageContainer}>
-                        
-                    <Image source={require('../../../../assets/fakeImage.jpg')} style={styles.image} />
+                {fakeItem.periodes.map((periode, index) => (
+                  <Text key={index} style={styles.periode}>
+                    {periode.start} à {periode.end}
+                  </Text>
+                ))}
+              </View>
+             {/*  <Button style={styles.buttonOutlined} mode="outlined" onPress={SignInScreen}>
+                <Text style={styles.buttonText}>Valider la location</Text>
+              </Button> */}
+            </View>
+            <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+              <View style={styles.contentContainer}>
+                <View style={styles.imageContainer}>
+                {/* <TouchableOpacity onPress={() => openPhotoViewer(0)}>
+                <Image source={require('../../../../assets/fakeImage.jpg')} style={styles.image} />
+      </TouchableOpacity> */}      
+                   
 
                     {/* <Image source={{ uri: fakeItem.photos[0] }} style={styles.image} /> */}
 					
@@ -94,46 +133,59 @@ export const ProductFormScreen = () => {
       ))}
     </View>
   </View>
-  <View style={{ marginTop: -10 }}>
-    <Text>À 1 km</Text>
-    <Text style={{ color:"green", fontWeight:500 }} >Disponible</Text>
-  </View>
+  
 </View>
-<Text style={styles.description}>{fakeItem.description}</Text>
+
 
 <View style={styles.infoContainer}>
 <View style={styles.infoRow}>
-<Text style={styles.infoLabel}>Périodes de location:</Text>
-  {fakeItem.periodes.map((periode, index) => (
-    <View key={index} style={styles.periodeContainer}>
-      <Text style={styles.periode}>
-        {periode.start}
-      </Text>
-      <Text style={styles.periode}>
-        à
-      </Text>
-      <Text style={styles.periode}>
-        {periode.end}
-      </Text>
-    </View>
-  ))}
-    <Text style={styles.infoText}></Text>
+    <Text style={styles.infoLabel}>Locataire:</Text>
+    <Text style={styles.infoText}>
+    Aicha Ahamada
+  </Text>
   </View>
-  <View style={styles.infoRow}>
-    <Text style={styles.infoLabel}>État:</Text>
-    <Text style={styles.infoText}>{fakeItem.etat}</Text>
+<View style={styles.infoRow}>
+    <Text style={styles.infoLabel}>Durée de location:</Text>
+    <Text style={styles.infoText}>
+    {calculateDays(selectedPeriod.start, selectedPeriod.end)}{" "}
+    {calculateDays(selectedPeriod.start, selectedPeriod.end) <= 1 ? "jour" : "jours"}
+  </Text>
   </View>
+<View style={styles.infoRow}>
+  <Text style={styles.infoLabel}>Prix par jour :</Text>
+  <Text style={styles.infoText}>
+    {fakeItem.prices.day}€ </Text>
+</View>
+
+<Portal>
+  <Modal visible={isModalVisible} onDismiss={toggleModal} contentContainerStyle={styles.modalContainer}>
+  <Text style={styles.modalTitle}>Protégez comme la prunelle de vos yeux </Text>
+  <Text style={styles.modalText}>Une usure normale est acceptable mais un dommage du bien d'autrui demande compensation. C'est pourquoi cette caution vous sera restitué lors de l'inspection du retour de matériel, entre vous et le propriétaire.</Text>
+ 
+    <Button style={{ marginTop:20, alignItems: 'center', backgroundColor: '#155263', color:"white" }} mode="outlined" onPress={toggleModal}>
+     <Text style={{ fontWeight:600, color:"white" }}> Fermer</Text> 
+    </Button>
+  </Modal>
+</Portal>
+
+<View style={styles.infoRow}>
+    <Text style={styles.infoLabel}>Prix total:</Text>
+    <Text style={styles.infoText}>{totalCost}€</Text>
+  </View>
+
   <View style={styles.infoRow}>
     <Text style={styles.infoLabel}>Caution:</Text>
-    <Text style={styles.infoText}>{fakeItem.caution}€</Text>
+    <Text style={styles.infoText}>{fakeItem.caution}€{' '}
+    <Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal} />
+  </Text>
   </View>
   <View style={styles.infoRow}>
     <Text style={styles.infoLabel}>Mode de remise:</Text>
     <Text style={styles.infoText}>En personne</Text>
   </View>
   <View style={styles.infoRow}>
-    <Text style={styles.infoLabel}>Vendeur:</Text>
-    <TouchableOpacity onPress={() => console.log("Nelson clicked")}><Text style={styles.linkText}>Nelson {fakeItem.ownerId}</Text></TouchableOpacity>
+    <Text style={styles.infoLabel}>Loueur:</Text>
+   <Text style={styles.infoText}>Nelson {fakeItem.ownerId}</Text>
   </View>
   <View style={styles.infoRow}>
     <Text style={styles.infoLabel}>Localisation:</Text>
@@ -143,13 +195,37 @@ export const ProductFormScreen = () => {
   </View>
 </View>		
 
-					</View>
-					</ScrollView>
-				</View>
-				
-				
-			</KeyboardAvoidingView>
-		</PaperProvider>
+</View>
+          </View>
+          
+          <View style={styles.checkboxContainer}>
+  <CheckBox value={acceptedTerms} onValueChange={toggleTermsAcceptance} />
+  <Text style={styles.checkboxLabel}>
+  {" J'accepte les "}
+    <TouchableOpacity onPress={openTermsPage}> 
+      <Text style={styles.clickableText}>conditions de location</Text>
+    </TouchableOpacity>
+    {' et le '}
+    <TouchableOpacity onPress={openPrivacyPolicyPage}> 
+      <Text style={styles.clickableText}>réglement d'utilisation</Text></TouchableOpacity>
+    {'de Cashetizer industry.'}
+  </Text>
+</View>
+            <View style={styles.buttonContainer}>
+            <Button style={[styles.buttonOutlined, styles.paypalButton]} mode="outlined" onPress={SignInScreen}>
+            <Image source={require('../../../../assets/paypalLogo.png')} style={styles.paypalLogo} />
+  </Button>
+  <Button style={[styles.buttonOutlined, styles.cbButton]} mode="outlined" onPress={SignInScreen}>
+  <Image source={require('../../../../assets/LogoCB.png')} style={styles.paypalLogo} />
+  </Button>
+</View>
+              <Button style={styles.buttonOutlined} mode="outlined" onPress={SignInScreen}>
+                <Text style={styles.buttonText}>Confirmer la location</Text>
+              </Button> 
+        </ScrollView>
+      </View>
+    </KeyboardAvoidingView>
+  </PaperProvider>
 	);
 };
 
@@ -157,18 +233,52 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
-    greyRectangle: {
-		backgroundColor: '#E2E2E2',
-		position: 'absolute',
-		top: 0, // Changed from 'bottom: 0'
-		left: 0,
-		right: 0,
-		marginTop: 0,
-        height : "20%",
-		alignContent: 'flex-start',
+  clickableText: {
+    color: 'blue', 
+    textDecorationLine: 'underline', 
+  },
+  checkboxContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		margin: 20,
+    marginBottom: 10,
+    
+	},
+	checkboxLabel: {
+		margin: 5,
+    marginRight: 10,
+		fontSize: 14,
+	},
+    modalTitle:{
+        color: '#155263',
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    modalText:{
+        fontSize: 14,
+        fontWeight: '600',
+    },
+    modalContainer:{
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 20,
         alignItems: 'center',
         justifyContent: 'center',
-	},
+  
+    },
+    greyRectangle: {
+        backgroundColor: '#E2E2E2',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        marginTop: 0,
+        height: "20%",
+        alignContent: 'flex-start',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
     name: {
         fontSize: 24,
         fontWeight: 'bold',
@@ -179,11 +289,11 @@ const styles = StyleSheet.create({
 
 	imageContainer: {
 		width: '85%',
-		marginTop: 30,
+		marginTop: 0,
         alignSelf: 'center',
 	},
 	image: {
-		width: '100%',
+		width: '20%',
 		resizeMode: 'contain',
 		
 	},
@@ -234,7 +344,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 10,
         padding: 5,
-        marginTop: 10,
+        marginTop: 240,
       },
       infoRow: {
         flexDirection: 'row',
@@ -264,23 +374,18 @@ const styles = StyleSheet.create({
 		color: '#155263',
 		fontWeight: '400',
 	},
-	buttonsContainer: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		marginTop: 60,
-	},
+
     buttonsContainer: {
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		marginTop: 60,
+		marginTop: 40,
 	},
 	buttonText: {
 		color: 'white',
 		textAlign: 'center',
 		fontWeight: 'bold',
-		fontSize: 22,
+		fontSize: 20,
 	},
 	buttonOutlined: {
 		backgroundColor: '#FFCE52',
@@ -290,6 +395,30 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 		margin: 10,
 	},
+  paypalButton: {
+    backgroundColor: 'white', 
+    borderColor: '#155263', 
+    width: '40%',
+  },
+  cbButton: {
+    backgroundColor: '#155263', 
+    borderColor: '#155263', 
+    width: '40%'
+  },
+
+  paypalLogo: {
+    width: 90, 
+    height: 50, 
+    resizeMode: 'contain', 
+  },
+
+
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginTop: 10,
+  },
 	buttonGreenOutlined: {
 		margin: 10,
 		backgroundColor: '#155263',
@@ -315,16 +444,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 5,
     },
-    periodeContainer: {
-      flexDirection: 'row', // Les éléments Text seront alignés horizontalement
-      alignItems: 'center', // Les éléments Text seront centrés verticalement
-      marginBottom: 5, // Ajoute un espace entre chaque période
-    },
-    periode: {
-      flexDirection: 'column', // Les éléments Text seront alignés horizontalement
-      color: '#555',
-      marginLeft: 10,
-    },
 	textInput: {
 		paddingVertical: 1,
 		paddingHorizontal: 1,
@@ -332,4 +451,8 @@ const styles = StyleSheet.create({
 		height: 35,
 		backgroundColor: '#E8E8E8',
 	},
+    scrollContainer: {
+            flex: 1,
+            marginTop: 10,
+    },
 });

@@ -101,7 +101,7 @@ export const SingleProductScreen = () => {
                 <Text style={styles.buttonText}>Valider la location</Text>
               </Button>
             </View>
-            <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+            <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="false">
               <View style={styles.contentContainer}>
                 <View style={styles.imageContainer}>
                 <TouchableOpacity onPress={() => openPhotoViewer(0)}>
@@ -181,6 +181,7 @@ export const SingleProductScreen = () => {
 
 </View>
           </View>
+          <View style={{ height: 1200 }} />
         </ScrollView>
       </View>
     </KeyboardAvoidingView>
@@ -378,6 +379,6 @@ const styles = StyleSheet.create({
 	},
     scrollContainer: {
             flex: 1,
-            marginTop: 10,
+            
     },
 });
