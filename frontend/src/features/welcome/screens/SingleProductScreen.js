@@ -1,13 +1,29 @@
 import { Ionicons } from '@expo/vector-icons';
 import { DateTimePicker } from '@react-native-community/datetimepicker';
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Button, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { PeriodsPicker } from '../components/PeriodsPicker';
+function formatDateInFrench(dateString) {
+	const date = new Date(dateString);
+	return new Intl.DateTimeFormat('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' }).format(date);
+}
 
 export const SingleProductScreen = ({ route }) => {
-	console.log(route.params.item.localisation);
+	const navigation = useNavigation();
+	const validateChoice = () => {
+		navigation.navigate('ProductForm', {
+			// item: initialItem,
+			startDate: selectedStartDate,
+			endDate: selectedEndDate,
+			price: calculatedPrice,
+			days: numberOfDays,
+		});
+	};
+
+	// console.log(route.params.item.periodes);
 	const initialItem = {
 		name: route.params.item.name,
 		ownerId: route.params.item.ownerId._id,
@@ -24,18 +40,136 @@ export const SingleProductScreen = ({ route }) => {
 			longitude: parseFloat(route.params.item.localisation.longitude),
 		},
 	};
+
+	const perDayPrice = initialItem.prices.perDay;
+	let perWeekPrice = initialItem.prices.perWeek;
+	let perMonthPrice = initialItem.prices.perMonth;
 	const item = route.params.item;
+
+	// FAKE PRICES ________________________________________________________________________________________________
+	if (!perWeekPrice) {
+		perWeekPrice = perDayPrice * 7 * 0.95;
+	}
+
+	if (!perMonthPrice) {
+		perMonthPrice = perDayPrice * 30 * 0.9;
+	}
+	item.prices = { perDay: perDayPrice, perWeek: perWeekPrice, perMonth: perMonthPrice };
+
 	const sortedPrices = Object.entries(item.prices).sort((a, b) => a[1] - b[1]);
+	console.log('-------------------------', item.prices);
 	const [isModalVisible, setModalVisible] = React.useState(false);
 	const [formItem, setFormItem] = useState(initialItem);
 	const [address, setAddress] = useState(null);
+	// const [selectedDates, setSelectedDates] = useState(route.params.item.periodes || []);
+
+	// DATE PICKER STATES ___________________________________________________________________
 	const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+	const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
+	const [selectedStartDate, setSelectedStartDate] = useState(null);
+	const [selectedEndDate, setSelectedEndDate] = useState(null);
+	const [activePeriod, setActivePeriod] = useState(null);
 
-	const [selectedDates, setSelectedDates] = useState({ period1: {}, period2: {} });
+	// CALCUL DES JOURS
+	const [numberOfDays, setNumberOfDays] = useState(null);
 
-	const [currentPeriod, setCurrentPeriod] = useState(null);
+	// POUR CALCUL DU PRIX
 
-	const [selectedPeriod, setSelectedPeriod] = useState(null);
+	const [calculatedPrice, setCalculatedPrice] = useState(0);
+
+	// DATE PICKER FUNCTIONS ______________________________________________________________________
+	const showDatePicker = (period) => {
+		setActivePeriod(period);
+		setDatePickerVisibility(true);
+	};
+
+	const handleStartDatePicked = (date) => {
+		setSelectedStartDate(date);
+		setDatePickerVisibility(false);
+		// After selecting start date, prompt for end date.
+		setEndDatePickerVisibility(true);
+	};
+
+	const handleEndDatePicked = (date) => {
+		setSelectedEndDate(date);
+		setEndDatePickerVisibility(false);
+	};
+
+	const onSelectDate = (date) => {
+		if (!startDate) {
+			setStartDate(date);
+		} else {
+			setEndDate(date);
+			const start = new Date(startDate);
+			const end = new Date(date);
+			const diffTime = Math.abs(end - start);
+			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+			setNumberOfDays(diffDays);
+			setDatePickerVisibility(false);
+		}
+	};
+	// const handleDatePicked = (date) => {
+	// 	if (!selectedStartDate) {
+	// 		setSelectedStartDate(date);
+	// 	} else if (!selectedEndDate) {
+	// 		setSelectedEndDate(date);
+	// 		setDatePickerVisibility(false);
+	// 	}
+	// };
+
+	const PeriodButton = ({ period }) => {
+		return (
+			<TouchableOpacity onPress={() => showDatePicker(period)}>
+				<Text>
+					{formatDateInFrench(period.start)} - {formatDateInFrench(period.end)}
+				</Text>
+			</TouchableOpacity>
+		);
+	};
+
+	// CALCUL DU NOMBRE DE JOURS ENTRE LES DATES SELECTIONNEES
+	const onDateChange = (event, selectedDate) => {
+		if (currentPeriod === 'period1Start' || currentPeriod === 'period2Start') {
+			setSelectedStartDate(selectedDate);
+		} else if (currentPeriod === 'period1End' || currentPeriod === 'period2End') {
+			setSelectedEndDate(selectedDate);
+		}
+	};
+
+	const getDifferenceInDays = (date1, date2) => {
+		const diffInTime = date2.getTime() - date1.getTime();
+		return Math.ceil(diffInTime / (1000 * 60 * 60 * 24));
+	};
+
+	// const numberOfDays = selectedStartDate && selectedEndDate ? getDifferenceInDays(new Date(selectedStartDate), new Date(selectedEndDate)) : null;
+
+	// NUMBER OF DAYS useEffect
+	useEffect(() => {
+		if (selectedStartDate && selectedEndDate) {
+			const days = getDifferenceInDays(new Date(selectedStartDate), new Date(selectedEndDate));
+			setNumberOfDays(days);
+		} else {
+			setNumberOfDays(null);
+		}
+	}, [selectedStartDate, selectedEndDate]);
+
+	// CALCUL DU PRIX useEffect
+
+	useEffect(() => {
+		if (numberOfDays < 8 && numberOfDays > 0) {
+			const dayRate = Number(numberOfDays * perDayPrice).toFixed(2);
+			setCalculatedPrice(dayRate);
+		} else if (numberOfDays > 7 && numberOfDays < 30) {
+			const weekRate = perWeekPrice / 7;
+			const weekPrice = Number(numberOfDays * weekRate).toFixed(2);
+			setCalculatedPrice(weekPrice);
+		} else {
+			const monthRate = Number(perMonthPrice / 30).toFixed(2);
+			setCalculatedPrice(numberOfDays * monthRate);
+		}
+	}, [numberOfDays]);
+
+	// LOCATION useEffect ________________________________________________________________________________
 
 	useEffect(() => {
 		(async () => {
@@ -44,23 +178,24 @@ export const SingleProductScreen = ({ route }) => {
 		})();
 	}, []);
 
-	const handleDateSelect = (selectedPeriod, selectedDate) => {
-		console.log('Selected Date:', selectedDate, 'in the period:', selectedPeriod);
-		// Handle the selected date here, maybe update the state or do other logic
-	};
-	const handlePeriod1Change = (startDate, endDate) => {
-		console.log('Period 1 Dates:', startDate, endDate);
+	const PeriodBadge = ({ period }) => {
+		if (!period.start || !period.end) return null;
+
+		return (
+			<View style={styles.periodeBadge}>
+				<Text style={styles.badgeText}>
+					Du: {formatDateInFrench(period.start)} - au: {formatDateInFrench(period.end)}
+				</Text>
+			</View>
+		);
 	};
 
-	const handlePeriod2Change = (startDate, endDate) => {
-		console.log('Period 2 Dates:', startDate, endDate);
+	const formatDate = (isoString) => {
+		const date = new Date(isoString);
+		return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 	};
 
-	const handlePeriodPress = (period) => {
-		setSelectedPeriod(period);
-		showDatePicker('start');
-	};
-	const GOOGLE_API_KEY = 'AIzaSyCKVV2S52hUifM6pOSiTVzj2MoAI4jccqw'; // Replace this with your Google API key
+	const GOOGLE_API_KEY = 'AIzaSyCKVV2S52hUifM6pOSiTVzj2MoAI4jccqw';
 
 	const fetchAddress = async (latitude, longitude) => {
 		try {
@@ -117,7 +252,6 @@ export const SingleProductScreen = ({ route }) => {
 					</TouchableOpacity>
 				</View>
 			</Modal>
-
 			<View style={styles.ownerUsername}>
 				<Text>
 					Propiétaire: {item.ownerId.username} - {address} à {Number(initialItem.distance).toFixed(2)}km
@@ -132,39 +266,62 @@ export const SingleProductScreen = ({ route }) => {
 					<Badge style={styles.badgePrices} key={key} text={`${getPriceLabel(key)}: ${value}€`} />
 				))}
 			</View>
-			{formItem.periodes.map((period, index) => (
-				<TouchableOpacity key={period._id} onPress={() => showDatePicker(period)} style={{ ...styles.badge, backgroundColor: '#EAEAEA' }}>
-					<Text>{`Du: ${new Date(period.start).toLocaleDateString('fr-FR')} Au: ${new Date(period.end).toLocaleDateString('fr-FR')}`}</Text>
-				</TouchableOpacity>
+			{/* PERIODES RENDER   ----------------------------------------------------------------------------------------------- */}
+			{item.periodes.map((period, index) => (
+				<PeriodButton key={index} period={period} />
 			))}
+			{/* DATE START PICKER -------------------------------- */}
+			<DateTimePickerModal
+				isVisible={isDatePickerVisible}
+				mode="date"
+				onConfirm={handleStartDatePicked}
+				onCancel={() => setDatePickerVisibility(false)}
+				minimumDate={new Date(activePeriod?.start)}
+				maximumDate={new Date(activePeriod?.end)}
+			/>
+			{/* DATE END PICKER -------------------------------- */}
+			<DateTimePickerModal
+				isVisible={isEndDatePickerVisible}
+				mode="date"
+				onConfirm={handleEndDatePicked}
+				onCancel={() => setEndDatePickerVisibility(false)}
+				minimumDate={selectedStartDate} // The end date shouldn't be before the selected start date
+				maximumDate={new Date(activePeriod?.end)}
+			/>
+			{/*DATES RANGE DISPLAY ------------- */}
+			{selectedStartDate && <Text>Début de location: {formatDateInFrench(selectedStartDate)}</Text>}
+			{selectedEndDate && <Text>Fin de location {formatDateInFrench(selectedEndDate)}</Text>}
+			{/* NOMBRE DE JOURS */}
+			<View style={styles.container}>
+				{/* {numberOfDays !== null ? <Text>Selected Range: {numberOfDays} days</Text> : <Text>No days selected</Text>} */}
 
+				{numberOfDays !== null && <Text>Selected Range: {numberOfDays || 'No days selected'} days</Text>}
+				<Text>Price: {calculatedPrice}€</Text>
+				<Button title="Valider" onPress={validateChoice} disabled={calculatedPrice === 0} />
+			</View>
+
+			{/* MAP RENDER   ----------------------------------------------------------------------------------------------- */}
 			{formItem.localisation.latitude && formItem.localisation.longitude && (
-				<MapView
-					style={styles.map}
-					initialRegion={{
-						latitude: formItem.localisation.latitude,
-						longitude: formItem.localisation.longitude,
-						latitudeDelta: 0.0922,
-						longitudeDelta: 0.0421,
-					}}
-				>
-					<Marker
-						coordinate={{
+				<View style={styles.container}>
+					<MapView
+						style={styles.map}
+						initialRegion={{
 							latitude: formItem.localisation.latitude,
 							longitude: formItem.localisation.longitude,
-						}}
-						title={formItem.name}
-						description={address}
-					/>
-				</MapView>
+							latitudeDelta: 0.0922,
+							longitudeDelta: 0.0421,
+						}}>
+						<Marker
+							coordinate={{
+								latitude: formItem.localisation.latitude,
+								longitude: formItem.localisation.longitude,
+							}}
+							title={formItem.name}
+							description={address}
+						/>
+					</MapView>
+				</View>
 			)}
-			<PeriodsPicker
-				periodes={formItem.periodes}
-				onDatesChange={(dates) => {
-					console.log(dates); // Or handle the dates as needed in your logic
-				}}
-			/>
-			<PeriodsPicker periods={formItem.periodes} onDateSelect={handleDateSelect} />
 		</View>
 	);
 };
@@ -218,7 +375,7 @@ const styles = StyleSheet.create({
 	},
 	badge: {
 		backgroundColor: '#155263',
-		paddingHorizontal: 10,
+		paddingHorizontal: 5,
 		margin: 5,
 		padding: 7,
 		borderRadius: 5,
@@ -226,18 +383,26 @@ const styles = StyleSheet.create({
 	},
 	badgeText: {
 		color: 'white',
-		fontWeight: '500',
+		fontWeight: '400',
 		textAlign: 'center',
-		fontSize: 12,
 	},
 	badgePrices: {
 		fontSize: 12,
 	},
+	badgesInlineContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'flex-start',
+		marginBottom: 10,
+		flexWrap: 'wrap',
+	},
 	periodeBadge: {
-		backgroundColor: '#ccc',
-		padding: 5,
-		margin: 5,
+		backgroundColor: '#155263',
+		paddingHorizontal: 8,
+		paddingVertical: 4,
 		borderRadius: 5,
+		margin: 5,
+		alignSelf: 'flex-start',
 	},
 	map: {
 		width: '100%',

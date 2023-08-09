@@ -3,7 +3,7 @@ const createNewItem = async (token, formData, payload) => {
 	try {
 		console.log('token from createNewItem handler', token);
 
-		const response = await fetch(`http://192.168.0.12:3000/item/items`, {
+		const response = await fetch(`http://192.168.0.15:3000/item/items`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,

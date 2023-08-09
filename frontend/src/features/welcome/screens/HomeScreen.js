@@ -4,7 +4,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import formTheme from '../themes/FormTheme';
 
-export const HomeScreen = ({ nav }) => {
+export const HomeScreen = ({ navigation }) => {
 	const handleRent = () => {
 		navigation.navigate('SearchScreen');
 	};
