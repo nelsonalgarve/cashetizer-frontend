@@ -24,16 +24,16 @@ export const HomeScreen = ({ nav }) => {
 
 				{/* Affichage des boutons de catégorie */}
 				<View style={styles.buttonCategorie}>
-					<TouchableOpacity key={index} style={styles.button} onPress={handleAddRent}>
+					<TouchableOpacity style={styles.button} onPress={handleAddRent}>
 						<Text style={styles.buttonText}>Mettre un objet en location</Text>
 					</TouchableOpacity>
-					<TouchableOpacity key={index} style={styles.button} onPress={handleRent}>
+					<TouchableOpacity style={styles.button} onPress={handleRent}>
 						<Text style={styles.buttonText}>Louer un objet</Text>
 					</TouchableOpacity>
-					<TouchableOpacity key={index} style={styles.button}>
+					<TouchableOpacity style={styles.button}>
 						<Text style={styles.buttonText}>Mes locations</Text>
 					</TouchableOpacity>
-					<TouchableOpacity key={index} style={styles.button}>
+					<TouchableOpacity style={styles.button}>
 						<Text style={styles.buttonText}>Mes annonces</Text>
 					</TouchableOpacity>
 					{/* {categories.map((category, index) => (

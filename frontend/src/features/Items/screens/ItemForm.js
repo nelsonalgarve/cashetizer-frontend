@@ -115,7 +115,7 @@ export const ItemForm = () => {
 				return;
 			}
 
-			const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+			const photo = await cameraRef.current.takePictureAsync({ quality: 0.1 });
 			setPhotos([...photos, photo.uri]);
 			if (photos.length === 3) {
 				await uploadPhotos();
@@ -247,9 +247,9 @@ export const ItemForm = () => {
 				prices: prices,
 				caution: caution,
 			};
-			console.log('formData-----------------------------', formData);
-			delete payload.photos;
 
+			delete payload.photos;
+			console.log('payload--------------------------------', payload);
 			for (const key in payload) {
 				formData.append(key, typeof payload[key] === 'object' ? JSON.stringify(payload[key]) : payload[key]);
 			}
@@ -557,7 +557,8 @@ export const ItemForm = () => {
 									alignItems: 'center',
 									paddingTop: 5,
 									borderRadius: 50,
-								}}>
+								}}
+							>
 								<Badge
 									size={30}
 									icon="calendar"
@@ -568,7 +569,8 @@ export const ItemForm = () => {
 										color: '#155263',
 										fontWeight: 500,
 									}}
-									onPress={() => setDatePickerVisible(true)}>
+									onPress={() => setDatePickerVisible(true)}
+								>
 									<Icon name="calendar" size={20} /> Remplissez le calendrier de disponibilité
 								</Badge>
 
@@ -589,7 +591,8 @@ export const ItemForm = () => {
 											fontSize: 12,
 											color: 'white',
 											minHeight: '100%',
-										}}>
+										}}
+									>
 										Période {index + 1}: {moment(period.start).format('L')} - {moment(period.end).format('L')}
 									</Badge>
 									<Divider />
@@ -599,7 +602,8 @@ export const ItemForm = () => {
 										mode="oulined"
 										compact="false"
 										style={{ paddingHorizontal: 0 }}
-										onPress={() => deletePeriod(index)}></Button>
+										onPress={() => deletePeriod(index)}
+									></Button>
 								</View>
 							))}
 						</Surface>
@@ -654,7 +658,8 @@ export const ItemForm = () => {
 									color: '#155263',
 									fontWeight: 500,
 								}}
-								onPress={() => setMapVisible(true)}>
+								onPress={() => setMapVisible(true)}
+							>
 								<Ionicons style={{ marginTop: 5 }} name="location" size={20} />
 								Cliquez ici pour géolocaliser votre objet
 							</Badge>
@@ -738,8 +743,8 @@ export const ItemForm = () => {
 const styles = StyleSheet.create({
 	camera: {
 		flex: 1,
-		width: '100',
-		height: 600,
+		width: 100,
+		height: 500,
 	},
 	container: {
 		flex: 1,
