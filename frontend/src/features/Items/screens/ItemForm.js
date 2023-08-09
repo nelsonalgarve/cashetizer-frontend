@@ -115,7 +115,7 @@ export const ItemForm = () => {
 				return;
 			}
 
-			const photo = await cameraRef.current.takePictureAsync({ quality: 0.1 });
+			const photo = await cameraRef.current.takePictureAsync({ quality: 0.3 });
 			setPhotos([...photos, photo.uri]);
 			if (photos.length === 3) {
 				await uploadPhotos();
@@ -256,7 +256,7 @@ export const ItemForm = () => {
 
 			//token provisoire pour tests
 			const token =
-				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGNlY2YxNDgxMjkyY2ViZGU5MTY0ZWMiLCJpYXQiOjE2OTE0MDU1NTB9.YysXb_yWgFkcLdLiDt6BuUWXLY7HGCa3ibPMsOXwFuw';
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGQzZDlkN2I3Y2U5MmI2NWMwNDc5MGEiLCJpYXQiOjE2OTE2MDgwMTN9.MMErOshlOGID1Zaczk6p3rr8iPOvbrA61whAx4VN2_c';
 
 			// Submit main payload
 			createNewItem(token, formData)
@@ -270,28 +270,6 @@ export const ItemForm = () => {
 			console.error('Error in onSubmit:', error);
 		}
 	};
-
-	// const onSubmit = (data) => {
-	// 	const newItemData = {
-	// 		...data,
-	// 		// address: myAddressParsed,
-	// 		category: selectedCategory,
-	// 		etat: selectedEtat,
-	// 		localisation: selectedLocation.location,
-	// 		remise: selectedRemise.value,
-	// 		periodes: periods,
-	// 	};
-	// 	console.log('newItemDataaaaa:', newItemData);
-	// 	// Call the helper function to create a new item
-
-	// 	createNewItem(token, newItemData)
-	// 		.then((data) => {
-	// 			console.log('New item created:', data);
-	// 		})
-	// 		.catch((error) => {
-	// 			// Handle errors here
-	// 		});
-	// };
 
 	//Set The Location from the map
 	const handleLocationSelected = (location, address) => {
@@ -516,13 +494,13 @@ export const ItemForm = () => {
 									onChangeText={(text) => onChange(text)}
 									onBlur={onBlur}
 									value={value}
-									editable={true}
+									editable={false}
 									error={errors.name ? true : false}
 									right={<TextInput.Icon icon="camera" onPress={toggleCamera} />}
 								/>
 							)}
 							name="photos"
-							rules={{ required: 'Vous devez poster au moins une photo de votre objet' }}
+							// rules={{ required: 'Vous devez poster au moins une photo de votre objet' }}
 							defaultValue=""
 						/>
 						<View style={styles.photosContainer}>
@@ -557,8 +535,7 @@ export const ItemForm = () => {
 									alignItems: 'center',
 									paddingTop: 5,
 									borderRadius: 50,
-								}}
-							>
+								}}>
 								<Badge
 									size={30}
 									icon="calendar"
@@ -569,8 +546,7 @@ export const ItemForm = () => {
 										color: '#155263',
 										fontWeight: 500,
 									}}
-									onPress={() => setDatePickerVisible(true)}
-								>
+									onPress={() => setDatePickerVisible(true)}>
 									<Icon name="calendar" size={20} /> Remplissez le calendrier de disponibilité
 								</Badge>
 
@@ -591,8 +567,7 @@ export const ItemForm = () => {
 											fontSize: 12,
 											color: 'white',
 											minHeight: '100%',
-										}}
-									>
+										}}>
 										Période {index + 1}: {moment(period.start).format('L')} - {moment(period.end).format('L')}
 									</Badge>
 									<Divider />
@@ -602,8 +577,7 @@ export const ItemForm = () => {
 										mode="oulined"
 										compact="false"
 										style={{ paddingHorizontal: 0 }}
-										onPress={() => deletePeriod(index)}
-									></Button>
+										onPress={() => deletePeriod(index)}></Button>
 								</View>
 							))}
 						</Surface>
@@ -658,8 +632,7 @@ export const ItemForm = () => {
 									color: '#155263',
 									fontWeight: 500,
 								}}
-								onPress={() => setMapVisible(true)}
-							>
+								onPress={() => setMapVisible(true)}>
 								<Ionicons style={{ marginTop: 5 }} name="location" size={20} />
 								Cliquez ici pour géolocaliser votre objet
 							</Badge>

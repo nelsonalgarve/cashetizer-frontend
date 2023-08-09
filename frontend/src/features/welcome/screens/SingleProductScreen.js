@@ -13,15 +13,6 @@ function formatDateInFrench(dateString) {
 
 export const SingleProductScreen = ({ route }) => {
 	const navigation = useNavigation();
-	const validateChoice = () => {
-		navigation.navigate('ProductForm', {
-			// item: initialItem,
-			startDate: selectedStartDate,
-			endDate: selectedEndDate,
-			price: calculatedPrice,
-			days: numberOfDays,
-		});
-	};
 
 	// console.log(route.params.item.periodes);
 	const initialItem = {
@@ -41,6 +32,8 @@ export const SingleProductScreen = ({ route }) => {
 		},
 	};
 
+	const [ownerUsername, setOwnerUsername] = useState(initialItem.ownerUSername);
+	const [photo, setPhoto] = useState(initialItem.photos[0]);
 	const perDayPrice = initialItem.prices.perDay;
 	let perWeekPrice = initialItem.prices.perWeek;
 	let perMonthPrice = initialItem.prices.perMonth;
@@ -61,7 +54,6 @@ export const SingleProductScreen = ({ route }) => {
 	const [isModalVisible, setModalVisible] = React.useState(false);
 	const [formItem, setFormItem] = useState(initialItem);
 	const [address, setAddress] = useState(null);
-	// const [selectedDates, setSelectedDates] = useState(route.params.item.periodes || []);
 
 	// DATE PICKER STATES ___________________________________________________________________
 	const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -108,14 +100,6 @@ export const SingleProductScreen = ({ route }) => {
 			setDatePickerVisibility(false);
 		}
 	};
-	// const handleDatePicked = (date) => {
-	// 	if (!selectedStartDate) {
-	// 		setSelectedStartDate(date);
-	// 	} else if (!selectedEndDate) {
-	// 		setSelectedEndDate(date);
-	// 		setDatePickerVisibility(false);
-	// 	}
-	// };
 
 	const PeriodButton = ({ period }) => {
 		return (
@@ -233,6 +217,29 @@ export const SingleProductScreen = ({ route }) => {
 			<Text style={styles.badgeText}>{text}</Text>
 		</View>
 	);
+
+	// NAVIGATION VERS productFormScreen.js ____________________________________________________________________________________________________
+
+	function convert(date) {
+		if (date) {
+			return date.toISOString();
+		} else {
+			return '';
+		}
+	}
+
+	const validateChoice = () => {
+		navigation.navigate('ProductForm', {
+			item: initialItem,
+			startDate: convert(selectedStartDate),
+			endDate: convert(selectedEndDate),
+			price: calculatedPrice,
+			days: numberOfDays,
+			ownerUsername: ownerUsername,
+			photo: photo,
+			address: address,
+		});
+	};
 
 	return (
 		<View style={styles.container}>

@@ -4,20 +4,43 @@ import CheckBox from 'expo-checkbox';
 import React, { useState } from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Modal, Provider as PaperProvider, Portal } from 'react-native-paper';
-import PhotoViewerModal from '../../helpers/PhotoViewerModal';
+import { useSelector } from 'react-redux';
+const moment = require('moment');
+moment.locale('fr');
 
-export const ProductFormScreen = () => {
+export const ProductFormScreen = ({ route, item }) => {
+	// const buyer = useSelector(() => state.user.value);
+	console.log(route.params.item.name);
 	const navigation = useNavigation();
 	const SignInScreen = () => {
 		navigation.navigate('SignIn');
 	};
+
+	const user = useSelector((state) => state.user.value);
+
+	console.log(user);
+
+	const order = {
+		ownerId: route.params.ownerId,
+		ownerUsername: route.params.ownerUsername,
+		itemLocalisation: route.params.item.localisation,
+		distance: route.params.item.distance,
+		itemName: route.params.item.name,
+		etat: route.params.item.etat,
+		address: route.params.address,
+		caution: route.params.item.caution,
+		startDate: moment(route.params.startDate).format('DD/MM/YYYY'),
+		endDate: moment(route.params.endDate).format('DD/MM/YYYY'),
+		totalPrice: route.params.price,
+		totalRentDays: route.params.days,
+	};
+
 	const fakeItem = {
-		ownerId: '12345',
-		name: "Fond Photo 'Les Mignons'",
-		description:
-			"Transformez vos photos en chef-d'œuvre avec ce fond photo unique en son genre. Donnez à vos clichés une touche très artistique et plus professionnelle en utilisant notre magnifique fond 'Les Mignons'.",
+		ownerId: order.ownerId,
+		name: order.itemName,
+		description: 'item.description',
 		photos: ['/Users/meon/Downloads/Cashetizer/cashetizer-frontend/frontend/assets/fakeImage.jpg'],
-		etat: 'Excellent',
+		etat: order.etat,
 		prices: {
 			day: 15,
 			week: 90,
@@ -25,11 +48,8 @@ export const ProductFormScreen = () => {
 		},
 		caution: 50,
 		category: 'Electronics',
-		localisation: 'Paris, France',
-		periodes: [
-			{ start: '2023-08-01', end: '2023-08-07' },
-			{ start: '2023-08-10', end: '2023-08-20' },
-		],
+		localisation: order.address,
+		periodes: [{ start: order.startDate, end: order.endDate }],
 	};
 
 	const calculateDays = (startDate, endDate) => {
@@ -94,15 +114,12 @@ export const ProductFormScreen = () => {
       </Modal> */}
 					<View style={styles.greyRectangle}>
 						<Text style={styles.name}>
-							{fakeItem.name} à {totalCost}€
+							{order.itemName} à {order.totalPrice}€
 						</Text>
 						<View style={styles.periodesContainer}>
-							<Text style={styles.periodes}>Périodes de location:</Text>
-							{fakeItem.periodes.map((periode, index) => (
-								<Text key={index} style={styles.periode}>
-									{periode.start} à {periode.end}
-								</Text>
-							))}
+							<Text style={styles.periodes}>
+								Location du {order.startDate} au {order.endDate}
+							</Text>
 						</View>
 						{/*  <Button style={styles.buttonOutlined} mode="outlined" onPress={SignInScreen}>
                 <Text style={styles.buttonText}>Valider la location</Text>
@@ -131,14 +148,11 @@ export const ProductFormScreen = () => {
 								<View style={styles.infoContainer}>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Locataire:</Text>
-										<Text style={styles.infoText}>Aicha Ahamada</Text>
+										<Text style={styles.infoText}> </Text>
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Durée de location:</Text>
-										<Text style={styles.infoText}>
-											{calculateDays(selectedPeriod.start, selectedPeriod.end)}{' '}
-											{calculateDays(selectedPeriod.start, selectedPeriod.end) <= 1 ? 'jour' : 'jours'}
-										</Text>
+										<Text style={styles.infoText}>{order.totalRentDays} jours</Text>
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Prix par jour :</Text>
@@ -165,13 +179,13 @@ export const ProductFormScreen = () => {
 
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Prix total:</Text>
-										<Text style={styles.infoText}>{totalCost}€</Text>
+										<Text style={styles.infoText}>{order.totalPrice}€</Text>
 									</View>
 
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Caution:</Text>
 										<Text style={styles.infoText}>
-											{fakeItem.caution}€{' '}
+											{order.caution}€
 											<Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal} />
 										</Text>
 									</View>
@@ -181,14 +195,13 @@ export const ProductFormScreen = () => {
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Loueur:</Text>
-										<Text style={styles.infoText}>Nelson {fakeItem.ownerId}</Text>
+										<Text style={styles.infoText}>{order.ownerUsername}</Text>
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Localisation:</Text>
 										<TouchableOpacity onPress={() => console.log('Nelson lives in Paris')}>
 											<Text style={styles.infoText}>
-												{' '}
-												<Ionicons name={'location'} color={'#FFCE52'} size={20} /> Paris
+												<Ionicons name={'location'} color={'#FFCE52'} size={20} /> {order.address}
 											</Text>
 										</TouchableOpacity>
 									</View>

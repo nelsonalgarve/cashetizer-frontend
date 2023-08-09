@@ -124,7 +124,7 @@ export const CheckIdScreen = () => {
 				return;
 			}
 
-			const response = await fetch(`${SERVER_URL}/IDCheck`, {
+			const response = await fetch(`https://cashetizer-backend.vercel.app/checkId/IDCheck`, {
 				method: 'POST',
 				body: formData,
 			});
