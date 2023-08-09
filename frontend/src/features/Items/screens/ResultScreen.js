@@ -63,7 +63,7 @@ export const ResultScreen = ({ route }) => {
 	const fetchItemsByCategory = async (categoryName, applyDateFilter = false) => {
 		try {
 			const encodedCategoryName = encodeURIComponent(categoryName);
-			const response = await fetch(`http://192.168.0.15:3000/item/items/categoryname/${encodedCategoryName}`);
+			const response = await fetch(`https://cashetizer-backend.vercel.app/item/items/categoryname/${encodedCategoryName}`);
 			let data = await response.json();
 
 			// If applyDateFilter is true, filter items based on the date range
@@ -105,7 +105,7 @@ export const ResultScreen = ({ route }) => {
 	// console.log(items.description);
 	console.log(items);
 	const renderItem = ({ item }) => {
-		return <ItemCard item={item} userLatitude={userLatitude} userLongitude={userLongitude} navigation={navigation} />;
+		return <ItemCard item={item} userLatitude={userLatitude} userLongitude={userLongitude} navigation={navigation} style={styles.card} />;
 	};
 
 	return (
@@ -115,10 +115,10 @@ export const ResultScreen = ({ route }) => {
 				<View style={styles.dateFilterRow}>
 					<Button
 						style={{ minWidth: '49%' }}
-						mode="outlined"
+						borderColor= "#FFCE50"
 						compact="true"
-						textColor="#155263"
 						buttonColor="#FFCE52"
+						textColor='#FFFFFF'
 						// rippleColor="green"
 						icon="calendar-range"
 						onPress={() => setCurrentPicker('start')}>
@@ -127,10 +127,10 @@ export const ResultScreen = ({ route }) => {
 
 					<Button
 						style={{ minWidth: '49%' }}
-						mode="outlined"
+						borderColor= "#FFCE50"
 						compact="true"
 						buttonColor="#FFCE52"
-						textColor="#155263"
+						textColor='#FFFFFF'
 						// rippleColor="green"
 						icon="calendar-range"
 						onPress={() => setCurrentPicker('end')}>
@@ -141,30 +141,29 @@ export const ResultScreen = ({ route }) => {
 				<View style={styles.dateFilterRow2}>
 					<View style={styles.rangePrecision}>
 						<Button
-							style={{ minWidth: '20%' }}
+							style={{ minWidth: '20%', marginLeft:0 }}
 							icon="calendar-minus"
 							textColor="#155263"
 							mode="outlined"
 							compact="true"
 							onPress={() => setDateTolerance((prev) => Math.max(0, prev - 1))}></Button>
-						<Text>+/- {dateTolerance} jour(s)</Text>
+						<Text style={{ margin:5 }}>+/- {dateTolerance} jour{dateTolerance > 1 ? 's' : ''}</Text>
 						<Button
 							textColor="#155263"
 							icon="calendar-plus"
-							style={{ minWidth: '20%' }}
+							style={{ minWidth: '20%', marginLeft:0 }}
 							mode="outlined"
+
 							compact="true"
 							onPress={() => setDateTolerance((prev) => prev + 1)}></Button>
 					</View>
 					<View>
-						<Button
-							textColor="#155263"
-							style={{ minWidth: '49%' }}
-							mode="outlined"
-							compact="true"
-							buttonColor="#FFCE52"
-							// rippleColor="green"
+						<Button style={styles.buttonsOutlineGreen }
 							icon="filter"
+							textColor="white"
+		mode="outlined"
+							
+							
 							onPress={() => fetchItemsByCategory(categoryName, true)}>
 							Filtrer
 						</Button>
@@ -219,6 +218,25 @@ const styles = StyleSheet.create({
 		backgroundColor: '#F1F1F1',
 		padding: 10, // added padding
 	},
+	buttonsOutlineGreen: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#155263',
+		borderWidth: 1, 
+		marginRight: 20,
+		borderColor: '#FFFFFF', 
+		width: '100%',
+		paddingHorizontal: 1,
+		borderRadius: 20,
+		shadowColor: 'rgba(0, 0, 0, 0.4)',
+		shadowOffset: {
+		  width: 0,
+		  height: 4,
+		},
+		shadowOpacity: 1,
+		shadowRadius: 3,
+		elevation: 4,
+	},
 	modalView: {
 		width: '40%', // use 80% of screen width
 		height: '20%', // use 40% of screen height
@@ -242,8 +260,8 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	card: {
-		marginBottom: 16,
-		backgroundColor: '#E8E8E8',
+		marginBottom: 5,
+		backgroundColor: 'red',
 		borderRadius: 8, // rounded corners
 		marginVertical: 5, // slight vertical margin for space between
 		elevation: 3, // shadow for Android
@@ -254,15 +272,16 @@ const styles = StyleSheet.create({
 	},
 	dateFilter: {
 		flex: 1,
-		margin: 10,
+		margin: 5,
 		backgroundColor: 'white',
 		borderRadius: 8,
-		padding: 10,
+		padding: 20,
 		elevation: 2,
 		shadowColor: '#000',
 		shadowOffset: { width: 0, height: 2 },
 		shadowOpacity: 0.2,
 		shadowRadius: 2,
+		
 	},
 	dateFilterRow: {
 		// flex: 1,
@@ -270,13 +289,15 @@ const styles = StyleSheet.create({
 		margin: 2,
 		justifyContent: 'space-between',
 		alignItems: 'center',
+		marginBottom: 5,
+
 	},
 	dateFilterRow2: {
 		// flex: 1,
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		marginTop: 10,
+		marginBottom: 10,
 	},
 	rangePrecision: {
 		flex: 1,
@@ -284,6 +305,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'space-between',
 		// width: '50%', // take up 70% of the container width
-		marginRight: 10,
+		marginRight: 65,
 	},
 });

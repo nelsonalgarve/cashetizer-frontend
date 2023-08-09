@@ -1,6 +1,6 @@
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, View } from 'react-native';
+import { KeyboardAvoidingView, Button, Modal, View } from 'react-native';
 import Geocoder from 'react-native-geocoding';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MapView, { Marker } from 'react-native-maps';
@@ -63,6 +63,7 @@ export const MapPicker = ({ onLocationSelected, isVisible, onClose }) => {
 
 	return (
 		<Modal visible={isVisible} onRequestClose={onClose}>
+			<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
 			<View style={{ flex: 1 }}>
 				<MapView style={{ flex: 1 }} region={region}>
 					{location && <Marker coordinate={location} draggable onDragEnd={handleMarkerDragEnd} />}
@@ -105,6 +106,7 @@ export const MapPicker = ({ onLocationSelected, isVisible, onClose }) => {
 				<TextInput label="Address" value={address} onChangeText={(text) => setAddress(text)} />
 				<Button title="Submit" onPress={handleSubmit} />
 			</View>
+			</KeyboardAvoidingView>
 		</Modal>
 	);
 };

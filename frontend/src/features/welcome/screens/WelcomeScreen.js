@@ -230,19 +230,14 @@ const styles = StyleSheet.create({
 		top: 0,
 		left: 0,
 		right: 0,
-		bottom: '80%',
 		marginTop: -15,
 	},
 	image: {
 		flex: 1,
 		maxWidth: '100%',
+		paddingHorizontal:5,
 	},
-	filterContainer: {
-		flex: 1,
-	},
-	filterForm: {
-		marginTop: -15,
-	},
+
 	buttonCategorie: {
 		position: 'absolute',
 		bottom: '40%', // Ajustez cette valeur pour déplacer les boutons vers le bas
@@ -322,8 +317,9 @@ const styles = StyleSheet.create({
 		paddingVertical: 40,
 	},
 	filterContainer: {
-		paddingHorizontal: 16,
-		marginTop: 16,
+		backgroundColor:"#E8E8E8",
+		marginTop: 0,
+		height: "4%",
 	},
 
 	flatList: {

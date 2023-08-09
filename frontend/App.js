@@ -35,6 +35,10 @@ import { SingleProductScreen } from './src/features/welcome/screens/SingleProduc
 import { WelcomeScreen } from './src/features/welcome/screens/WelcomeScreen';
 import { theme } from './src/infrastructure/theme';
 import themePaper from './src/infrastructure/theme/themePaper';
+import { useNavigation } from '@react-navigation/native';
+
+
+
 const store = configureStore({
 	reducer: { user },
 });
@@ -47,6 +51,11 @@ const TabNavigator = () => {
 		const routeName = route.state?.routes[route.state.index]?.name ?? '';
 		return routeName !== 'Welcome';
 	};
+const handleExitApp = () => {
+	navigation.navigate('Welcome');
+};
+  
+const navigation = useNavigation();
 
 	return (
 		<Tab.Navigator
@@ -100,8 +109,21 @@ const TabNavigator = () => {
 			<Tab.Screen name="MyProfile" component={MyProfileScreen} />
 			<Tab.Screen name="Favourite" component={FavouriteScreen} />
 			<Tab.Screen name="Settings" component={SettingsScreen} />
-			<Tab.Screen name="Welcome" component={WelcomeScreen} options={{ tabBarVisible: false }} />
-		</Tab.Navigator>
+			<Tab.Screen
+      name="Welcome"
+      component={WelcomeScreen}
+      options={{
+        tabBarVisible: false,
+        tabBarIcon: ({ color }) => (
+          <TouchableOpacity onPress={handleExitApp}>
+            <View style={{ justifyContent: 'center', alignItems: 'center', height: 50, marginTop: 40 }}>
+              <Ionicons name="exit-outline" size={30} color={color} />
+            </View>
+          </TouchableOpacity>
+        ),
+      }}
+    />
+  </Tab.Navigator>
 	);
 };
 
@@ -248,7 +270,19 @@ export default App = () => {
 											headerShown: false,
 										}}
 									/>
-									<Stack.Screen name="Results" component={ResultScreen} />
+									<Stack.Screen name="Results" component={ResultScreen} options={({ navigation }) => ({
+											title: 'Résultats recherche',
+											headerLeft: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={styles.backButton}>
+													<Ionicons name="arrow-back" size={30} color="white" />
+												</TouchableOpacity>
+											),
+											headerRight: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('TabNavigator')} style={styles.backButton}>
+													<Ionicons name="home-outline" size={30} color="white" />
+												</TouchableOpacity>
+											),
+										})}/>
 									<Stack.Screen
 										name="SingleProduct"
 										component={SingleProductScreen}
