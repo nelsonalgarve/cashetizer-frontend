@@ -709,14 +709,14 @@ borderRadius: 20,
 	header: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		marginLeft: -200,
+		marginLeft: -170,
 	  },
 	  backIcon: {
 		marginRight: 5,
 	  },
 	  resultsText: {
 		color: '#FFCE52', 
-		fontSize: 12, 
-		fontWeight:"700"  
+		fontSize: 14, 
+		fontWeight:"800"  
 	  },
 });
