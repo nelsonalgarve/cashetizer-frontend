@@ -567,8 +567,17 @@ borderRadius: 20,
 		zIndex:1,
 		alignItems: 'center',
 		justifyContent: 'center',
-
+		borderColor: '#E6E6E6', 
+borderRadius: 20,
+	shadowColor: 'rgba(0, 0, 0, 0.4)', 
+	shadowOffset: {
+	  width: 0,
+	  height: 4,
 	},
+	shadowOpacity: 1,
+	shadowRadius: 3,
+	elevation: 4, 
+  },
 	emptyRectangle: {
 		
 		height: 300,
