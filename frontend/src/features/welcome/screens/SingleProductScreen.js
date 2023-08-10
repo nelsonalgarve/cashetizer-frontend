@@ -353,17 +353,49 @@ export const SingleProductScreen = ({ route }) => {
 					</View>
 				</Modal>
 
+				
 				<View style={styles.infoContainer}>
-					<View style={styles.infoRow}>
-						<Text style={styles.infoLabel}>Prix de la location: </Text>
-						<Text style={styles.infoText}>
-							{calculatedPrice}€ <Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal2} />
-						</Text>
-					</View>
-					<View style={styles.infoRow}>
-						<Text style={styles.infoLabel}>État: </Text>
-						<Text style={styles.infoText}>{item.description.etat}</Text>
-					</View>
+				{calculatedPrice !== 0 && (
+  <View style={styles.infoRow}>
+    <Text style={styles.infoLabel}>Prix de la location: </Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Text style={styles.infoText}>
+        {calculatedPrice !== null ? `${calculatedPrice}€` : '0€'}
+        {calculatedPrice !== null && (
+          <Ionicons
+            name="information-circle-outline"
+            size={20}
+            color="blue"
+            onPress={toggleModal2}
+          />
+        )}
+      </Text>
+    </View>
+  </View>
+)}
+
+
+
+{calculatedPrice !== 0 && (<View style={styles.infoRow}>
+  <Text style={styles.infoLabel}>Durée de location: </Text>
+  <Text style={styles.infoText}>
+    {numberOfDays !== null && (
+      `${numberOfDays} jour${numberOfDays > 1 ? 's' : ''}`
+    )}
+  </Text>
+</View>)}
+
+
+
+
+<View style={styles.infoRow}>
+  <Text style={styles.infoLabel}>État: </Text>
+  <Text style={styles.infoText}>{item.description.etat}</Text>
+</View>
+
+	
+
+
 					<View style={styles.infoRow}>
 						<Text style={styles.infoLabel}>Caution:</Text>
 						<Text style={styles.infoText}>
