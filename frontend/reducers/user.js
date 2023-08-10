@@ -15,7 +15,7 @@ const user = createSlice({
 			state.value = action.payload;
 		},
 		setToken: (state, action) => {
-			state.token = action.payload;
+			state.tokenValue = action.payload;
 		},
 		setError: (state, action) => {
 			state.error = action.payload;

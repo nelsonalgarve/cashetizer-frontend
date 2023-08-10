@@ -13,7 +13,7 @@ export const SignOut = () => {
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.value);
 	const token = useSelector((state) => state.user.token);
-	console.log(token);
+
 	const onSubmitLogout = () => {
 		// Adresse du backend pour Fetch POST logout
 		const logout = `${SERVER_URL}user/users/logoutAll`;

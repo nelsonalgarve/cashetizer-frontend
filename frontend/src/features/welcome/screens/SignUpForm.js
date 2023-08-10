@@ -17,7 +17,7 @@ export const SignUpForm = () => {
 	const navigation = useNavigation();
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.value);
-	const token = useSelector((state) => state.user.token);
+	const token = useSelector((state) => state.user.tokenValue);
 	const userData = useSelector(selectUserData);
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
@@ -57,7 +57,7 @@ export const SignUpForm = () => {
 		};
 
 		// Adresse du backend pour Fetch POST signup
-		const signUpEndpoint = `https://cashetizer-backend.vercel.app/users`;
+		const signUpEndpoint = `http://192.168.0.12:3000/users`;
 
 		fetch(signUpEndpoint, {
 			method: 'POST',
@@ -75,9 +75,7 @@ export const SignUpForm = () => {
 					console.log('Succes loggedIn', data);
 					dispatch(setToken(data.token));
 					dispatch(setUser(data.user));
-					// affichage du reducer user
-					console.log('userfromreducer', user);
-					console.log('tokenFormReducer', token);
+
 					navigation.navigate('ConfirmationAccount');
 				} else {
 					console.log('Error', data.message || 'Sign-up failed');

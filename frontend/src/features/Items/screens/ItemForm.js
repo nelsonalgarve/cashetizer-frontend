@@ -70,7 +70,7 @@ export const ItemForm = () => {
 	const [myAddressParsed, setMyAddressParsed] = useState({});
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.value);
-	const token = useSelector((state) => state.user.token);
+	const token = useSelector((state) => state.user.tokenValue);
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState('');
 	const [cameraType, setCameraType] = useState(CameraType.front);
@@ -79,7 +79,7 @@ export const ItemForm = () => {
 	const [livePhoto, setLivePhoto] = useState('');
 	const isFocused = useIsFocused();
 	const cameraRef = useRef(null);
-
+	console.log('tokenUseSelector_________________________________________________', token);
 	// USESTATE PHOTOS
 	const [photos, setPhotos] = useState([]);
 	const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
@@ -115,41 +115,13 @@ export const ItemForm = () => {
 				return;
 			}
 
-			const photo = await cameraRef.current.takePictureAsync({ quality: 0.3 });
+			const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
 			setPhotos([...photos, photo.uri]);
 			if (photos.length === 3) {
 				await uploadPhotos();
 			}
 		}
 	};
-	// UPLOAD PHOTOS TO THE FETCH ROUTE
-	// const uploadPhotos = async () => {
-	// 	try {
-	// 		for (let i = 0; i < photos.length; i++) {
-	// 			const formData = new FormData();
-	// 			formData.append('photoFromFront', {
-	// 				uri: photos[i],
-	// 				name: `photo_${i}.jpg`,
-	// 				type: 'image/jpeg',
-	// 			});
-
-	// 			const response = await fetch('http://172.20.10.4:3000/Upload/Upload', {
-	// 				method: 'POST',
-	// 				body: formData,
-	// 			});
-
-	// 			const data = await response.json();
-
-	// 			if (data.result && data.urls && data.urls.length > 0) {
-	// 				console.log(`Image ${i + 1} téléchargée avec succès:`, data.urls[data.urls.length - 1]);
-	// 			} else {
-	// 				console.log(`Erreur lors du téléchargement de l'image ${i + 1}. Référence à la caméra invalide.`);
-	// 			}
-	// 		}
-	// 	} catch (error) {
-	// 		console.error('Error uploading photos:', error);
-	// 	}
-	// };
 
 	const handleSubmit = async () => {
 		console.log('Uploading');
@@ -249,14 +221,14 @@ export const ItemForm = () => {
 			};
 
 			delete payload.photos;
-			console.log('payload--------------------------------', payload);
+			console.log('payload--------------------------------', token);
 			for (const key in payload) {
 				formData.append(key, typeof payload[key] === 'object' ? JSON.stringify(payload[key]) : payload[key]);
 			}
 
 			//token provisoire pour tests
-			const token =
-				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGQzZDlkN2I3Y2U5MmI2NWMwNDc5MGEiLCJpYXQiOjE2OTE2MDgwMTN9.MMErOshlOGID1Zaczk6p3rr8iPOvbrA61whAx4VN2_c';
+			// const token =
+			// 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGQzZDlkN2I3Y2U5MmI2NWMwNDc5MGEiLCJpYXQiOjE2OTE2MjIxMTJ9.E1876ldSYf4atZDU1NMqrlte_rk89ObCUgR9slSmUno';
 
 			// Submit main payload
 			createNewItem(token, formData)
@@ -535,7 +507,8 @@ export const ItemForm = () => {
 									alignItems: 'center',
 									paddingTop: 5,
 									borderRadius: 50,
-								}}>
+								}}
+							>
 								<Badge
 									size={30}
 									icon="calendar"
@@ -546,7 +519,8 @@ export const ItemForm = () => {
 										color: '#155263',
 										fontWeight: 500,
 									}}
-									onPress={() => setDatePickerVisible(true)}>
+									onPress={() => setDatePickerVisible(true)}
+								>
 									<Icon name="calendar" size={20} /> Remplissez le calendrier de disponibilité
 								</Badge>
 
@@ -567,7 +541,8 @@ export const ItemForm = () => {
 											fontSize: 12,
 											color: 'white',
 											minHeight: '100%',
-										}}>
+										}}
+									>
 										Période {index + 1}: {moment(period.start).format('L')} - {moment(period.end).format('L')}
 									</Badge>
 									<Divider />
@@ -577,7 +552,8 @@ export const ItemForm = () => {
 										mode="oulined"
 										compact="false"
 										style={{ paddingHorizontal: 0 }}
-										onPress={() => deletePeriod(index)}></Button>
+										onPress={() => deletePeriod(index)}
+									></Button>
 								</View>
 							))}
 						</Surface>
@@ -632,7 +608,8 @@ export const ItemForm = () => {
 									color: '#155263',
 									fontWeight: 500,
 								}}
-								onPress={() => setMapVisible(true)}>
+								onPress={() => setMapVisible(true)}
+							>
 								<Ionicons style={{ marginTop: 5 }} name="location" size={20} />
 								Cliquez ici pour géolocaliser votre objet
 							</Badge>

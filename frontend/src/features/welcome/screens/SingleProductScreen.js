@@ -78,8 +78,9 @@ export const SingleProductScreen = ({ route }) => {
 	const handleStartDatePicked = (date) => {
 		setSelectedStartDate(date);
 		setDatePickerVisibility(false);
-		// After selecting start date, prompt for end date.
-		setEndDatePickerVisibility(true);
+		setTimeout(() => {
+			setEndDatePickerVisibility(true);
+		}, 500);
 	};
 
 	const handleEndDatePicked = (date) => {
@@ -281,6 +282,8 @@ export const SingleProductScreen = ({ route }) => {
 			<DateTimePickerModal
 				isVisible={isDatePickerVisible}
 				mode="date"
+				display="inline"
+				confirmTextIOS="Date de début de location"
 				onConfirm={handleStartDatePicked}
 				onCancel={() => setDatePickerVisibility(false)}
 				minimumDate={new Date(activePeriod?.start)}
@@ -290,6 +293,10 @@ export const SingleProductScreen = ({ route }) => {
 			<DateTimePickerModal
 				isVisible={isEndDatePickerVisible}
 				mode="date"
+				display="inline"
+				// buttonTextColorIOS="yellow"
+				// backdropStyleIOS="green"
+				confirmTextIOS="Date de fin de location"
 				onConfirm={handleEndDatePicked}
 				onCancel={() => setEndDatePickerVisibility(false)}
 				minimumDate={selectedStartDate} // The end date shouldn't be before the selected start date
@@ -317,7 +324,8 @@ export const SingleProductScreen = ({ route }) => {
 							longitude: formItem.localisation.longitude,
 							latitudeDelta: 0.0922,
 							longitudeDelta: 0.0421,
-						}}>
+						}}
+					>
 						<Marker
 							coordinate={{
 								latitude: formItem.localisation.latitude,

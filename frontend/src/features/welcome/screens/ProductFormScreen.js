@@ -17,8 +17,7 @@ export const ProductFormScreen = ({ route, item }) => {
 	};
 
 	const user = useSelector((state) => state.user.value);
-
-	console.log(user);
+	console.log('__________________', user);
 
 	const order = {
 		ownerId: route.params.ownerId,
@@ -148,7 +147,7 @@ export const ProductFormScreen = ({ route, item }) => {
 								<View style={styles.infoContainer}>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Locataire:</Text>
-										<Text style={styles.infoText}> </Text>
+										<Text style={styles.infoText}> {user.username}</Text>
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Durée de location:</Text>
@@ -156,7 +155,7 @@ export const ProductFormScreen = ({ route, item }) => {
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Prix par jour :</Text>
-										<Text style={styles.infoText}>{fakeItem.prices.day}€ </Text>
+										<Text style={styles.infoText}>{order.totalPrice / order.totalRentDays}€ </Text>
 									</View>
 
 									<Portal>
@@ -164,14 +163,15 @@ export const ProductFormScreen = ({ route, item }) => {
 											<Text style={styles.modalTitle}>Protégez comme la prunelle de vos yeux </Text>
 											<Text style={styles.modalText}>
 												Une usure normale est acceptable mais un dommage du bien d'autrui demande compensation. C'est pourquoi
-												cette caution vous sera restitué lors de l'inspection du retour de matériel, entre vous et le
+												cette caution vous sera restituée lors de l'inspection du retour de matériel, entre vous et le
 												propriétaire.
 											</Text>
 
 											<Button
 												style={{ marginTop: 20, alignItems: 'center', backgroundColor: '#155263', color: 'white' }}
 												mode="outlined"
-												onPress={toggleModal}>
+												onPress={toggleModal}
+											>
 												<Text style={{ fontWeight: 600, color: 'white' }}> Fermer</Text>
 											</Button>
 										</Modal>
@@ -197,8 +197,8 @@ export const ProductFormScreen = ({ route, item }) => {
 										<Text style={styles.infoLabel}>Loueur:</Text>
 										<Text style={styles.infoText}>{order.ownerUsername}</Text>
 									</View>
-									<View style={styles.infoRow}>
-										<Text style={styles.infoLabel}>Localisation:</Text>
+									<View style={styles.infoRowAddress}>
+										<Text style={styles.infoLabelAddress}>Localisation:</Text>
 										<TouchableOpacity onPress={() => console.log('Nelson lives in Paris')}>
 											<Text style={styles.infoText}>
 												<Ionicons name={'location'} color={'#FFCE52'} size={20} /> {order.address}
@@ -306,6 +306,15 @@ const styles = StyleSheet.create({
 		width: '20%',
 		resizeMode: 'contain',
 	},
+	infoRowAddress: {
+		flexWrap: 'wrap',
+	},
+	infoLabelAddress: {
+		fontSize: 16,
+		fontWeight: 'bold',
+		color: '#333',
+	},
+
 	textContainer: {
 		alignItems: 'center',
 		marginBottom: 10,
