@@ -310,9 +310,9 @@ export const SingleProductScreen = ({ route }) => {
 			</Portal>
 
 			<View style={styles.greyRectangle}>
-				<TouchableOpacity style={styles.header} onPress={() => navigation.navigate('Results')}>
+				<TouchableOpacity style={styles.header} onPress={() => navigation.navigate('Search')}>
 					<Ionicons name="arrow-back" size={25} color="#FFCE52" style={styles.backIcon} />
-					<Text style={styles.resultsText}>Résultats de la recherche</Text>
+					<Text style={styles.resultsText}>Nouvelle recherche</Text>
 				</TouchableOpacity>
 				<Text style={styles.name}>
 					{limitTextLength(item.name, 25)} à {calculatedPrice} €

@@ -40,6 +40,8 @@ import { MapPicker } from '../components/MapPicker';
 const SERVER_URL = process.env.SERVER_URL;
 
 export const ItemForm = () => {
+	const navigation = useNavigation();
+	
 	// GOOGLE PLACES
 	const [isMapVisible, setMapVisible] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState(null);
@@ -73,7 +75,7 @@ export const ItemForm = () => {
 	const token = useSelector((state) => state.user.tokenValue);
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState('');
-	const [cameraType, setCameraType] = useState(CameraType.front);
+	const [cameraType, setCameraType] = useState();
 	const [hasPermission, setHasPermission] = useState(false);
 	const [showCamera, setShowCamera] = useState(false);
 	const [livePhoto, setLivePhoto] = useState('');
@@ -185,7 +187,9 @@ export const ItemForm = () => {
 	// A L'AIDE DU HELPER createNewItem.js--------------------------------------------
 
 	const onSubmit = async (data) => {
+		
 		try {
+			
 			const formData = new FormData();
 
 			// VERIFIE SI ARRAY PHOTOS EXISTE
@@ -196,6 +200,7 @@ export const ItemForm = () => {
 						name: `photo_${i}.jpg`,
 						type: 'image/jpeg',
 					});
+					
 				}
 			} else {
 				console.log('pas de photos:', photos);
@@ -235,6 +240,7 @@ export const ItemForm = () => {
 			createNewItem(token, formData)
 				.then((data) => {
 					console.log('New item created:', data);
+					navigation.navigate('ConfirmAdvert')
 				})
 				.catch((error) => {
 					console.error('Error in createNewItem:', error);
@@ -654,7 +660,7 @@ export const ItemForm = () => {
 				</View>
 				<View style={styles.buttonsContainer}>
 					<Button style={styles.buttonOutlined} mode="outlined" onPress={onSubmit}>
-						<Text style={styles.buttonText}>Poster l'annonce</Text>
+						 <Text>Poster l'annonce </Text>
 					</Button>
 
 					{/* <Button mode="outlined" onPress={onReset}>

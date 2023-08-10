@@ -75,7 +75,7 @@ export const SignUpForm = () => {
 					dispatch(setToken(data.token));
 					dispatch(setUser(data.user));
 
-					navigation.navigate('ConfirmationAccount');
+					navigation.navigate('CheckId');
 				} else {
 					console.log('Error', data.message || 'Sign-up failed');
 				}

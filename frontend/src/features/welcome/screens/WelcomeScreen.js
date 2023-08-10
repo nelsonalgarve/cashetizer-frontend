@@ -149,7 +149,7 @@ export const WelcomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
 	buttonsContainer: {
 		position: 'absolute',
-		bottom: 20,
+		bottom: 5,
 		left: 0,
 		right: 0,
 		paddingBottom: 20,
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		paddingBottom: 20,
 		alignItems: 'center',
-		marginTop: 30,
+		marginTop: 5,
 	},
 	button: {
 		backgroundColor: '#155263',

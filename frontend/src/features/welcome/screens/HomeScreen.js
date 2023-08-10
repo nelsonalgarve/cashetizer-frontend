@@ -9,7 +9,7 @@ export const HomeScreen = ({ navigation }) => {
 		navigation.navigate('SearchScreen');
 	};
 	const handleAddRent = () => {
-		navigation.navigate('CheckId');
+		navigation.navigate('ItemForm');
 	};
 
 	// Définissez les catégories ici

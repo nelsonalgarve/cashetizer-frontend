@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		paddingBottom: 20,
 		alignItems: 'center',
-		marginTop: 35,
+		marginTop: 5,
 	},
 	button: {
 		backgroundColor: '#155263',

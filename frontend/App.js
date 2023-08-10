@@ -234,7 +234,7 @@ export default App = () => {
 										})}
 									/>
 									<Stack.Screen
-										name="ConfirmationRent"
+										name="ConfirmRent"
 										component={ConfirmationRentScreen}
 										options={({ navigation }) => ({
 											title: 'Bienvenue!',
@@ -247,7 +247,7 @@ export default App = () => {
 										})}
 									/>
 									<Stack.Screen
-										name="ConfirmationAdvert"
+										name="ConfirmAdvert"
 										component={ConfirmationAdvertScreen}
 										options={({ navigation }) => ({
 											title: 'Bienvenue!',
