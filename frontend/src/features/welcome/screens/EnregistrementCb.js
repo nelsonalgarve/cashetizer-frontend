@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectUserData, setToken, setUser } from '../../../../reducers/user';
 import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
+
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const EnregistrementCb = () => {
@@ -21,6 +22,14 @@ export const EnregistrementCb = () => {
 	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 
+	
+	  const handleValiderPaiement = () => {
+		navigation.navigate('Confirmation'); 
+	  };
+	  const handleProductFormScreen = () => {
+		navigation.navigate('ProductFormScreen'); 
+	  };
+	  
 	const {
 		handleSubmit,
 		control,
@@ -41,6 +50,8 @@ export const EnregistrementCb = () => {
 		const requestData = {
 			cardName: data.cardName,
 			cardNumber: data.cardNumber,
+			cardMonths: data.cardMonths,
+			cardYears: data.cardYears,
 			cardType: data.cardType,
 			cvc: data.cvc,
 		  };
@@ -109,14 +120,70 @@ export const EnregistrementCb = () => {
         keyboardType="numeric"
         error={errors.cardNumber}
         left={<TextInput.Icon icon="credit-card" />}
-        onChangeText={(text) => field.onChange(text.replace(/\D/g, '').slice(0, 16))} // Limiter à 16 chiffres
+        onChangeText={(text) => field.onChange(text.replace(/\D/g, '').slice(0,16))} // Limiter à 16 chiffres
       />
       {errors.cardNumber && <HelperText type="error">{errors.cardNumber.message}</HelperText>}
     </View>
   )}
 />
+<Controller
+  name="cardMonths"
+  control={control}
+  defaultValue=""
+  rules={{
+    required: 'Le mois est obligatoire',
+    pattern: {
+      value: /\d{2}/,
+      message: 'Mois invalide',
+    },
+  }}
+  render={({ field }) => (
+    <View style={styles.halfContainer}>
+      <TextInput
+        style={styles.halfTextInput}
+        {...field}
+        value={field.value}
+        label="Mois"
+        mode="outlined"
+        keyboardType="numeric"
+        error={errors.cardMonths}
+        left={<TextInput.Icon icon="credit-card" />}
+        onChangeText={(text) => field.onChange(text.replace(/\D/g, '').slice(0, 2))}
+      />
+      {errors.cardMonths && <HelperText type="error">{errors.cardMonths.message}</HelperText>}
+    </View>
+	
+  )}
+/>
 
-
+<Controller
+  name="cardYears"
+  control={control}
+  defaultValue=""
+  rules={{
+    required: 'L\'année est obligatoire',
+    pattern: {
+      value: /\d{4}/,
+      message: 'Année invalide',
+    },
+  }}
+  render={({ field }) => (
+    <View style={styles.halfContainer}>
+      <TextInput
+        style={styles.halfTextInput}
+        {...field}
+        value={field.value}
+        label="Année"
+        mode="outlined"
+        keyboardType="numeric"
+        error={errors.cardYears}
+        left={<TextInput.Icon icon="credit-card" />}
+        onChangeText={(text) => field.onChange(text.replace(/\D/g, '').slice(0, 4))}
+      />
+      {errors.cardYears && <HelperText type="error">{errors.cardYears.message}</HelperText>}
+    </View>
+  )}
+/>
 <Controller
   name="cardType"
   control={control}
@@ -167,8 +234,7 @@ export const EnregistrementCb = () => {
     </View>
   )}
 />
-						
-						
+					
 						<View style={styles.checkboxContainer}>
 							<CheckBox value={acceptedTerms} onValueChange={toggleTermsAcceptance} />
 							<Text style={styles.checkboxLabel}>
@@ -176,13 +242,14 @@ export const EnregistrementCb = () => {
 							</Text>
 						</View>
 						<View style={styles.buttonsContainer}>
-							<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSubmit(onSubmit)}>
+							<Button style={styles.buttonOutlined} mode="outlined" onPress={handleValiderPaiement}>
 								<Text style={styles.buttonText}>Valider paiement</Text>
 							</Button>
 
-							<Button mode="outlined" onPress={onReset}>
+							<Button mode="outlined" onPress={handleProductFormScreen}>
 								Annuler
 							</Button>
+
 						</View>
 					</ScrollView>
 				</View>
@@ -237,16 +304,17 @@ const styles = StyleSheet.create({
 		marginLeft: 8,
 		fontSize: 14,
 	},
-	passwordContainer: {
+
+	halfContainer: {
 		flexDirection: 'row',
-		alignItems: 'center',
 		justifyContent: 'space-between',
-		borderColor: '#ccc',
-		borderWidth: 1,
-		borderRadius: 5,
-		paddingHorizontal: 10,
-		marginBottom: 20,
-	},
+	  },
+	  halfTextInput: {
+		fontSize: 12,
+		height: 35,
+		backgroundColor: '#E8E8E8',
+	  },
+	
 	passwordInput: {
 		flex: 1,
 		height: 40,

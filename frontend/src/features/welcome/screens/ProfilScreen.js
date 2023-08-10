@@ -14,6 +14,9 @@ export const ProfilScreen = () => {
     { label: "Nombre d'objets loués", value: "6" },
   ];
 
+    
+  const navigation = useNavigation();
+  
   const handleContractPress = () => {
     // Navigate to the "Contrat de location" screen
     navigation.navigate('ContratDeLocationScreen');
@@ -24,6 +27,9 @@ export const ProfilScreen = () => {
     navigation.navigate('OutilsDEtatDesLieuxScreen');
   };
 
+  const handleHomeScreen = () => {
+		navigation.navigate('HomeScreen');
+	  };
 
   const profilePhotoUri = require('../../../../assets/SuperM.png');
 
@@ -56,8 +62,11 @@ export const ProfilScreen = () => {
         <View style={styles.imageContainer}>
           {/* Your image here */}
           <View style={styles.imageContainer}>
-          <Image source={profilePhotoUri} style={styles.profileImage} />
-        </View>
+  <Image source={profilePhotoUri} style={styles.profileImage} />
+  <View style={styles.verifiedIconContainer}>
+    <Icon name="check-circle" size={18} color="#00FF00" />
+  </View>
+</View>
         </View>
       </View>
 
@@ -77,7 +86,7 @@ export const ProfilScreen = () => {
       ))}
 
       <Button style={styles.button1} onPress={handleContractPress} labelStyle={styles.buttonText1}>Retour Page Produit</Button>
-      <Button style={styles.button2} onPress={handleChecklistPress} labelStyle={styles.buttonText2}>Home</Button>
+      <Button style={styles.button2} onPress={handleHomeScreen} labelStyle={styles.buttonText2}>Home</Button>
       <View style={styles.greenRectangle}>
 				<Text style={styles.rectangleText}>
 					Economies futées,{'\n'}
@@ -91,15 +100,16 @@ export const ProfilScreen = () => {
 const styles = StyleSheet.create({
     itemContainer: {
       backgroundColor: '#ffffff',
-      padding: 16,
+      padding: 10,
       borderRadius: 8,
       shadowColor: '#000000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.2,
       shadowRadius: 4,
       elevation: 4,
-      bottom: '18%',
+      bottom: '20%',
     },
+
     label: {
         fontSize: 13,
       fontWeight: 'bold',
@@ -211,14 +221,26 @@ const styles = StyleSheet.create({
   },
   
   profileImage: {
-    width: 60, // Adjust the size of the profile photo as needed
-    height: 60,
+    width: 110, // Adjust the size of the profile photo as needed
+    height: 90,
     borderRadius: 25, // Set the borderRadius to half of the width and height to create a circle
     borderWidth: 2,
     borderColor: '#fff', // Optionally, you can set a border color for the profile photo
     position: 'absolute',
     top: 16,
     left: 16,
+  },
+
+  verifiedIconContainer: {
+    position: 'absolute',
+    bottom: -109,
+    right: 355,
+    backgroundColor: '#fff',
+    borderRadius: 9,
+    padding: 2,
+    borderWidth: 2,
+    borderColor: '#00FF00',
+    left: 15,
   },
 
   greenRectangle: {
@@ -241,5 +263,3 @@ const styles = StyleSheet.create({
   });
   
   
-
-

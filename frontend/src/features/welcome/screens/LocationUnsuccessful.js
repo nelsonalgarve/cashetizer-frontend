@@ -26,14 +26,11 @@ const RentalInformationCard = ({
 };
 
 export const LocationUnsuccessful = ({ navigation }) => {
-  const handleContractPress = () => {
-    // Navigate to the "Contrat de location" screen
-    navigation.navigate('ContratDeLocationScreen');
-  };
+  
 
-  const handleChecklistPress = () => {
+  const handleSearchScreen = () => {
     // Navigate to the "Outils d'état des lieux" screen
-    navigation.navigate('OutilsDEtatDesLieuxScreen');
+    navigation.navigate('SearchScreen');
   };
 
   return (
@@ -58,9 +55,17 @@ export const LocationUnsuccessful = ({ navigation }) => {
           paymentMethod="Credit Card"
         />
 
-        <Button style={styles.button1} onPress={handleContractPress}labelStyle={styles.buttonText1}>Poursuivre mes recherches</Button>
-        
-		<View style={styles.infoBar}></View>
+        <Button style={styles.button1} onPress={handleSearchScreen}labelStyle={styles.buttonText1}>Poursuivre mes recherches</Button>
+
+    <View style={[styles.imageContainer, { zIndex: -1 }]}>
+				<Image source={require('../../../../assets/LogoShortUp.png')} style={styles.image} />
+			</View>
+			<View style={styles.greenRectangle}>
+				<Text style={styles.rectangleText}>
+					Economies futées,{'\n'}
+					Des revenus assurés !{' '}
+				</Text>
+			</View>
       </View>
     </PaperProvider>
   );
@@ -76,8 +81,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
-	bottom: '60%',
+	bottom: '20%',
   },
+
   title1: {
 	fontSize: 29,
     fontWeight: 'bold',
@@ -104,16 +110,13 @@ const styles = StyleSheet.create({
 	backgroundColor: '#F1F1F1',
 },
 imageContainer: {
-	position: 'absolute',
-	top: 0,
-	left: 0,
-	right: 0,
-	bottom: '80%',
+  width: '100%',
+  marginBottom: -18,
 },
-
 image: {
-	flex: 1,
-	maxWidth: '100%',
+  width: '100%',
+  resizeMode: 'contain',
+  height: 210,
 },
 
 button1: {
@@ -123,11 +126,11 @@ button1: {
 	marginVertical: 7,
 	width: 290, //largeur des boutons
 	borderRadius: 50, //  pour des bords arrondis
-	bottom: '60%',
+	bottom: '10%',
 	left: '12%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
 },
 buttonText1: {
-	color: '#FFCE52',
+  color: 'white',
 	textAlign: 'center',
 	fontSize: 18,
 },
@@ -157,6 +160,23 @@ infoBar: {
 	height: 100,
 	alignItems: 'center',
 	justifyContent: 'center',
+},
+
+greenRectangle: {
+  weight: 40,
+  backgroundColor: '#155263',
+  paddingVertical: 2,
+  paddingHorizontal: 20,
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+},
+rectangleText: {
+  color: 'white',
+  textAlign: 'center',
+  fontSize: 20,
+  fontWeight: 'bold',
 },
 
 });

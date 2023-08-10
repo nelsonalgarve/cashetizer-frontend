@@ -172,31 +172,11 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 	},
 	buttonOutlined: {
+		margin: 10,
 		backgroundColor: '#FFCE52',
 		fontColor: 'black',
-		alignItems: 'center',
-		paddingVertical: 12,
-		marginVertical: 7,
-		width: 290, //largeur des boutons
-		borderRadius: 50, //  pour des bords arrondis
-		bottom: '0%',
-		left: '12%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
-	},
-	buttonGreenOutlined: {
-		margin: 10,
-		backgroundColor: '#155263',
-		fontColor: 'black',
 		borderWidth: 1,
-		width: '100%',
-		alignSelf: 'center',
-		margin: 12,
-	},
-	buttonNoColorOutlined: {
-		margin: 10,
-		backgroundColor: 'transparent',
-		fontColor: 'black',
-		borderWidth: 1,
-		width: '100%',
+		width: '80%',
 		alignSelf: 'center',
 		margin: 12,
 	},
@@ -208,14 +188,13 @@ const styles = StyleSheet.create({
 		backgroundColor: '#E8E8E8',
 	},
 	button: {
-		backgroundColor:'#155263',
-		alignItems: 'center',
-		paddingVertical: 12,
-		marginVertical: 7,
-		width: 290, //largeur des boutons
-		borderRadius: 50, //  pour des bords arrondis
-		bottom: '0%',
-		left: '12%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
+		margin: 10,
+		backgroundColor: '#155263',
+		fontColor: 'black',
+		borderWidth: 1,
+		width: '80%',
+		alignSelf: 'center',
+		margin: 12,
 	},
 
 });

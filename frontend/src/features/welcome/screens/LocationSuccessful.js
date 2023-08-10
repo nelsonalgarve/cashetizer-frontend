@@ -20,7 +20,7 @@ const RentalInformationCard = ({
 	<Text style={styles.info}>Prix total: {totalPrice}€</Text>
 	<Text style={styles.info}>Prix de caution: {depositPrice}€</Text>
 	<Text style={styles.info}>Mode de paiement: {paymentMethod}</Text>
-	<Text style={styles.title2}>Etat de la demande : Demande refusée par le propriétaire.</Text>
+	<Text style={styles.title2}>Etat de la demande : Demande acceptée par le propriétaire.</Text>
   </View>
   );
 };
@@ -58,8 +58,17 @@ export const LocationSuccessful = ({ navigation }) => {
         />
         <Button style={styles.button1} onPress={handleContractPress}labelStyle={styles.buttonText1}>Contrat de location</Button>
         <Button style={styles.button2} onPress={handleChecklistPress}labelStyle={styles.buttonText2}>Outils d'état des lieux</Button>
-		<View style={styles.infoBar}></View>
+	
       </View>
+      <View style={[styles.imageContainer, { zIndex: -1 }]}>
+				<Image source={require('../../../../assets/LogoShortUp.png')} style={styles.image} />
+			</View>
+			<View style={styles.greenRectangle}>
+				<Text style={styles.rectangleText}>
+					Economies futées,{'\n'}
+					Des revenus assurés !{' '}
+				</Text>
+			</View>
     </PaperProvider>
   );
 };
@@ -74,8 +83,19 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
-	bottom: '60%',
+	bottom: '10%',
   },
+
+  imageContainer: {
+		width: '100%',
+		marginBottom: -18,
+	},
+	image: {
+		width: '100%',
+		resizeMode: 'contain',
+		height: 210,
+	},
+
   title1: {
 	fontSize: 29,
     fontWeight: 'bold',
@@ -101,60 +121,100 @@ const styles = StyleSheet.create({
 	flex: 1,
 	backgroundColor: '#F1F1F1',
 },
-imageContainer: {
-	position: 'absolute',
-	top: 0,
-	left: 0,
-	right: 0,
-	bottom: '80%',
-},
-
-image: {
-	flex: 1,
-	maxWidth: '100%',
-},
 
 button1: {
-	backgroundColor:'#155263',
-	alignItems: 'center',
-	paddingVertical: 12,
-	marginVertical: 7,
-	width: 290, //largeur des boutons
-	borderRadius: 50, //  pour des bords arrondis
-	bottom: '60%',
-	left: '12%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
+	
+		backgroundColor: '#155263',
+		fontColor: 'black',
+		borderWidth: 1,
+		width: '80%',
+		alignSelf: 'center',
+		margin: 12,
+    bottom: '-10%',
 },
+
 buttonText1: {
-	color: '#FFCE52',
+  color: 'white',
 	textAlign: 'center',
 	fontSize: 18,
 },
+
 button2: {
-	backgroundColor: '#FFCE52',
-	alignItems: 'center',
-	paddingVertical: 12,
-	marginVertical: 7,
-	width: 290, //largeur des boutons
-	borderRadius: 50, //  pour des bords arrondis
-	bottom: '60%',
-	left: '12%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
-},
-buttonText2: {
-	color: '#155263',
-	textAlign: 'center',
-	fontSize: 18,
-},
-
-infoBar: {
-	backgroundColor: '#155263',
-	paddingVertical: 8,
-	paddingHorizontal: 16,
-	position: 'absolute',
-	bottom: '0%', // Ajustez cette valeur pour déplacer les boutons vers le bas
-	width: '100%',
-	height: 100,
-	alignItems: 'center',
-	justifyContent: 'center',
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: '#FFCE52',
+  borderWidth: 1,
+  borderColor: 'black', // Change the border color to black
+  width: '80%',
+  paddingHorizontal: 1,
+  borderRadius: 20,
+  shadowColor: 'rgba(0, 0, 0, 0.4)',
+  shadowOffset: {
+    width: 0,
+    height: 4,
+  },
+  shadowOpacity: 1,
+  shadowRadius: 3,
+  elevation: 4,
+  bottom: '-10%',
+  left: 40,
 },
 
+
+greenRectangle: {
+  weight: 40,
+  backgroundColor: '#155263',
+  paddingVertical: 2,
+  paddingHorizontal: 20,
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+},
+rectangleText: {
+  color: 'white',
+  textAlign: 'center',
+  fontSize: 20,
+  fontWeight: 'bold',
+},
+
+buttonsOutlineGreen: {
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: '#155263',
+  borderWidth: 1,
+  borderColor: '#FFFFFF',
+  width: '40%',
+  paddingHorizontal: 1,
+  borderRadius: 20,
+  shadowColor: 'rgba(0, 0, 0, 0.4)',
+  shadowOffset: {
+  width: 0,
+  height: 4,
+  },
+  shadowOpacity: 1,
+  shadowRadius: 3,
+  elevation: 4,
+  },
+
+  buttonsOutlineYellow: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFCE52',
+    borderWidth: 1,
+    borderColor: '#E6E6E6',
+    width: '40%',
+    paddingHorizontal: 1,
+    borderRadius: 20,
+    shadowColor: 'rgba(0, 0, 0, 0.4)',
+    shadowOffset: {
+    width: 0,
+    height: 4,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 4,
+    },
+    
 });
+

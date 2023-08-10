@@ -4,7 +4,12 @@ import formTheme from '../themes/FormTheme';
 import { useNavigation } from '@react-navigation/native';
 
 export const MesLocations = () => {
+  
+  const navigation = useNavigation();
 
+  const handleHomeScreen = () => {
+		navigation.navigate('HomeScreen');
+	  };
     const persons = [
       {
         name: "Appareil Photo Lumix",
@@ -41,10 +46,8 @@ export const MesLocations = () => {
     navigation.navigate('ContratDeLocationScreen');
   };
 
-  const handleChecklistPress = () => {
-    // Navigate to the "Outils d'état des lieux" screen
-    navigation.navigate('OutilsDEtatDesLieuxScreen');
-  };
+
+  
 
   const profilePhotoUri = require('../../../../assets/SuperM.png');
  
@@ -69,7 +72,7 @@ export const MesLocations = () => {
       ))}
 
       <Button style={styles.button1} onPress={handleContractPress} labelStyle={styles.buttonText1}>Retour Page Produit</Button>
-      <Button style={styles.button2} onPress={handleChecklistPress} labelStyle={styles.buttonText2}>Home</Button>
+      <Button style={styles.button2} onPress={handleHomeScreen} labelStyle={styles.buttonText2}>Home</Button>
       
       <View style={styles.greenRectangle}>
 				<Text style={styles.rectangleText}>

@@ -13,6 +13,11 @@ export const Confirmation = () => {
 	const WelcomeScreen = () => {
 		navigation.navigate('TabNavigator');
 	};
+
+	const handleHomeScreen = () => {
+		navigation.navigate('HomeScreen');
+	  };
+
 	const handleNotificationPermission = async () => {
 		const { status: existingStatus } = await Notifications.getPermissionsAsync();
 		let finalStatus = existingStatus;
@@ -63,7 +68,7 @@ export const Confirmation = () => {
 				</View>
 			
 				
-				<Button style={styles.buttonOutlined} mode="outlined" onPress={() => navigation.navigate('ItemForm')}>
+				<Button style={styles.buttonOutlined} mode="outlined" onPress={handleHomeScreen}>
 					<Text style={styles.buttonText}>Home</Text>
 				</Button>
 			</View>

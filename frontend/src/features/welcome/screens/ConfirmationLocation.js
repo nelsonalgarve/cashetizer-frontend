@@ -1,207 +1,200 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper';
-import formTheme from '../themes/FormTheme';
 import { useNavigation } from '@react-navigation/native';
+import * as Notifications from 'expo-notifications';
+import React from 'react';
+import { Controller, useController, useForm } from 'react-hook-form';
+import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { TextInputMask } from 'react-native-masked-text';
+import { Button, HelperText, Provider as PaperProvider, TextInput } from 'react-native-paper';
+import { CustomTextInput } from '../components/CustomTextInput';
+import formTheme from '../themes/FormTheme';
 
-export const MesAnnonces = () => {
+export const ConfirmationDeLocation = () => {
+	const navigation = useNavigation();
+	const WelcomeScreen = () => {
+		navigation.navigate('TabNavigator');
+	};
+	const handleContractPress = () => {
+		// Navigate to the "Contrat de location" screen
+		navigation.navigate('ContratDeLocationScreen');
+	  };
+	
+	  const handleChecklistPress = () => {
+		// Navigate to the "Outils d'état des lieux" screen
+		navigation.navigate('OutilsDEtatDesLieuxScreen');
+	  };
+	const handleNotificationPermission = async () => {
+		const { status: existingStatus } = await Notifications.getPermissionsAsync();
+		let finalStatus = existingStatus;
 
-    const persons = [
-        {
-          name: "Guitare",
-          surname: "bon état",
-          date: "du 30/08/2023 au 18/09/2023",
-          statut: "à venir",
-          image: require('../../../../assets/SuperM.png')
-        },
-        {
-          name: "Tondeuse",
-          surname: "usé",
-          date: "du 07/08/2023 au 19/09/2023",
-          statut: "en cours",
-          image: require('../../../../assets/chien.png')
-        },
-        {
-          name: "Raquette",
-          surname: "bon etat",
-          date: "du 08/08/2023 au 30/09/2023",
-          statut: "en cours",
-          image: require('../../../../assets/SuperM.png')
-        },
-        {
-            name: "Piano",
-            surname: "bon etat",
-            date: "du 08/08/2023 au 30/09/2023",
-            statut: "en cours",
-          image: require('../../../../assets/chien.png')
-        },
-      ];
-    
-  const handleContractPress = () => {
-    // Navigate to the "Contrat de location" screen
-    navigation.navigate('ContratDeLocationScreen');
-  };
+		if (existingStatus !== 'granted') {
+			const { status } = await Notifications.requestPermissionsAsync();
+			finalStatus = status;
+		}
 
-  const handleChecklistPress = () => {
-    // Navigate to the "Outils d'état des lieux" screen
-    navigation.navigate('OutilsDEtatDesLieuxScreen');
-  };
+		if (finalStatus === 'granted') {
+			console.log('Notification permission granted!');
+		}
+	};
 
-  const profilePhotoUri = require('../../../../assets/SuperM.png');
- 
+	const {
+		handleSubmit,
+		control,
+		formState: { errors },
+		getValues,
+		reset,
+	} = useForm();
 
-  return (
-   
-  <PaperProvider theme={formTheme}>
-      {/* Your component logic here */}
-      {persons.map((person, index) => (
-        <View key={index} style={styles.itemContainer}>
-          <View style={styles.imageContainer}>
-            
-          </View>
-          <View style={styles.infoContainer}>
-          <Image source={person.image} style={styles.profileImage} />
-            <Text style={styles.label}>titre produit: {person.name}</Text>
-            <Text style={styles.label}>etat produit: {person.surname}</Text>
-            <Text style={styles.label}>date de location: {person.date}</Text>
-            <Text style={styles.label}>statut location: {person.statut}</Text>
-          </View>
-        </View>
-      ))}
+	const onSubmit = (data) => {
+		// Handle form submission logic here
+		console.log(data);
+	};
 
-      <Button style={styles.button1} onPress={handleContractPress} labelStyle={styles.buttonText1}>Retour Page Produit</Button>
-      <Button style={styles.button2} onPress={handleChecklistPress} labelStyle={styles.buttonText2}>Home</Button>
-      <View style={styles.infoBar}></View>
-    </PaperProvider>
-  );
+	const onReset = () => {
+		reset();
+	};
+
+	return (
+		<PaperProvider theme={formTheme}>
+			<View style={styles.container}>
+				<View style={styles.textContainer}>
+					<Text style={styles.emoji}>🥳</Text>
+					<Text style={styles.title}> Félicitations ! </Text>
+
+					<Text style={styles.text}>
+                    Vous pouvez dès à présent fixer le lieu de rdv via notre messagerie sécurisée{'\n'}
+						{'\n'}
+						Nous vous souhaitons une excellente expérience avec .....
+						{'\n'}
+						
+					</Text>
+				</View>
+				
+				<Button style={styles.buttonOutlined} mode="outlined" onPress={() => navigation.navigate('ItemForm')}>
+					<Text style={styles.buttonText1}>Contact locataire</Text>
+				</Button>
+				<Button style={styles.button} onPress={handleContractPress}labelStyle={styles.buttonText}>Contrat de location</Button>
+        <Button style={styles.button} onPress={handleChecklistPress}labelStyle={styles.buttonText}>Outils d'état des lieux</Button>
+			</View>
+			<View style={[styles.imageContainer, { zIndex: -1 }]}>
+				<Image source={require('../../../../assets/LogoShortUp.png')} style={styles.image} />
+			</View>
+			<View style={styles.greenRectangle}>
+				<Text style={styles.rectangleText}>
+					Economies futées,{'\n'}
+					Des revenus assurés !{' '}
+				</Text>
+			</View>
+		</PaperProvider>
+	);
 };
 
-
 const styles = StyleSheet.create({
-    itemContainer: {
-      backgroundColor: '#ffffff',
-      padding: 9,
-      borderRadius: 7,
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      elevation: 4,
-      bottom: '-3%',
-    },
+	container: {
+		flex: 1,
+	},
 
-    infoContainer: {
-        backgroundColor: '#ffffff',
-        padding: 9,
-        borderRadius: 8,
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 4,
-        bottom: '8%',
-      },
+	imageContainer: {
+		width: '100%',
+		marginBottom: -18,
+	},
+	image: {
+		width: '100%',
+		resizeMode: 'contain',
+		height: 215,
+	},
+	textContainer: {
+		alignItems: 'center',
+		marginBottom: 10,
+	},
+	title: {
+		fontSize: 30,
+		textAlign: 'center',
+		fontWeight: 'bold',
+		marginTop: 10,
+		marginBottom: 10,
+		color: '#155263',
+	},
+	greenRectangle: {
+		weight: 40,
+		backgroundColor: '#155263',
+		paddingVertical: 2,
+		paddingHorizontal: 20,
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		right: 0,
+	},
+	rectangleText: {
+		color: 'white',
+		textAlign: 'center',
+		fontSize: 20,
+		fontWeight: 'bold',
+	},
+	emoji: {
+		fontSize: 60,
+		marginTop: 25,
+		marginBottom: 25,
+	},
+	text: {
+		fontSize: 16,
+		marginTop: 10,
+		textAlign: 'center',
+		color: '#155263',
+		fontWeight: '400',
+	},
+	buttonsContainer: {
+		flex: 1,
+		alignContent: 'flex-end',
+		marginTop: 10,
+	},
+	buttonNoLine: {
+		color: '#FFCE52',
+		textAlign: 'center',
+		fontWeight: 'bold',
+		fontSize: 16,
+		textShadowColor: '#000',
+		textShadowOffset: {
+			width: 0.5,
+			height: 0.5,
+		},
+		textShadowRadius: 2,
+	},
+	buttonText: {
+		color: 'white',
+		textAlign: 'center',
+		fontWeight: 'bold',
+		fontSize: 16,
+	},
+	buttonText1: {
+		color: 'white',
+		textAlign: 'center',
+		fontWeight: 'bold',
+		fontSize: 16,
+	},
+	buttonOutlined: {
+		margin: 10,
+		backgroundColor: '#FFCE52',
+		fontColor: 'black',
+		borderWidth: 1,
+		width: '80%',
+		alignSelf: 'center',
+		margin: 12,
+	},
+	textInput: {
+		paddingVertical: 1,
+		paddingHorizontal: 1,
+		fontSize: 12,
+		height: 35,
+		backgroundColor: '#E8E8E8',
+	},
+	button: {
+		margin: 10,
+		backgroundColor: '#155263',
+		fontColor: 'black',
+		borderWidth: 1,
+		width: '80%',
+		alignSelf: 'center',
+		margin: 12,
+	},
 
-    label: {
-        fontSize: 13,
-      fontWeight: 'bold',
-      marginBottom: 8,
-      textAlign: 'justify',
-    left: 80,
-    },
- 
-    value : {
-        fontSize: 15,
-      fontWeight: 'bold',
-      marginBottom: 8,
-      textAlign: 'right',
-      color :'#FFCE52',
-    },
-
-    title: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      marginBottom: 8,
-    },
-    
-    container: {
-      flex: 1,
-      backgroundColor: '#F1F1F1',
-     },
-    imageContainer: {
-      position: 'absolute',
-      top: 0,
-      left: 15,
-      right: 0,
-      bottom: '80%',
-     },
-     image: {
-      flex: 1,
-      maxWidth: '100%',
-  },
-  
-  button1: {
-      backgroundColor:'#155263',
-      alignItems: 'center',
-      paddingVertical: 1,
-      marginVertical: 7,
-      width: 290, //largeur des boutons
-      borderRadius: 50, //  pour des bords arrondis
-      bottom: '-10%',
-      left: '12%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
-  },
-
-  buttonText1: {
-      color: '#FFCE52',
-      textAlign: 'center',
-      fontSize: 18,
-  },
-
-  button2: {
-      backgroundColor: '#FFCE52',
-      alignItems: 'center',
-      paddingVertical: 1,
-      marginVertical: 7,
-      width: 290, //largeur des boutons
-      borderRadius: 50, //  pour des bords arrondis
-      bottom: '5%',
-      left: '12%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
-  },
-
-  buttonText2: {
-      color: '#155263',
-      textAlign: 'center',
-      fontSize: 18,
-  },
-  
-  infoBar: {
-      backgroundColor: '#155263',
-      paddingVertical: 8,
-      paddingHorizontal: 16,
-      position: 'absolute',
-      bottom: '-10%', // Ajustez cette valeur pour déplacer les boutons vers le bas
-      width: '100%',
-      height: 100,
-      alignItems: 'center',
-      justifyContent: 'center',
-  },
-  
-  profileImage: {
-    width: 60, // Adjust the size of the profile photo as needed
-    height: 60,
-    borderRadius: 2, // Set the borderRadius to half of the width and height to create a circle
-    borderWidth: 0,
-    borderColor: '#fff', // Optionally, you can set a border color for the profile photo
-    position: 'absolute',
-    top: 16,
-    left: 16,
-  },
-
-  labelImage: {
-    width: 30, // Ajustez la taille de l'image du label selon vos besoins
-    height: 30,
-    marginRight: 35, // Ajoutez une marge à droite pour séparer l'image du texte
-  },
-
-  });
-  
-  
+});
