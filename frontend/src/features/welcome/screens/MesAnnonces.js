@@ -11,28 +11,28 @@ export const MesAnnonces = () => {
           surname: "bon état",
           date: "du 30/08/2023 au 18/09/2023",
           statut: "à venir",
-          image: require('../../../../assets/SuperM.png')
+          image: require('../../../../assets/guitare.png')
         },
         {
           name: "Tondeuse",
           surname: "usé",
           date: "du 07/08/2023 au 19/09/2023",
           statut: "en cours",
-          image: require('../../../../assets/chien.png')
+          image: require('../../../../assets/tondeuse.png')
         },
         {
           name: "Raquette",
           surname: "bon etat",
           date: "du 08/08/2023 au 30/09/2023",
           statut: "en cours",
-          image: require('../../../../assets/SuperM.png')
+          image: require('../../../../assets/raquette.png')
         },
         {
-            name: "Piano",
+            name: "Flûte",
             surname: "bon etat",
             date: "du 08/08/2023 au 30/09/2023",
             statut: "en cours",
-          image: require('../../../../assets/chien.png')
+          image: require('../../../../assets/flute.png')
         },
       ];
     
@@ -68,9 +68,16 @@ export const MesAnnonces = () => {
         </View>
       ))}
 
+       <Button style={styles.button2} onPress={handleChecklistPress} labelStyle={styles.buttonText2}>Home</Button>
       <Button style={styles.button1} onPress={handleContractPress} labelStyle={styles.buttonText1}>Retour Page Produit</Button>
-      <Button style={styles.button2} onPress={handleChecklistPress} labelStyle={styles.buttonText2}>Home</Button>
-      <View style={styles.infoBar}></View>
+    
+
+      <View style={styles.greenRectangle}>
+				<Text style={styles.rectangleText}>
+					Economies futées,{'\n'}
+					Des revenus assurés !{' '}
+				</Text>
+			</View>
     </PaperProvider>
   );
 };
@@ -78,7 +85,7 @@ export const MesAnnonces = () => {
 
 const styles = StyleSheet.create({
     itemContainer: {
-      backgroundColor: '#ffffff',
+      backgroundColor: '#F1F1F1',
       padding: 9,
       borderRadius: 7,
       shadowColor: '#000000',
@@ -86,7 +93,7 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.2,
       shadowRadius: 4,
       elevation: 4,
-      bottom: '-3%',
+      bottom: '-2%',
     },
 
     infoContainer: {
@@ -98,7 +105,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 4,
         elevation: 4,
-        bottom: '8%',
+        bottom: '4%',
       },
 
     label: {
@@ -140,35 +147,56 @@ const styles = StyleSheet.create({
   },
   
   button1: {
-      backgroundColor:'#155263',
-      alignItems: 'center',
-      paddingVertical: 1,
-      marginVertical: 7,
-      width: 290, //largeur des boutons
-      borderRadius: 50, //  pour des bords arrondis
-      bottom: '-10%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#155263',
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
+    width: '80%',
+    paddingHorizontal: 1,
+    borderRadius: 20,
+    shadowColor: 'rgba(0, 0, 0, 0.4)',
+    shadowOffset: {
+    width: 0,
+    height: 4,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 4,
+      bottom: '1%',
       left: '12%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
   },
 
   buttonText1: {
-      color: '#FFCE52',
+    color: 'white',
       textAlign: 'center',
       fontSize: 18,
   },
 
   button2: {
-      backgroundColor: '#FFCE52',
-      alignItems: 'center',
-      paddingVertical: 1,
-      marginVertical: 7,
-      width: 290, //largeur des boutons
-      borderRadius: 50, //  pour des bords arrondis
-      bottom: '5%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFCE52',
+    borderWidth: 1,
+    borderColor: 'black', // Change the border color to black
+    width: '80%',
+    paddingHorizontal: 1,
+    borderRadius: 20,
+    shadowColor: 'rgba(0, 0, 0, 0.4)',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 4,
+    left: 40,
+      bottom: '-11%',
       left: '12%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
   },
 
   buttonText2: {
-      color: '#155263',
+    color: 'white',
       textAlign: 'center',
       fontSize: 18,
   },
@@ -201,6 +229,24 @@ const styles = StyleSheet.create({
     height: 30,
     marginRight: 35, // Ajoutez une marge à droite pour séparer l'image du texte
   },
+  greenRectangle: {
+    weight: 40,
+    backgroundColor: '#155263',
+    paddingVertical: 2,
+    paddingHorizontal: 20,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  rectangleText: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
 
   });
+  
+  
   

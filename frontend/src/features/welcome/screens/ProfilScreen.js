@@ -1,13 +1,14 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import formTheme from '../themes/FormTheme';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export const ProfilScreen = () => {
   const informations = [
     { label: "Nom", value: "Mr Tard" },
-    { label: "Niveau d'expérience", value: "Amateur" },
-    { label: "Évaluation propriétaire", value: "5/5" },
+    { label: "Niveau d'expérience", value: "confirmé" },
+    { label: "Évaluation propriétaire", value: "      5/5" },
     { label: "Avis sur le profil", value: "7" },
     { label: "Objet en location", value: "12" },
     { label: "Nombre d'objets loués", value: "6" },
@@ -23,7 +24,31 @@ export const ProfilScreen = () => {
     navigation.navigate('OutilsDEtatDesLieuxScreen');
   };
 
+
   const profilePhotoUri = require('../../../../assets/SuperM.png');
+
+
+  const renderStars = (rating) => {
+    const filledStars = Math.floor(rating);
+    const halfStar = rating - filledStars > 0.5;
+    const emptyStars = 5 - filledStars - (halfStar ? 1 : 0);
+
+    const stars = [];
+
+    for (let i = 0; i < filledStars; i++) {
+      stars.push(<Icon key={`star-${i}`} name="star" size={18} color="gold" />);
+    }
+
+    if (halfStar) {
+      stars.push(<Icon key={`star-half`} name="star-half" size={18} color="gold" />);
+    }
+
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<Icon key={`star-empty-${i}`} name="star-outline" size={18} color="gold" />);
+    }
+
+    return stars;
+  };
 
   return (
     <PaperProvider theme={formTheme}>
@@ -39,18 +64,29 @@ export const ProfilScreen = () => {
       {/* Your component logic here */}
       {informations.map((info, index) => (
         <View key={index} style={styles.itemContainer}>
-          <Text style={styles.label}>{info.label}: </Text>
-          <Text style={styles.value}>{info.value}</Text>
+        <Text style={styles.label}>{info.label}: </Text>
+        {info.label === "Évaluation propriétaire" ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {renderStars(parseFloat(info.value))}
+            <Text style={styles.value}>{info.value}</Text>
         </View>
+         ) : (
+          <Text style={styles.value}>{info.value}</Text>
+          )}
+          </View>
       ))}
 
       <Button style={styles.button1} onPress={handleContractPress} labelStyle={styles.buttonText1}>Retour Page Produit</Button>
       <Button style={styles.button2} onPress={handleChecklistPress} labelStyle={styles.buttonText2}>Home</Button>
-      <View style={styles.infoBar}></View>
+      <View style={styles.greenRectangle}>
+				<Text style={styles.rectangleText}>
+					Economies futées,{'\n'}
+					Des revenus assurés !{' '}
+				</Text>
+			</View>
     </PaperProvider>
   );
 };
-
 
 const styles = StyleSheet.create({
     itemContainer: {
@@ -62,7 +98,7 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.2,
       shadowRadius: 4,
       elevation: 4,
-      bottom: '9%',
+      bottom: '18%',
     },
     label: {
         fontSize: 13,
@@ -109,35 +145,55 @@ const styles = StyleSheet.create({
   },
   
   button1: {
-      backgroundColor:'#155263',
-      alignItems: 'center',
-      paddingVertical: 12,
-      marginVertical: 7,
-      width: 290, //largeur des boutons
-      borderRadius: 50, //  pour des bords arrondis
-      bottom: '9%',
-      left: '12%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#155263',
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
+    width: '80%',
+    paddingHorizontal: 1,
+    borderRadius: 20,
+    shadowColor: 'rgba(0, 0, 0, 0.4)',
+    shadowOffset: {
+    width: 0,
+    height: 4,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 4,
+      bottom: '14%',
+      left: '10%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
   },
 
   buttonText1: {
-      color: '#FFCE52',
+      color: 'white',
       textAlign: 'center',
       fontSize: 18,
   },
 
   button2: {
-      backgroundColor: '#FFCE52',
-      alignItems: 'center',
-      paddingVertical: 12,
-      marginVertical: 7,
-      width: 290, //largeur des boutons
-      borderRadius: 50, //  pour des bords arrondis
-      bottom: '9%',
-      left: '12%', // Ajustez cette valeur pour déplacer les boutons vers la gauche
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFCE52',
+    borderWidth: 1,
+    borderColor: 'black', // Change the border color to black
+    width: '80%',
+    paddingHorizontal: 1,
+    borderRadius: 20,
+    shadowColor: 'rgba(0, 0, 0, 0.4)',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 4,
+    bottom: '12%',
+    left: 40, // Ajustez cette valeur pour déplacer les boutons vers la gauche
   },
 
   buttonText2: {
-      color: '#155263',
+      color: 'white',
       textAlign: 'center',
       fontSize: 18,
   },
@@ -155,8 +211,8 @@ const styles = StyleSheet.create({
   },
   
   profileImage: {
-    width: 50, // Adjust the size of the profile photo as needed
-    height: 50,
+    width: 60, // Adjust the size of the profile photo as needed
+    height: 60,
     borderRadius: 25, // Set the borderRadius to half of the width and height to create a circle
     borderWidth: 2,
     borderColor: '#fff', // Optionally, you can set a border color for the profile photo
@@ -164,6 +220,24 @@ const styles = StyleSheet.create({
     top: 16,
     left: 16,
   },
+
+  greenRectangle: {
+    weight: 40,
+    backgroundColor: '#155263',
+    paddingVertical: 2,
+    paddingHorizontal: 20,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  rectangleText: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+
   });
   
   
