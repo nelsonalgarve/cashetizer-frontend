@@ -104,7 +104,7 @@ export const SignInForm = () => {
 			})
 			.then((data) => {
 				dispatch(clearUser());
-				forceUpdate();
+
 				console.log(data);
 			})
 			.catch((error) => {
@@ -224,6 +224,9 @@ export const SignInForm = () => {
 					</Button>
 					<Button onPress={() => navigation.navigate('ProductForm')}>
 						<Text> Go to ProductForm </Text>
+					</Button>
+					<Button onPress={() => navigation.navigate('MesAnnonces')}>
+						<Text> Mes annonces </Text>
 					</Button>
 				</ScrollView>
 			</View>

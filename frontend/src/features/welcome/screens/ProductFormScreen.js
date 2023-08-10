@@ -170,8 +170,7 @@ export const ProductFormScreen = ({ route, item }) => {
 											<Button
 												style={{ marginTop: 20, alignItems: 'center', backgroundColor: '#155263', color: 'white' }}
 												mode="outlined"
-												onPress={toggleModal}
-											>
+												onPress={toggleModal}>
 												<Text style={{ fontWeight: 600, color: 'white' }}> Fermer</Text>
 											</Button>
 										</Modal>

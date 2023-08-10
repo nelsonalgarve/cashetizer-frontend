@@ -324,8 +324,7 @@ export const SingleProductScreen = ({ route }) => {
 							longitude: formItem.localisation.longitude,
 							latitudeDelta: 0.0922,
 							longitudeDelta: 0.0421,
-						}}
-					>
+						}}>
 						<Marker
 							coordinate={{
 								latitude: formItem.localisation.latitude,

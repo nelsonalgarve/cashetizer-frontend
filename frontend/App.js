@@ -26,6 +26,7 @@ import { ConfirmationAdvertScreen } from './src/features/welcome/screens/Confirm
 import { ConfirmationRentScreen } from './src/features/welcome/screens/ConfirmationRentScreen';
 import FavouriteScreen from './src/features/welcome/screens/FavouriteScreen';
 import { HomeScreen } from './src/features/welcome/screens/HomeScreen';
+import { MesAnnonces } from './src/features/welcome/screens/MesAnnonces';
 import MyProfileScreen from './src/features/welcome/screens/MyProfileScreen';
 import { ProductFormScreen } from './src/features/welcome/screens/ProductFormScreen';
 import { SearchScreen } from './src/features/welcome/screens/SearchScreen';
@@ -170,6 +171,7 @@ export default App = () => {
 
 									<Stack.Screen name="ItemForm" component={ItemForm} />
 									<Stack.Screen name="SearchScreen" component={SearchScreen} />
+									<Stack.Screen name="MesAnnonces" component={MesAnnonces} />
 
 									<Stack.Screen
 										name="MapPicker"
