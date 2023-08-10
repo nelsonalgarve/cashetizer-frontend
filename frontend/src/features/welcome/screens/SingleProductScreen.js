@@ -1,15 +1,34 @@
 import { Ionicons } from '@expo/vector-icons';
+import { DateTimePicker } from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Button, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { IconButton, Portal, Modal } from 'react-native-paper';
 import MapView, { Marker } from 'react-native-maps';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { PeriodsPicker } from '../components/PeriodsPicker';
 
-import { Button, Modal, Provider as PaperProvider, Portal } from 'react-native-paper';
-import PhotoViewerModal from '../../helpers/PhotoViewerModal';
+
+
+function formatDateInFrench(dateString) {
+	const date = new Date(dateString);
+	return new Intl.DateTimeFormat('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' }).format(date);
+}
 
 export const SingleProductScreen = ({ route }) => {
-	console.log('photos---------------------', route.params.item.localisation);
-	const item = {
+	const navigation = useNavigation();
+	const validateChoice = () => {
+		navigation.navigate('ProductForm', {
+			// item: initialItem,
+			startDate: selectedStartDate,
+			endDate: selectedEndDate,
+			price: calculatedPrice,
+			days: numberOfDays,
+		});
+	};
+
+	// console.log(route.params.item.periodes);
+	const initialItem = {
 		name: route.params.item.name,
 		ownerId: route.params.item.ownerId._id,
 		ownerUSername: route.params.item.ownerId.username,
@@ -17,325 +36,501 @@ export const SingleProductScreen = ({ route }) => {
 		caution: route.params.item.caution,
 		periodes: route.params.item.periodes,
 		photos: route.params.item.description.photos,
+		description: route.params.item.description.details,
 		etat: route.params.item.description.etat,
 		category: route.params.item.category.name,
 		distance: route.params.distanceKm,
-		localisation: route.params.item.localisation,
+		localisation: {
+			latitude: parseFloat(route.params.item.localisation.latitude),
+			longitude: parseFloat(route.params.item.localisation.longitude),
+		
+		},
 	};
 
-	// FROM ITEM CARD
-	// const [item, setItem] = useState(route.params);
-	// console.log(item.periodes);
 
-	// // const periodes = item.periodes.map((item) => {
-	// // 	{
-	// // 		start: item.periode.start;
-	// // 		end: item.periode.end;
-	// // 	}
-	// });
-	// console.log('useState ---------------------------', item);
-	const navigation = useNavigation();
+	console.log(initialItem.prices);
 
-	const SignInScreen = () => {
-		navigation.navigate('SignIn');
+	const item = route.params.item;
+	const sortedPrices = Object.entries(item.prices).sort((a, b) => a[1] - b[1]);
+	const [isModalVisible, setModalVisible] = React.useState(false);
+	const [formItem, setFormItem] = useState(initialItem);
+	const [address, setAddress] = useState(null);
+	const [isModalVisible2, setModalVisible2] = useState(false);
+	const toggleModal2 = () => {
+		setModalVisible2(!isModalVisible2);
 	};
-	const fakeItem = {
-		ownerId: '12345',
-		name: item.name,
-		// description: item.item.description,
+	const [isModalVisible3, setModalVisible3] = useState(false);
+	const toggleModal3 = () => {
+		setModalVisible3(!isModalVisible3);
+	};
+	// const [selectedDates, setSelectedDates] = useState(route.params.item.periodes || []);
 
-		photos: [item.photos],
-		etat: item.etat,
-		prices: item.prices,
-		caution: item.caution,
-		category: item.category.name,
-		localisation: 'Paris, France',
-		periodes: [item.periodes],
+	// DATE PICKER STATES ___________________________________________________________________
+	const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+	const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
+	const [selectedStartDate, setSelectedStartDate] = useState(null);
+	const [selectedEndDate, setSelectedEndDate] = useState(null);
+	const [activePeriod, setActivePeriod] = useState(null);
+
+	// CALCUL DES JOURS
+	const [numberOfDays, setNumberOfDays] = useState(null);
+
+	// POUR CALCUL DU PRIX
+
+	const [calculatedPrice, setCalculatedPrice] = useState(0);
+
+	// DATE PICKER FUNCTIONS ______________________________________________________________________
+	const showDatePicker = (period) => {
+		setActivePeriod(period);
+		setDatePickerVisibility(true);
 	};
 
-	console.log(item.periodes);
+	const handleStartDatePicked = (date) => {
+        setSelectedStartDate(date);
+        setDatePickerVisibility(false);
+        setTimeout(() => {
+            setEndDatePickerVisibility(true);
+        }, 500);
+    };
 
-	const periodes = item.periodes.map((periode, index) => {
-		const startDate = new Date(periode.start).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-		const endDate = new Date(periode.end).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+	const numberOfStars = '3';
+
+	const handleEndDatePicked = (date) => {
+		setSelectedEndDate(date);
+		setEndDatePickerVisibility(false);
+	};
+
+	const onSelectDate = (date) => {
+		if (!startDate) {
+			setStartDate(date);
+		} else {
+			setEndDate(date);
+			const start = new Date(startDate);
+			const end = new Date(date);
+			const diffTime = Math.abs(end - start);
+			const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+			setNumberOfDays(diffDays);
+			setDatePickerVisibility(false);
+		}
+	};
+	// const handleDatePicked = (date) => {
+	// 	if (!selectedStartDate) {
+	// 		setSelectedStartDate(date);
+	// 	} else if (!selectedEndDate) {
+	// 		setSelectedEndDate(date);
+	// 		setDatePickerVisibility(false);
+	// 	}
+	// };
+
+	const PeriodButton = ({ period }) => {
+		return (
+			<TouchableOpacity style={styles.periodButton} icon="calendar-check" onPress={() => showDatePicker(period)}>
+				<Text>
+				<Ionicons style={styles.icon} name="calendar" size={20} mode="contained" color='#155263' /> {formatDateInFrench(period.start)} - {formatDateInFrench(period.end)}
+				</Text>
+			</TouchableOpacity>
+		);
+	};
+
+	// CALCUL DU NOMBRE DE JOURS ENTRE LES DATES SELECTIONNEES
+	const onDateChange = (event, selectedDate) => {
+		if (currentPeriod === 'period1Start' || currentPeriod === 'period2Start') {
+			setSelectedStartDate(selectedDate);
+		} else if (currentPeriod === 'period1End' || currentPeriod === 'period2End') {
+			setSelectedEndDate(selectedDate);
+		}
+	};
+
+	const getDifferenceInDays = (date1, date2) => {
+		const diffInTime = date2.getTime() - date1.getTime();
+		return Math.ceil(diffInTime / (1000 * 60 * 60 * 24));
+	};
+
+	// const numberOfDays = selectedStartDate && selectedEndDate ? getDifferenceInDays(new Date(selectedStartDate), new Date(selectedEndDate)) : null;
+
+	// NUMBER OF DAYS useEffect
+	useEffect(() => {
+		if (selectedStartDate && selectedEndDate) {
+			const days = getDifferenceInDays(new Date(selectedStartDate), new Date(selectedEndDate));
+			setNumberOfDays(days);
+		} else {
+			setNumberOfDays(null);
+		}
+	}, [selectedStartDate, selectedEndDate]);
+
+	// CALCUL DU PRIX useEffect
+
+	const perDayPrice = initialItem.prices.perDay;
+	const perWeekPrice = initialItem.prices.perWeek;
+	const perMonthPrice = initialItem.prices.perMonth;
+
+	const pricePerDay = perDayPrice;
+		const pricePerWeek = pricePerDay * 7 * 0.95;
+		const pricePerMonth = pricePerDay * 30 * 0.9;
+		const pricePerDayWeek = pricePerDay * 0.95;
+		const pricePerDayMonth = pricePerDay * 0.9;
+
+
+	useEffect(() => {
+		if (numberOfDays < 8 && numberOfDays > 0) {
+			const dayRate = Number(numberOfDays * perDayPrice).toFixed(2);
+			setCalculatedPrice(dayRate);
+		} else if (numberOfDays > 7 && numberOfDays < 30) {
+			const weekRate = perWeekPrice / 7;
+			const weekPrice = Number(numberOfDays * weekRate).toFixed(2);
+			setCalculatedPrice(weekPrice);
+		} else {
+			const monthRate = Number(perMonthPrice / 30).toFixed(2);
+			setCalculatedPrice(numberOfDays * monthRate);
+		}
+	}, [numberOfDays]);
+
+	// LOCATION useEffect ________________________________________________________________________________
+
+	useEffect(() => {
+		(async () => {
+			const addr = await fetchAddress(formItem.localisation.latitude, formItem.localisation.longitude);
+			setAddress(addr);
+		})();
+	}, []);
+
+	const PeriodBadge = ({ period }) => {
+		if (!period.start || !period.end) return null;
 
 		return (
-			<Text key={index} style={styles.periode}>
-				{startDate} à {endDate}
-			</Text>
+			<View style={styles.periodeBadge}>
+				<Text style={styles.badgeText}>
+					Du: {formatDateInFrench(period.start)} - au: {formatDateInFrench(period.end)}
+				</Text>
+			</View>
 		);
-	});
+	};
 
-	const calculateDays = (startDate, endDate) => {
-		const start = new Date(startDate);
-		const end = new Date(endDate);
-		const timeDifference = end.getTime() - start.getTime();
-		const days = timeDifference / (1000 * 3600 * 24);
-		return Math.ceil(days);
+	const formatDate = (isoString) => {
+		const date = new Date(isoString);
+		return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 	};
-	const calculateTotalCost = (pricePerDay, startDate, endDate) => {
-		const days = calculateDays(startDate, endDate);
-		return pricePerDay * days;
-	};
-	const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(0);
 
-	const handlePeriodChange = (index) => {
-		setSelectedPeriodIndex(index);
+	const GOOGLE_API_KEY = 'AIzaSyCKVV2S52hUifM6pOSiTVzj2MoAI4jccqw';
+
+	const fetchAddress = async (latitude, longitude) => {
+		try {
+			const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`);
+			const data = await response.json();
+			if (data.results && data.results.length > 0) {
+				return data.results[0].formatted_address;
+			}
+			return null;
+		} catch (error) {
+			console.error('Error fetching address:', error);
+			return null;
+		}
 	};
-	const numberOfStars = '3';
-	const [isModalVisible, setModalVisible] = useState(false);
+
+	function limitTextLength(text, maxLength) {
+		if (text.length <= maxLength) {
+			return text;
+		}
+	
+		return text.substring(0, maxLength) + '...'; // adds '...' at the end
+	}
+
 	const toggleModal = () => {
 		setModalVisible(!isModalVisible);
 	};
 
-	const selectedPeriod = fakeItem.periodes[selectedPeriodIndex];
-	const totalCost = calculateTotalCost(item.prices.perDay, selectedPeriod.start, selectedPeriod.end);
-	const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
-	const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
-
-	const openPhotoViewer = (index) => {
-		setSelectedPhotoIndex(index);
-		setPhotoViewerVisible(true);
+	const getPriceLabel = (key) => {
+		switch (key) {
+			case 'perDay':
+				return 'Prix/Jour';
+			case 'perWeek':
+				return 'Prix/Semaine';
+			case 'perMonth':
+				return 'Prix/Mois';
+			default:
+				return '';
+		}
 	};
 
-	const closePhotoViewer = () => {
-		setPhotoViewerVisible(false);
-	};
+	const Badge = ({ text, color = '#155263' }) => (
+		<View style={{ ...styles.badge, backgroundColor: color }}>
+			<Text style={styles.badgeText}>{text}</Text>
+		</View>
+	);
 
 	return (
-		<PaperProvider>
-			<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-				<View style={styles.container}>
-					<Modal visible={photoViewerVisible} transparent={true}>
-						<PhotoViewerModal
-							visible={photoViewerVisible}
-							photos={item.photos}
-							currentIndex={selectedPhotoIndex}
-							onClose={closePhotoViewer}
-							onNext={() => setSelectedPhotoIndex(selectedPhotoIndex + 1)}
-							onPrev={() => setSelectedPhotoIndex(selectedPhotoIndex - 1)}
-							showDeleteIcon={false}
-						/>
-					</Modal>
-					<View style={styles.greyRectangle}>
-						<Text style={styles.name}>
-							{fakeItem.name} à {totalCost}€
-						</Text>
-						<View style={styles.periodesContainer}>
-							<Text style={styles.periodes}>Périodes de location:</Text>
-							{periodes}
-						</View>
-						<Button style={styles.buttonOutlined} mode="outlined" onPress={SignInScreen}>
-							<Text style={styles.buttonText}>Valider la location</Text>
-						</Button>
-					</View>
-					<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-						<View style={styles.contentContainer}>
-							<View style={styles.imageContainer}>
-								<TouchableOpacity onPress={() => openPhotoViewer(0)}>
-									<Image
-										source={{
-											uri: item.photos[0],
-											width: 200,
-											height: 200,
-										}}
-										style={styles.image}
-									/>
-								</TouchableOpacity>
+		<View style={styles.container}>
+			<Portal>
+										<Modal visible={isModalVisible2} onDismiss={toggleModal2} contentContainerStyle={styles.modalContainer2}>
+											<Text style={styles.modalTitle2}>Plus je loue, moins je paye 😀</Text>
+											<Text style={styles.modalText2}>Prix par jour: {'\n'} {Number(pricePerDay).toFixed(2)}€/J {'\n'}</Text>
+											<Text style={styles.modalText2}>Prix par semaine:  {'\n'} {Number(pricePerWeek).toFixed(2)}€ soit {Number(pricePerDayWeek).toFixed(2)}€/J {'\n'}</Text>
+											<Text style={styles.modalText2}>Prix par mois: {'\n'} {Number(pricePerMonth).toFixed(2)}€ soit {Number(pricePerDayMonth).toFixed(2)}€/J</Text>
+											<TouchableOpacity
+												style={{ marginTop: 20, alignItems: 'center', backgroundColor: '#155263', color: 'white', borderRadius: 10, width: '20%' }}
+												mode="outlined"
+												onPress={toggleModal2}>
+												<Text style={{ fontWeight: 600, color: 'white' }}> Fermer</Text>
+											</TouchableOpacity>
+										</Modal>
+									</Portal>
 
-								{/* <Image source={{ uri: fakeItem.photos[0] }} style={styles.image} /> */}
+									<Portal>
+										<Modal visible={isModalVisible3} onDismiss={toggleModal3} contentContainerStyle={styles.modalContainer3}>
+											<Text style={styles.modalTitle3}>Protégez comme la prunelle de vos yeux </Text>
+											<Text style={styles.modalText3}>
+												Une usure normale est acceptable mais un dommage du bien d'autrui demande compensation. C'est pourquoi
+												cette caution vous sera restitué lors de l'inspection du retour de matériel, entre vous et le
+												propriétaire.
+											</Text>
 
-								<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: -130 }}>
+											<TouchableOpacity
+												style={{ marginTop: 20, alignItems: 'center', backgroundColor: '#155263', color: 'white', borderRadius: 10, width: '20%' }}
+												mode="outlined"
+												onPress={toggleModal3}>
+												<Text style={{ fontWeight: 600, color: 'white' }}> Fermer</Text>
+											</TouchableOpacity>
+										</Modal>
+									</Portal>
+
+			
+									<View style={styles.greyRectangle}>
+ 								 <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('Results')}>
+    								<Ionicons name="arrow-back" size={25} color='#FFCE52' style={styles.backIcon} />
+    								<Text style={styles.resultsText}>Résultats de la recherche</Text>
+  									</TouchableOpacity>
+  									<Text style={styles.name}>
+    								{limitTextLength(item.name, 25)} à {calculatedPrice} €
+ 									</Text>
+  									<View style={styles.periodesContainer}>
+   									 <Text style={styles.periodes}>Périodes disponibles:</Text>
+    								{item.periodes.map((period, index) => (
+     								 <PeriodButton key={index} period={period} />
+   									 ))}
+  </View>
+  <TouchableOpacity
+    style={styles.buttonOutlined}
+    mode="outlined"
+    onPress={validateChoice}
+    disabled={calculatedPrice === 0}>
+    <Text style={styles.buttonText}>Valider la location</Text>
+  </TouchableOpacity>
+</View>
+	
+			<ScrollView contentContainerStyle={styles.buttonCategorie}>
+			
+	<View style={styles.emptyRectangle}>
+		
+		</View>
+		
+		<View >
+			<TouchableOpacity onPress={toggleModal} style={{ backgroundColor:"white", borderRadius: 15 }}>
+				<Image source={{ uri: item.description.photos[0] }} style={styles.image} resizeMode="contain" />
+			</TouchableOpacity>
+			</View>
+			<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5 }}>
 									<View>
 										<Text style={{ color: 'black', fontWeight: 600 }}>36 évaluations</Text>
 										<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 											{Array.from({ length: numberOfStars }).map((_, index) => (
-												<Ionicons key={index} name={'star'} size={25} color={'gold'} />
+												<Ionicons key={index} name={'star'} size={20} color={'gold'} />
 											))}
 										</View>
+										</View>
+										<View style={{ marginTop: -10 }}>
+										<Text> <Ionicons name={'location'} color={'#FFCE52'} size={20} /> À {Number(initialItem.distance).toFixed(2)} km</Text>
+										<Text style={{ color: 'green', fontWeight: 500, textAlign:"right" }}>  Disponible</Text>
 									</View>
-									<View style={{ marginTop: -10 }}>
-										<Text>À {Number(item.distance).toFixed(2)} km</Text>
-										<Text style={{ color: 'green', fontWeight: 500 }}>Disponible</Text>
 									</View>
-								</View>
-								<Text style={styles.description}>{fakeItem.description}</Text>
-
-								<View style={styles.infoContainer}>
+			<Text style={styles.itemName}>{item.name}</Text>
+			<Text style={styles.itemDetails}>{limitTextLength(item.description.details)}</Text>
+			<Modal animationType="slide" transparent={false} visible={isModalVisible} onRequestClose={toggleModal}>
+				<View style={styles.modalContainer}>
+					<ScrollView contentContainerStyle={styles.scrollContainer}>
+						{item.description.photos.map((photo, index) => (
+							<Image key={index} source={{ uri: item.description.photos[0] }} style={styles.modalImage} resizeMode="contain" />
+						))}
+					</ScrollView>
+					<TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
+						<Text>Close</Text>
+					</TouchableOpacity>
+				</View>
+			</Modal>
+			
+			<View style={styles.infoContainer}>
 									<View style={styles.infoRow}>
-										<Text style={styles.infoLabel}>Prix:</Text>
-										<Text style={styles.infoText}>
-											{item.prices.perDay}€ par jour{' '}
-											<Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal} />
-										</Text>
+										<Text style={styles.infoLabel}>Prix de la location: </Text>
+										<Text style={styles.infoText}>{calculatedPrice}€{' '}
+											<Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal2} /></Text>
 									</View>
-									<Portal>
-										<Modal visible={isModalVisible} onDismiss={toggleModal} contentContainerStyle={styles.modalContainer}>
-											<Text style={styles.modalTitle}>Plus je loue, moins je paye 😀</Text>
-											<Text style={styles.modalText}>Prix par jour: {item.prices.perDay}€</Text>
-											<Text style={styles.modalText}>Prix par semaine: {fakeItem.prices.week}€</Text>
-											<Text style={styles.modalText}>Prix par mois: {fakeItem.prices.month}€</Text>
-											<Button
-												style={{ marginTop: 20, alignItems: 'center', backgroundColor: '#155263', color: 'white' }}
-												mode="outlined"
-												onPress={toggleModal}>
-												<Text style={{ fontWeight: 600, color: 'white' }}> Fermer</Text>
-											</Button>
-										</Modal>
-									</Portal>
-
 									<View style={styles.infoRow}>
-										<Text style={styles.infoLabel}>État:</Text>
-										<Text style={styles.infoText}>{fakeItem.etat}</Text>
+										<Text style={styles.infoLabel}>État: </Text>
+										<Text style={styles.infoText}>{item.description.etat}</Text>
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Caution:</Text>
-										<Text style={styles.infoText}>{fakeItem.caution}€</Text>
+										<Text style={styles.infoText}>{item.caution}€{' '}
+											<Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal3} />
+										</Text>
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Mode de remise:</Text>
 										<Text style={styles.infoText}>En personne</Text>
 									</View>
 									<View style={styles.infoRow}>
-										<Text style={styles.infoLabel}>Vendeur:</Text>
+										<Text style={styles.infoLabel}>Propriétaire:</Text>
 										<TouchableOpacity onPress={() => console.log('Nelson clicked')}>
-											<Text style={styles.linkText}>{item.ownerUSername} </Text>
+											<Text style={styles.linkText}>{item.ownerId.username} </Text>
 										</TouchableOpacity>
 									</View>
-
-									<View style={styles.infoRow}>
-										<Text style={styles.infoLabel}>Localisation:</Text>
-										<TouchableOpacity onPress={() => console.log('Nelson lives in Paris')}>
-											<Text style={styles.infoText}>
-												{' '}
-												<Ionicons name={'location'} color={'#FFCE52'} size={20} /> Paris
-											</Text>
-										</TouchableOpacity>
 									</View>
-								</View>
-								<View style={{ flex: 1 }}>
-									{/* <MapView
-										style={{ flex: 1, width: '100%', height: 200 }}
-										initialRegion={{
-											latitude: 48.8566,
-											longitude: 2.3522,
-											latitudeDelta: 0.0922,
-											longitudeDelta: 0.0421,
-										}}>
-										<MapView.Marker
-											coordinate={{ latitude: 48.8566, longitude: 2.3522 }}
-											title={item.name}
-											description={item.localisation}
-										/>
-									</MapView> */}
-								</View>
-							</View>
-						</View>
-					</ScrollView>
+			
+			{/* MAP RENDER   ----------------------------------------------------------------------------------------------- */}
+			{formItem.localisation.latitude && formItem.localisation.longitude && (
+				<View style={styles.container}>
+					<MapView
+						style={styles.map}
+						initialRegion={{
+							latitude: formItem.localisation.latitude,
+							longitude: formItem.localisation.longitude,
+							latitudeDelta: 0.0922,
+							longitudeDelta: 0.0421,
+						}}>
+						<Marker
+							coordinate={{
+								latitude: formItem.localisation.latitude,
+								longitude: formItem.localisation.longitude,
+							}}
+							title={formItem.name}
+							description={address}
+						/>
+					</MapView>
+					
 				</View>
-			</KeyboardAvoidingView>
-		</PaperProvider>
+				
+					
+			)}
+			
+			
+			{/* PERIODES RENDER   ----------------------------------------------------------------------------------------------- */}
+			{item.periodes.map((period, index) => (
+				<PeriodButton key={index} period={period} />
+			))}
+			{/* DATE START PICKER -------------------------------- */}
+			<DateTimePickerModal
+				isVisible={isDatePickerVisible}
+				mode="date"
+				display='inline'
+				confirmTextIOS='Date de début de location'
+				onConfirm={handleStartDatePicked}
+				onCancel={() => setDatePickerVisibility(false)}
+				minimumDate={new Date(activePeriod?.start)}
+				maximumDate={new Date(activePeriod?.end)}
+			/>
+			{/* DATE END PICKER -------------------------------- */}
+			<DateTimePickerModal
+				isVisible={isEndDatePickerVisible}
+				mode="date"
+				display='inline'
+				confirmTextIOS='Date de fin de location'
+				onConfirm={handleEndDatePicked}
+				onCancel={() => setEndDatePickerVisibility(false)}
+				minimumDate={selectedStartDate} // The end date shouldn't be before the selected start date
+				maximumDate={new Date(activePeriod?.end)}
+			/>
+			{/*DATES RANGE DISPLAY ------------- */}
+			{selectedStartDate && <Text>Début de location: {formatDateInFrench(selectedStartDate)}</Text>}
+			{selectedEndDate && <Text>Fin de location {formatDateInFrench(selectedEndDate)}</Text>}
+			{/* NOMBRE DE JOURS */}
+			<View style={styles.container}>
+				{/* {numberOfDays !== null ? <Text>Selected Range: {numberOfDays} days</Text> : <Text>No days selected</Text>} */}
+
+				{numberOfDays !== null && <Text>Selected Range: {numberOfDays || 'No days selected'} days</Text>}
+				<Text>Price: {calculatedPrice}€</Text>
+				<Button title="Valider" onPress={validateChoice} disabled={calculatedPrice === 0} />
+			</View>
+			
+
+			</ScrollView>
+		</View>
+			
+		
 	);
 };
-
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		padding: 15,
+		backgroundColor:'#F1F1F1',
 	},
-	modalTitle: {
-		color: '#155263',
-		fontSize: 18,
-		fontWeight: 'bold',
-		marginBottom: 10,
-	},
-	modalText: {
-		fontSize: 14,
-		fontWeight: '600',
-	},
-	modalContainer: {
-		backgroundColor: 'white',
-		borderRadius: 10,
-		padding: 20,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	greyRectangle: {
-		backgroundColor: '#E2E2E2',
-		position: 'absolute',
-		top: 0,
-		left: 0,
-		right: 0,
+	name:{
 		marginTop: 0,
-		height: '20%',
-		alignContent: 'flex-start',
-		alignItems: 'center',
-		justifyContent: 'center',
-		zIndex: 1,
-	},
-	name: {
-		fontSize: 24,
-		fontWeight: 'bold',
-		marginTop: 16,
-		alignSelf: 'center',
 		color: '#155263',
-	},
-
-	imageContainer: {
-		width: '85%',
-		marginTop: 30,
-		alignSelf: 'center',
-	},
-	image: {
-		width: '100%',
-		resizeMode: 'contain',
-	},
-	textContainer: {
-		alignItems: 'center',
-		marginBottom: 10,
-	},
-	title: {
-		fontSize: 30,
-		textAlign: 'center',
 		fontWeight: 'bold',
-		marginTop: 10,
-		marginBottom: 10,
+		fontSize: 18,
+		textAlign: 'center',
+	},
+	periodes:{
+		fontWeight: 'bold',
+		fontSize: 14,
+	},
+	periodesContainer:{
+	marginTop: 7,
+	alignItems: 'center'
+	},
+	periodButton:{
+		 padding:3,
+		 marginTop: -5,
+		// borderWidth: 2,
+        borderColor: '#155263', 
+borderRadius: 20,
+        shadowColor: 'rgba(0, 0, 0, 0.4)', 
+        shadowOffset: {
+          width: 0,
+          height: 4,
+        },
+        shadowOpacity: 1,
+        shadowRadius: 3,
+        elevation: 4, 
+	},
+	buttonOutlined:{
+		marginTop: 5,
+	justifyContent: 'center',
+	alignItems: 'center',
+	backgroundColor: '#FFCE52',
+	borderWidth: 1,
+	borderColor: '#E6E6E6', 
+	width: '80%',
+	paddingHorizontal: 1,
+		  borderWidth: 1,
+	borderColor: '#E6E6E6', 
+borderRadius: 20,
+	shadowColor: 'rgba(0, 0, 0, 0.4)', 
+	shadowOffset: {
+	  width: 0,
+	  height: 4,
+	},
+	shadowOpacity: 1,
+	shadowRadius: 3,
+	elevation: 4, 
+  },
+  buttonText: {
+	color: 'white',
+	textAlign: 'center',
+	fontWeight: 'bold',
+	fontSize: 22,
+},
+	itemName: {
+		fontSize: 22,
+		fontWeight: 'bold',
 		color: '#155263',
-	},
-	description: {
-		textAlign: 'justify',
-	},
-
-	greenRectangle: {
-		weight: 40,
-		backgroundColor: '#155263',
-		paddingVertical: 2,
-		paddingHorizontal: 20,
-		position: 'absolute',
-		bottom: 0,
-		left: 0,
-		right: 0,
-	},
-	rectangleText: {
-		color: 'white',
 		textAlign: 'center',
-		fontSize: 20,
-		fontWeight: 'bold',
-	},
-	emoji: {
-		fontSize: 60,
-		marginTop: 25,
 		marginBottom: 10,
+		marginTop: 5,
 	},
-	linkText: {
-		color: 'blue',
-		textDecorationLine: 'underline',
-		fontSize: 16,
-	},
-	infoContainer: {
-		backgroundColor: 'white',
-		borderRadius: 10,
-		padding: 5,
-		marginTop: 10,
+	itemDetails:{
+		marginBottom:5,
+		textAlign:"justify"
 	},
 	infoRow: {
 		flexDirection: 'row',
@@ -349,82 +544,170 @@ const styles = StyleSheet.create({
 		color: '#333',
 		textAlign: 'right',
 	},
+	infoContainer: {
+		backgroundColor: 'white',
+		borderRadius: 10,
+		padding: 5,
+		marginTop: 10,
+	},
 	infoText: {
 		fontSize: 16,
 		color: '#555',
 		marginLeft: 10,
 	},
-	infoClickableText: {
-		color: 'blue',
-		textDecorationLine: 'underline',
-	},
-	text: {
-		fontSize: 16,
-		marginTop: 10,
-		textAlign: 'center',
-		color: '#155263',
-		fontWeight: '400',
-	},
-	buttonsContainer: {
-		flex: 1,
+	greyRectangle: {
+		height: 170,
+		backgroundColor: '#ECECEC',
+		paddingVertical: 2,
+		paddingHorizontal: 20,
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		zIndex:1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		marginTop: 60,
+
 	},
-	buttonsContainer: {
-		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
-		marginTop: 60,
-	},
-	buttonText: {
-		color: 'white',
-		textAlign: 'center',
-		fontWeight: 'bold',
-		fontSize: 22,
-	},
-	buttonOutlined: {
-		backgroundColor: '#FFCE52',
-		fontColor: 'black',
-		borderWidth: 1,
-		width: '80%',
-		alignSelf: 'center',
-		margin: 10,
-	},
-	buttonGreenOutlined: {
-		margin: 10,
-		backgroundColor: '#155263',
-		fontColor: 'black',
-		borderWidth: 1,
-		width: '100%',
-		alignSelf: 'center',
-		margin: 12,
-	},
-	buttonNoColorOutlined: {
-		margin: 10,
+	emptyRectangle: {
+		
+		height: 300,
 		backgroundColor: 'transparent',
-		fontColor: 'black',
-		borderWidth: 1,
-		width: '100%',
-		alignSelf: 'center',
-		margin: 12,
+		paddingVertical: 2,
+		paddingHorizontal: 20,
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		
+		alignItems: 'center',
+		justifyContent: 'center',
+
 	},
-	periodes: {
-		fontSize: 16,
-		fontWeight: 'bold',
-		color: 'black',
+
+	ownerUsername: {
 		textAlign: 'center',
-		marginTop: 5,
 	},
-	textInput: {
-		paddingVertical: 1,
-		paddingHorizontal: 1,
-		fontSize: 12,
-		height: 35,
-		backgroundColor: '#E8E8E8',
+	image: {
+		width: '100%',
+		height: 240,
+		marginTop:150,
+		borderRadius: 15, 
+	},
+	modalContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: 'transparent',
+	},
+	modalContainer2: {
+		backgroundColor: 'white',
+		borderRadius: 10,
+		padding: 20,
+		alignItems: 'center',
+		justifyContent: 'center',
+		textAlign: "right",
+	},
+	modalTitle2: {
+		color: '#155263',
+		fontSize: 18,
+		fontWeight: 'bold',
+		marginBottom: 10,
+	},
+	modalText2: {
+		fontSize: 14,
+		fontWeight: '600',
+		textAlign: 'center',
 	},
 	scrollContainer: {
-		flex: 1,
-		marginTop: 10,
+		alignItems: 'center',
 	},
+	modalImage: {
+		width: '20%',
+		height: 200,
+		marginBottom: 15,
+		justifyContent: 'center',
+		alignItems: 'center',
+
+	},
+	modalTitle3: {
+		color: '#155263',
+		fontSize: 18,
+		fontWeight: 'bold',
+		marginBottom: 10,
+	},
+	modalText3: {
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	modalContainer3: {
+		backgroundColor: 'white',
+		borderRadius: 10,
+		padding: 20,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	closeButton: {
+		position: 'absolute',
+		top: 40,
+		right: 20,
+		padding: 10,
+		backgroundColor: '#ddd',
+		borderRadius: 5,
+	},
+	badgesInlineContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'flex-start',
+		marginBottom: 10,
+		flexWrap: 'wrap',
+	},
+	badge: {
+		backgroundColor: '#155263',
+		paddingHorizontal: 5,
+		margin: 5,
+		padding: 7,
+		borderRadius: 5,
+		alignSelf: 'flex-start',
+	},
+	badgeText: {
+		color: 'white',
+		fontWeight: '400',
+		textAlign: 'center',
+	},
+	badgePrices: {
+		fontSize: 12,
+	},
+	badgesInlineContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'flex-start',
+		marginBottom: 10,
+		flexWrap: 'wrap',
+	},
+	periodeBadge: {
+		backgroundColor: '#155263',
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		borderRadius: 5,
+		margin: 5,
+		alignSelf: 'flex-start',
+	},
+	map: {
+		width: '100%',
+		height: 200,
+	},
+	header: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginLeft: -200,
+	  },
+	  backIcon: {
+		marginRight: 5,
+	  },
+	  resultsText: {
+		color: '#FFCE52', 
+		fontSize: 12, 
+		fontWeight:"700"  
+	  },
 });

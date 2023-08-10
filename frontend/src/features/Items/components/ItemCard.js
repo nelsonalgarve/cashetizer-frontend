@@ -51,12 +51,12 @@ export const ItemCard = ({ item, userLatitude, userLongitude, navigation }) => {
 		// const end = moment(periode.end).format('DD MMMM YYYY, h:mm:ss a');
 
 		return (
-			<View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 5 }}>
+			<View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: -5 }}>
 				<Chip
-					icon={() => <Ionicons name="calendar" size={16} color="white" />}
+					icon={() => <Ionicons name="calendar" size={16} color="#155263" />}
 					onPress={() => console.log('Pressed')}
 					compact={true}
-					textStyle={{ fontSize: 10, color:'white', fontWeight: 'bold' }}
+					textStyle={{ fontSize: 10, color:'#155263', fontWeight: 'bold' }}
 					style={styles.chipStyle}>
 					Période {index + 1}: {moment(periode.start).format('L')} - {moment(periode.end).format('L')}
 				</Chip>
@@ -114,6 +114,9 @@ const styles = StyleSheet.create({
 	itemName: {
 		fontWeight:'600',
 		fontSize: 16
+	},
+	itemDetails:{
+		marginBottom:5,
 	},
 	priceOverlay: {
 		position: 'absolute',
@@ -189,14 +192,6 @@ const styles = StyleSheet.create({
 		marginTop: 10,
 	},
 	chipStyle:{
-		backgroundColor: '#FFCE52',
-		shadowColor: 'rgba(0, 0, 0, 0.2)', // Shadow color
-		shadowOffset: {
-		  width: 0,
-		  height: 4,
-		},
-		shadowOpacity: 1,
-		shadowRadius: 3,
-		elevation: 4, // Android shadow elevation
-	  },
+		backgroundColor: 'transparent',
+	}
 });

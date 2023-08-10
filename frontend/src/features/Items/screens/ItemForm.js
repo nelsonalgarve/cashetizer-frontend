@@ -255,9 +255,9 @@ export const ItemForm = () => {
 			}
 
 			//token provisoire pour tests
-			const token =
+			/* const token =
 				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NGNlY2YxNDgxMjkyY2ViZGU5MTY0ZWMiLCJpYXQiOjE2OTE0MDU1NTB9.YysXb_yWgFkcLdLiDt6BuUWXLY7HGCa3ibPMsOXwFuw';
-
+ */
 			// Submit main payload
 			createNewItem(token, formData)
 				.then((data) => {

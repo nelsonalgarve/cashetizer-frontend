@@ -191,7 +191,9 @@ export default App = () => {
 									/>
 
 									<Stack.Screen name="ItemForm" component={ItemForm} />
-									<Stack.Screen name="SearchScreen" component={SearchScreen} />
+									<Stack.Screen name="Search" component={SearchScreen} options={{
+											headerShown: false,
+										}}/>
 
 									<Stack.Screen
 										name="MapPicker"
@@ -273,7 +275,7 @@ export default App = () => {
 									<Stack.Screen name="Results" component={ResultScreen} options={({ navigation }) => ({
 											title: 'Résultats recherche',
 											headerLeft: () => (
-												<TouchableOpacity onPress={() => navigation.navigate('SignUp')} style={styles.backButton}>
+												<TouchableOpacity onPress={() => navigation.navigate('Welcome')} style={styles.backButton}>
 													<Ionicons name="arrow-back" size={30} color="white" />
 												</TouchableOpacity>
 											),

@@ -119,12 +119,13 @@ export const CheckIdScreen = () => {
 			console.log('step2');
 			if (data.rectoID && data.versoID && livePhoto && acceptedTerms) {
 				navigation.navigate('ConfirmationAccount');
+				
 			} else {
 				Alert.alert('Attention', 'Veuillez remplir tous les champs et cocher la case avant de valider votre compte.');
 				return;
 			}
 
-			const response = await fetch(`https://cashetizer-backend.vercel.app/IDCheck`, {
+			const response = await fetch(`https://cashetizer-backend.vercel.app/checkId/IDCheck`, {
 				method: 'POST',
 				body: formData,
 			});
@@ -134,6 +135,7 @@ export const CheckIdScreen = () => {
 				console.log('URL du recto:', responseData.rectoIdUrl);
 				console.log('URL du verso:', responseData.versoIdUrl);
 				console.log('URL de la photo en direct:', responseData.livePhotoUrl);
+				console.log(responseData)
 			} else {
 				console.error("Erreur lors de l'enregistrement des images:", responseData.error);
 			}

@@ -175,7 +175,7 @@ export const SignInForm = () => {
 					<Button onPress={() => navigation.navigate('ItemForm')}>
 						<Text> Go to item form </Text>
 					</Button>
-					<Button onPress={() => navigation.navigate('SearchScreen')}>
+					<Button onPress={() => navigation.navigate('Search')}>
 						<Text> Go to SearchScreen </Text>
 					</Button>
 					<Button onPress={() => navigation.navigate('SingleProduct')}>

@@ -41,7 +41,7 @@ export const SearchScreen = ({ navigation }) => {
 		<PaperProvider theme={formTheme}>
 			<View style={styles.container}>
 				<View style={styles.imageContainer}>
-					<Image source={require('../../../../assets/LogoCash.png')} style={styles.image} />
+					<Image source={require('../../../../assets/LogoShortUpMarg.png')} style={styles.image} resizeMode="center" />
 				</View>
 
 				<View>
@@ -57,7 +57,12 @@ export const SearchScreen = ({ navigation }) => {
 						</TouchableOpacity>
 					))}
 				</ScrollView>
-				<View style={styles.infoBar}></View>
+				<View style={styles.greenRectangle}>
+					<Text style={styles.rectangleText}>
+						Louez malin.{'\n'}
+						Gagnez des € en chemin!{' '}
+					</Text>
+				</View>
 			</View>
 		</PaperProvider>
 	);
@@ -70,7 +75,7 @@ const styles = StyleSheet.create({
 	},
 	imageContainer: {
 		position: 'absolute',
-		top: 0,
+		top: -20,
 		left: 0,
 		right: 0,
 		bottom: '80%',
@@ -83,20 +88,36 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		paddingBottom: 20,
 		alignItems: 'center',
+		marginTop: 35,
 	},
 	button: {
 		backgroundColor: '#155263',
 		paddingVertical: 12,
 		paddingHorizontal: 24,
 		borderRadius: 50,
-		marginVertical: 8,
+		marginVertical: 10,
 		alignItems: 'center',
+		justifyContent: 'center',
 		width: 300,
-	},
+		height: 70,
+		borderWidth: 0.25, 
+        borderColor: '#FFFFFF',
+        borderRadius: 40,
+        shadowColor: 'rgba(0, 0, 0, 0.4)',
+        shadowOffset: {
+          width: 0,
+          height: 4,
+        },
+        shadowOpacity: 1,
+        shadowRadius: 3,
+        elevation: 4,
+    },
+
 	buttonText: {
-		color: '#FFCE52',
+		color: 'white',
 		textAlign: 'center',
 		fontSize: 18,
+		fontWeight: '500',
 	},
 	infoBar: {
 		backgroundColor: '#155263',
@@ -109,8 +130,24 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
+	greenRectangle: {
+		weight: 40,
+		backgroundColor: '#155263',
+		paddingVertical: 2,
+		paddingHorizontal: 20,
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		right: 0,
+	},
+	rectangleText: {
+		color: 'white',
+		textAlign: 'center',
+		fontSize: 20,
+		fontWeight: 'bold',
+	},
 	textInput: {
-		marginTop: 110,
+		marginTop: 127,
 		paddingVertical: 1,
 		paddingHorizontal: 1,
 		fontSize: 12,
