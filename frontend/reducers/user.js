@@ -21,8 +21,9 @@ const user = createSlice({
 			state.error = action.payload;
 		},
 		clearUser: (state) => {
-			state.value = {};
+			console.log('From ClearUSer---------------------------------------------------------------------', state);
 			state.tokenValue = '';
+			state.value = {};
 			state.error = '';
 		},
 	},

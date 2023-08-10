@@ -57,7 +57,7 @@ export const SignUpForm = () => {
 		};
 
 		// Adresse du backend pour Fetch POST signup
-		const signUpEndpoint = `http://192.168.0.12:3000/users`;
+		const signUpEndpoint = `https://cashetizer-backend.vercel.app/users`;
 
 		fetch(signUpEndpoint, {
 			method: 'POST',

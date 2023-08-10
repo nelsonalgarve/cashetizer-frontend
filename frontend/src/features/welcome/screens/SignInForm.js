@@ -46,7 +46,7 @@ export const SignInForm = () => {
 	// SIGNIN _______________________________________________________________
 	const onSubmit = (data) => {
 		// Adresse du backend pour Fetch POST login
-		const signIn = `http://192.168.0.12:3000/user/users/login`;
+		const signIn = `https://cashetizer-backend.vercel.app/users/login`;
 
 		// Objet user à envoyer au backend
 		const requestData = {
@@ -82,8 +82,9 @@ export const SignInForm = () => {
 
 	/// SIGNOUT _________________________________________________________________________
 	const onSubmitLogout = () => {
+		dispatch(clearUser());
 		// Adresse du backend pour Fetch POST logout
-		const logout = `http://192.168.0.12:3000/user/users/logoutAll`;
+		const logout = `http://192.168.0.15:3000/users/logoutAll`;
 
 		// Token récupéré depuis le reducer user
 		const bearerToken = token;

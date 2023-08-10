@@ -182,6 +182,7 @@ export const ItemForm = () => {
 	} = useForm();
 
 	// --------------------------ENVOI DU FORMULAIRE --------------------------------
+	// A L'AIDE DU HELPER createNewItem.js--------------------------------------------
 
 	const onSubmit = async (data) => {
 		try {
@@ -248,6 +249,8 @@ export const ItemForm = () => {
 		setSelectedLocation({ location, address });
 		setMapVisible(false);
 	};
+
+	// UseEffect qui sert à parser l'adresse récupérée en un objet{number, street, city, zipCode}
 
 	useEffect(() => {
 		if (selectedLocation) {
@@ -507,8 +510,7 @@ export const ItemForm = () => {
 									alignItems: 'center',
 									paddingTop: 5,
 									borderRadius: 50,
-								}}
-							>
+								}}>
 								<Badge
 									size={30}
 									icon="calendar"
@@ -519,8 +521,7 @@ export const ItemForm = () => {
 										color: '#155263',
 										fontWeight: 500,
 									}}
-									onPress={() => setDatePickerVisible(true)}
-								>
+									onPress={() => setDatePickerVisible(true)}>
 									<Icon name="calendar" size={20} /> Remplissez le calendrier de disponibilité
 								</Badge>
 
@@ -541,8 +542,7 @@ export const ItemForm = () => {
 											fontSize: 12,
 											color: 'white',
 											minHeight: '100%',
-										}}
-									>
+										}}>
 										Période {index + 1}: {moment(period.start).format('L')} - {moment(period.end).format('L')}
 									</Badge>
 									<Divider />
@@ -552,8 +552,7 @@ export const ItemForm = () => {
 										mode="oulined"
 										compact="false"
 										style={{ paddingHorizontal: 0 }}
-										onPress={() => deletePeriod(index)}
-									></Button>
+										onPress={() => deletePeriod(index)}></Button>
 								</View>
 							))}
 						</Surface>
@@ -561,28 +560,6 @@ export const ItemForm = () => {
 
 					{/* // CHAMP MAP --------------------------------------------------------------------- */}
 
-					{/* <Controller
-						name="adress"
-						control={control}
-						defaultValue=""
-						render={({ field }) => (
-							<View style={{ flex: 1 }}>
-								<TextInput
-									style={styles.textInput}
-									{...field}
-									value={field.value}
-									maxLength={6}
-									label="Veuillez saisir l'adresse où se situe votre bien"
-									mode="outlined"
-									error={errors && errors.caution}
-									right={<TextInput.Icon icon="map" />}
-									onChangeText={(text) => field.onChange(text)}
-								/>
-								{errors.caution && <HelperText type="error">{errors.caution.message}</HelperText>}
-								<Text style={{ alignSelf: 'center', fontSize: 20, fontWeight: 600, color: '#155263', marginTop: 5 }}> Ou </Text>
-							</View>
-						)}
-					/> */}
 					<View style={{ flex: 1 }}>
 						{/* Button to open the MapPicker */}
 						<Button title="Select Location" onPress={() => setMapVisible(true)} />
@@ -608,8 +585,7 @@ export const ItemForm = () => {
 									color: '#155263',
 									fontWeight: 500,
 								}}
-								onPress={() => setMapVisible(true)}
-							>
+								onPress={() => setMapVisible(true)}>
 								<Ionicons style={{ marginTop: 5 }} name="location" size={20} />
 								Cliquez ici pour géolocaliser votre objet
 							</Badge>
