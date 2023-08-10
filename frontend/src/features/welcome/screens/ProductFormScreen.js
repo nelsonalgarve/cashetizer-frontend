@@ -5,41 +5,49 @@ import React, { useState } from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Modal, Provider as PaperProvider, Portal } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-const moment = require('moment');
-moment.locale('fr');
 
-export const ProductFormScreen = ({ route, item }) => {
-	// const buyer = useSelector(() => state.user.value);
-	console.log(route.params.item.name);
+export const ProductFormScreen = ({ route }) => {
 	const navigation = useNavigation();
 	const SignInScreen = () => {
 		navigation.navigate('SignIn');
 	};
 
 	const user = useSelector((state) => state.user.value);
-	console.log('__________________', user);
 
-	const order = {
-		ownerId: route.params.ownerId,
-		ownerUsername: route.params.ownerUsername,
-		itemLocalisation: route.params.item.localisation,
-		distance: route.params.item.distance,
-		itemName: route.params.item.name,
-		etat: route.params.item.etat,
-		address: route.params.address,
+	console.log(user);
+
+	const item = {
+		name: route.params.item.name,
+		ownerId: route.params.item.ownerId._id,
+		ownerUSername: route.params.item.ownerId.username,
+		prices: route.params.item.prices,
 		caution: route.params.item.caution,
-		startDate: moment(route.params.startDate).format('DD/MM/YYYY'),
-		endDate: moment(route.params.endDate).format('DD/MM/YYYY'),
-		totalPrice: route.params.price,
-		totalRentDays: route.params.days,
+		periodes: route.params.item.periodes,
+		photos: route.params.item.description.photos,
+		etat: route.params.item.description.etat,
+		category: route.params.item.category.name,
+		distance: route.params.distanceKm,
+		localisation: route.params.item.localisation,
+		description: route.params.item.description.details,
 	};
 
+	const periodes = item.periodes.map((periode, index) => {
+		const startDate = new Date(periode.start).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+		const endDate = new Date(periode.end).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+		return (
+			<Text key={index} style={styles.periode}>
+				{startDate} au {endDate}
+			</Text>
+		);
+	});
+
 	const fakeItem = {
-		ownerId: order.ownerId,
-		name: order.itemName,
-		description: 'item.description',
+		ownerId: item.Username,
+		name: item.name,
+		description: item.description,
 		photos: ['/Users/meon/Downloads/Cashetizer/cashetizer-frontend/frontend/assets/fakeImage.jpg'],
-		etat: order.etat,
+		etat: 'Excellent',
 		prices: {
 			day: 15,
 			week: 90,
@@ -47,8 +55,11 @@ export const ProductFormScreen = ({ route, item }) => {
 		},
 		caution: 50,
 		category: 'Electronics',
-		localisation: order.address,
-		periodes: [{ start: order.startDate, end: order.endDate }],
+		localisation: 'Paris, France',
+		periodes: [
+			{ start: '2023-08-01', end: '2023-08-07' },
+			{ start: '2023-08-10', end: '2023-08-20' },
+		],
 	};
 
 	const calculateDays = (startDate, endDate) => {
@@ -113,12 +124,16 @@ export const ProductFormScreen = ({ route, item }) => {
       </Modal> */}
 					<View style={styles.greyRectangle}>
 						<Text style={styles.name}>
-							{order.itemName} à {order.totalPrice}€
+							{fakeItem.name} à {totalCost}€
 						</Text>
 						<View style={styles.periodesContainer}>
-							<Text style={styles.periodes}>
-								Location du {order.startDate} au {order.endDate}
-							</Text>
+							<Text style={styles.periodes}>Périodes de location:</Text>
+							{periodes}
+							{/* {fakeItem.periodes.map((periode, index) => (
+								<Text key={index} style={styles.periode}>
+									{periode.start} à {periode.end}
+								</Text>
+							))} */}
 						</View>
 						{/*  <Button style={styles.buttonOutlined} mode="outlined" onPress={SignInScreen}>
                 <Text style={styles.buttonText}>Valider la location</Text>
@@ -147,15 +162,18 @@ export const ProductFormScreen = ({ route, item }) => {
 								<View style={styles.infoContainer}>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Locataire:</Text>
-										<Text style={styles.infoText}> {user.username}</Text>
+										<Text style={styles.infoText}>Aicha Ahamada</Text>
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Durée de location:</Text>
-										<Text style={styles.infoText}>{order.totalRentDays} jours</Text>
+										<Text style={styles.infoText}>
+											{calculateDays(selectedPeriod.start, selectedPeriod.end)}{' '}
+											{calculateDays(selectedPeriod.start, selectedPeriod.end) <= 1 ? 'jour' : 'jours'}
+										</Text>
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Prix par jour :</Text>
-										<Text style={styles.infoText}>{order.totalPrice / order.totalRentDays}€ </Text>
+										<Text style={styles.infoText}>{fakeItem.prices.day}€ </Text>
 									</View>
 
 									<Portal>
@@ -163,7 +181,7 @@ export const ProductFormScreen = ({ route, item }) => {
 											<Text style={styles.modalTitle}>Protégez comme la prunelle de vos yeux </Text>
 											<Text style={styles.modalText}>
 												Une usure normale est acceptable mais un dommage du bien d'autrui demande compensation. C'est pourquoi
-												cette caution vous sera restituée lors de l'inspection du retour de matériel, entre vous et le
+												cette caution vous sera restitué lors de l'inspection du retour de matériel, entre vous et le
 												propriétaire.
 											</Text>
 
@@ -178,13 +196,13 @@ export const ProductFormScreen = ({ route, item }) => {
 
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Prix total:</Text>
-										<Text style={styles.infoText}>{order.totalPrice}€</Text>
+										<Text style={styles.infoText}>{totalCost}€</Text>
 									</View>
 
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Caution:</Text>
 										<Text style={styles.infoText}>
-											{order.caution}€
+											{fakeItem.caution}€{' '}
 											<Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal} />
 										</Text>
 									</View>
@@ -194,13 +212,14 @@ export const ProductFormScreen = ({ route, item }) => {
 									</View>
 									<View style={styles.infoRow}>
 										<Text style={styles.infoLabel}>Loueur:</Text>
-										<Text style={styles.infoText}>{order.ownerUsername}</Text>
+										<Text style={styles.infoText}>Nelson {fakeItem.ownerId}</Text>
 									</View>
-									<View style={styles.infoRowAddress}>
-										<Text style={styles.infoLabelAddress}>Localisation:</Text>
+									<View style={styles.infoRow}>
+										<Text style={styles.infoLabel}>Localisation:</Text>
 										<TouchableOpacity onPress={() => console.log('Nelson lives in Paris')}>
 											<Text style={styles.infoText}>
-												<Ionicons name={'location'} color={'#FFCE52'} size={20} /> {order.address}
+												{' '}
+												<Ionicons name={'location'} color={'#FFCE52'} size={20} /> Paris
 											</Text>
 										</TouchableOpacity>
 									</View>
@@ -305,15 +324,6 @@ const styles = StyleSheet.create({
 		width: '20%',
 		resizeMode: 'contain',
 	},
-	infoRowAddress: {
-		flexWrap: 'wrap',
-	},
-	infoLabelAddress: {
-		fontSize: 16,
-		fontWeight: 'bold',
-		color: '#333',
-	},
-
 	textContainer: {
 		alignItems: 'center',
 		marginBottom: 10,

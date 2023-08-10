@@ -118,7 +118,7 @@ export const ResultScreen = ({ route }) => {
 						borderColor="#FFCE50"
 						compact="true"
 						buttonColor="#FFCE52"
-						textColor="#FFFFFF"
+						textColor="#155263"
 						// rippleColor="green"
 						icon="calendar-range"
 						onPress={() => setCurrentPicker('start')}>
@@ -130,7 +130,7 @@ export const ResultScreen = ({ route }) => {
 						borderColor="#FFCE50"
 						compact="true"
 						buttonColor="#FFCE52"
-						textColor="#FFFFFF"
+						textColor="#155263"
 						// rippleColor="green"
 						icon="calendar-range"
 						onPress={() => setCurrentPicker('end')}>
@@ -238,8 +238,8 @@ const styles = StyleSheet.create({
 		elevation: 4,
 	},
 	modalView: {
-		width: '40%', // use 80% of screen width
-		height: '20%', // use 40% of screen height
+		width: '40%',
+		height: '20%',
 		backgroundColor: 'white',
 		borderRadius: 20,
 		padding: 20,

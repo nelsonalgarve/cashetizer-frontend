@@ -11,7 +11,6 @@ import { selectUserData, setToken, setUser } from '../../../../reducers/user';
 import GooglePlacesInput from '../../Items/components/GooglePlacesInput';
 import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
-const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const SignUpForm = () => {
 	const navigation = useNavigation();
