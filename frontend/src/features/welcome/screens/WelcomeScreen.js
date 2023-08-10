@@ -3,11 +3,16 @@ import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Provider as PaperProvider, Searchbar, TextInput } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUser, selectUserData, setToken, setUser } from '../../../../reducers/user';
 import formTheme from '../themes/FormTheme';
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const WelcomeScreen = ({ navigation }) => {
+	const dispatch = useDispatch();
+	const user = useSelector((state) => state.user.value);
+	const token = useSelector((state) => state.user.tokenValue);
 	const [categories, setCategories] = useState([]);
 	const [userLatitude, setUserLatitude] = useState(null);
 	const [userLongitude, setUserLongitude] = useState(null);
@@ -57,6 +62,40 @@ export const WelcomeScreen = ({ navigation }) => {
 		navigation.navigate('Results', { category });
 	};
 
+	const onSubmitLogout = () => {
+		dispatch(clearUser());
+		// Adresse du backend pour Fetch POST logout
+		const logout = `https://cashetizer-backend.vercel.app/users/logoutAll`;
+
+		// Token récupéré depuis le reducer user
+		const bearerToken = token;
+		console.log('-----------beresr', bearerToken);
+		fetch(logout, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${bearerToken}`,
+				// 'Content-Type': 'application/json',
+			},
+		})
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				return response.json();
+			})
+			.then((data) => {
+				dispatch(clearUser());
+
+				console.log(data);
+			})
+			.catch((error) => {
+				// setError(error.message);
+			});
+	};
+	const onReset = () => {
+		reset();
+	};
+
 	return (
 		<PaperProvider theme={formTheme}>
 			<View style={styles.container}>
@@ -77,14 +116,24 @@ export const WelcomeScreen = ({ navigation }) => {
 						</TouchableOpacity>
 					))}
 				</ScrollView>
-				<View style={styles.buttonsContainer}>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignUpPress}>
-						S'inscrire
-					</Button>
-					<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignInPress}>
-						Se connecter
-					</Button>
-				</View>
+				{!token && (
+					<View style={styles.buttonsContainer}>
+						<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignUpPress}>
+							S'inscrire
+						</Button>
+						<Button style={styles.buttonOutlined} mode="outlined" onPress={handleSignInPress}>
+							Se connecter
+						</Button>
+					</View>
+				)}
+				{/* If token exists, show the logout button */}
+				{token && (
+					<View style={styles.buttonsContainer}>
+						<Button style={styles.buttonOutlined} mode="Outlined" onPress={onSubmitLogout}>
+							Logout {user.username}
+						</Button>
+					</View>
+				)}
 
 				<View style={styles.greenRectangle}>
 					<Text style={styles.rectangleText}>

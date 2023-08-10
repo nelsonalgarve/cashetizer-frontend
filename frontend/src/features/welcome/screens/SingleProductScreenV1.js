@@ -32,6 +32,16 @@ export const SingleProductScreen = ({ route }) => {
 	console.log(initialItem.prices);
 
 	const item = route.params.item;
+	// FAKE PRICES ________________________________________________________________________________________________
+	if (!perWeekPrice) {
+		perWeekPrice = perDayPrice * 7 * 0.95;
+	}
+
+	if (!perMonthPrice) {
+		perMonthPrice = perDayPrice * 30 * 0.9;
+	}
+	item.prices = { perDay: perDayPrice, perWeek: perWeekPrice, perMonth: perMonthPrice };
+
 	const sortedPrices = Object.entries(item.prices).sort((a, b) => a[1] - b[1]);
 	const [isModalVisible, setModalVisible] = React.useState(false);
 	const [formItem, setFormItem] = useState(initialItem);

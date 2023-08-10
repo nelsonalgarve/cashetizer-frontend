@@ -15,17 +15,29 @@ function formatDateInFrench(dateString) {
 
 export const SingleProductScreen = ({ route }) => {
 	const navigation = useNavigation();
+
+	function convert(date) {
+		if (date) {
+			return date.toISOString();
+		} else {
+			return '';
+		}
+	}
+
 	const validateChoice = () => {
 		navigation.navigate('ProductForm', {
-			// item: initialItem,
-			startDate: selectedStartDate,
-			endDate: selectedEndDate,
+			item: initialItem,
+			startDate: convert(selectedStartDate),
+			endDate: convert(selectedEndDate),
 			price: calculatedPrice,
 			days: numberOfDays,
+			ownerUsername: ownerUsername,
+			photo: photo,
+			address: address,
 		});
 	};
 
-	// console.log(route.params.item.periodes);
+	// const sortedPrices = Object.entries(item.prices).sort((a, b) => a[1] - b[1]);
 	const initialItem = {
 		name: route.params.item.name,
 		ownerId: route.params.item.ownerId._id,
@@ -44,9 +56,24 @@ export const SingleProductScreen = ({ route }) => {
 		},
 	};
 
-	console.log(initialItem.prices);
+	const [ownerUsername, setOwnerUsername] = useState(initialItem.ownerUSername);
+	const [photo, setPhoto] = useState(initialItem.photos[0]);
+	const [item, setItem] = useState(route.params.item);
+	const perDayPrice = initialItem.prices.perDay;
+	let perWeekPrice = initialItem.prices.perWeek;
+	let perMonthPrice = initialItem.prices.perMonth;
 
-	const item = route.params.item;
+	// FAKE PRICES ____________________________________________
+	if (!perWeekPrice) {
+		perWeekPrice = perDayPrice * 7 * 0.95;
+	}
+
+	if (!perMonthPrice) {
+		perMonthPrice = perDayPrice * 30 * 0.9;
+	}
+	item.prices = { perDay: perDayPrice, perWeek: perWeekPrice, perMonth: perMonthPrice };
+
+	// const item = route.params.item;
 	const sortedPrices = Object.entries(item.prices).sort((a, b) => a[1] - b[1]);
 	const [isModalVisible, setModalVisible] = React.useState(false);
 	const [formItem, setFormItem] = useState(initialItem);
@@ -109,14 +136,6 @@ export const SingleProductScreen = ({ route }) => {
 			setDatePickerVisibility(false);
 		}
 	};
-	// const handleDatePicked = (date) => {
-	// 	if (!selectedStartDate) {
-	// 		setSelectedStartDate(date);
-	// 	} else if (!selectedEndDate) {
-	// 		setSelectedEndDate(date);
-	// 		setDatePickerVisibility(false);
-	// 	}
-	// };
 
 	const PeriodButton = ({ period }) => {
 		return (
@@ -156,10 +175,6 @@ export const SingleProductScreen = ({ route }) => {
 	}, [selectedStartDate, selectedEndDate]);
 
 	// CALCUL DU PRIX useEffect
-
-	const perDayPrice = initialItem.prices.perDay;
-	const perWeekPrice = initialItem.prices.perWeek;
-	const perMonthPrice = initialItem.prices.perMonth;
 
 	const pricePerDay = perDayPrice;
 	const pricePerWeek = pricePerDay * 7 * 0.95;
@@ -308,6 +323,8 @@ export const SingleProductScreen = ({ route }) => {
 						<PeriodButton key={index} period={period} />
 					))}
 				</View>
+				{/*DATES RANGE DISPLAY ------------- */}
+
 				<TouchableOpacity style={styles.buttonOutlined} mode="outlined" onPress={validateChoice} disabled={calculatedPrice === 0}>
 					<Text style={styles.buttonText}>Valider la location</Text>
 				</TouchableOpacity>
@@ -354,12 +371,46 @@ export const SingleProductScreen = ({ route }) => {
 				</Modal>
 
 				<View style={styles.infoContainer}>
-					<View style={styles.infoRow}>
-						<Text style={styles.infoLabel}>Prix de la location: </Text>
-						<Text style={styles.infoText}>
-							{calculatedPrice}€ <Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal2} />
-						</Text>
-					</View>
+					{calculatedPrice !== 0 && (
+						<View style={styles.infoRow}>
+							<Text style={styles.infoLabel}>Prix de la location: </Text>
+							<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+								<Text style={styles.infoText}>
+									{calculatedPrice !== null ? `${calculatedPrice}€` : '0€'}
+									{calculatedPrice !== null && (
+										<Ionicons name="information-circle-outline" size={20} color="blue" onPress={toggleModal2} />
+									)}
+								</Text>
+							</View>
+						</View>
+					)}
+					{calculatedPrice !== 0 && (
+						<View style={styles.infoRow}>
+							<Text style={styles.infoLabel}>Durée de location: </Text>
+							<Text style={styles.infoText}>{numberOfDays !== null && `${numberOfDays} jour${numberOfDays > 1 ? 's' : ''}`}</Text>
+						</View>
+					)}
+					{calculatedPrice !== 0 && (
+						<View style={styles.infoRow}>
+							<Text style={styles.infoLabel}>Début de location:</Text>
+							{selectedStartDate && (
+								<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+									<Text style={styles.infoText}>{formatDateInFrench(selectedStartDate)}</Text>
+								</View>
+							)}
+						</View>
+					)}
+
+					{calculatedPrice !== 0 && (
+						<View style={styles.infoRow}>
+							<Text style={styles.infoLabel}>Fin de location:</Text>
+							{selectedEndDate && (
+								<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+									<Text style={styles.infoText}>{formatDateInFrench(selectedEndDate)}</Text>
+								</View>
+							)}
+						</View>
+					)}
 					<View style={styles.infoRow}>
 						<Text style={styles.infoLabel}>État: </Text>
 						<Text style={styles.infoText}>{item.description.etat}</Text>
@@ -405,10 +456,6 @@ export const SingleProductScreen = ({ route }) => {
 					</View>
 				)}
 
-				{/* PERIODES RENDER   ----------------------------------------------------------------------------------------------- */}
-				{item.periodes.map((period, index) => (
-					<PeriodButton key={index} period={period} />
-				))}
 				{/* DATE START PICKER -------------------------------- */}
 				<DateTimePickerModal
 					isVisible={isDatePickerVisible}
@@ -431,17 +478,6 @@ export const SingleProductScreen = ({ route }) => {
 					minimumDate={selectedStartDate} // The end date shouldn't be before the selected start date
 					maximumDate={new Date(activePeriod?.end)}
 				/>
-				{/*DATES RANGE DISPLAY ------------- */}
-				{selectedStartDate && <Text>Début de location: {formatDateInFrench(selectedStartDate)}</Text>}
-				{selectedEndDate && <Text>Fin de location {formatDateInFrench(selectedEndDate)}</Text>}
-				{/* NOMBRE DE JOURS */}
-				<View style={styles.container}>
-					{/* {numberOfDays !== null ? <Text>Selected Range: {numberOfDays} days</Text> : <Text>No days selected</Text>} */}
-
-					{numberOfDays !== null && <Text>Selected Range: {numberOfDays || 'No days selected'} days</Text>}
-					<Text>Price: {calculatedPrice}€</Text>
-					<Button title="Valider" onPress={validateChoice} disabled={calculatedPrice === 0} />
-				</View>
 			</ScrollView>
 		</View>
 	);

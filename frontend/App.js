@@ -298,6 +298,13 @@ export default App = () => {
 										}}
 									/>
 									<Stack.Screen
+										name="SearchScreen"
+										component={SearchScreen}
+										options={{
+											headerShown: false,
+										}}
+									/>
+									<Stack.Screen
 										name="ProductForm"
 										component={ProductFormScreen}
 										options={({ navigation }) => ({

@@ -9,9 +9,6 @@ import formTheme from '../themes/FormTheme';
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const SignInForm = () => {
-	const [, updateState] = React.useState();
-	const forceUpdate = React.useCallback(() => updateState({}), []);
-
 	const navigation = useNavigation();
 	const handleSignUpPress = () => {
 		navigation.navigate('SignUp');

@@ -279,11 +279,11 @@ export const ItemForm = () => {
 	};
 
 	const dataSelectList = [
-		{ key: 'new', value: 'Neuf' },
-		{ key: 'good', value: 'Bon état' },
-		{ key: 'ok', value: 'Acceptable' },
-		{ key: 'used', value: 'Usé' },
-		{ key: 'veryused', value: 'Très usé' },
+		{ key: 'Neuf', value: 'Neuf' },
+		{ key: 'Bon état', value: 'Bon état' },
+		{ key: 'Acceptable', value: 'Acceptable' },
+		{ key: 'Usé', value: 'Usé' },
+		{ key: 'Très usé', value: 'Très usé' },
 	];
 
 	const dataModeRemise = [
