@@ -3,8 +3,10 @@ const createNewItem = async (token, formData, payload) => {
 	try {
 		console.log('token from createNewItem handler', token);
 
+
 		const response = await fetch('https://cashetizer-backend.vercel.app/item/items', {
-			method: 'POST',
+
+				method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
