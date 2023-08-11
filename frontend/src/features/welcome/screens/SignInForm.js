@@ -13,7 +13,7 @@ export const SignInForm = () => {
 	const handleSignUpPress = () => {
 		navigation.navigate('SignUp');
 	};
-	const testCheckIdSignUpPress = () => {
+	/* const testCheckIdSignUpPress = () => {
 		navigation.navigate('CheckId');
 	};
 	const testConfirmationAccountScreen = () => {
@@ -24,7 +24,7 @@ export const SignInForm = () => {
 	};
 	const testConfirmationRentScreen = () => {
 		navigation.navigate('ConfirmationRent');
-	};
+	}; */
 	const testGoHome = () => {
 		navigation.navigate('TabNavigator');
 	};
@@ -197,7 +197,7 @@ export const SignInForm = () => {
 							Mot de passe oublié?
 						</Button>
 					)}
-					<Button onPress={onReset}>Reset</Button>
+			{/* 		<Button onPress={onReset}>Reset</Button>
 					<Button onPress={testCheckIdSignUpPress}>
 						<Text> Test CheckId </Text>
 					</Button>
@@ -224,7 +224,7 @@ export const SignInForm = () => {
 					</Button>
 					<Button onPress={() => navigation.navigate('MesAnnonces')}>
 						<Text> Mes annonces </Text>
-					</Button>
+					</Button> */}
 				</ScrollView>
 			</View>
 			{/* </KeyboardAvoidingView> */}

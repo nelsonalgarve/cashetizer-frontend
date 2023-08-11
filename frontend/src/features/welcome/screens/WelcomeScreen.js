@@ -107,7 +107,7 @@ export const WelcomeScreen = ({ navigation }) => {
 					<TextInput style={styles.textInput} label="Rechercher" mode="outlined" Left={<TextInput.Icon icon="search" />} />
 				</View>
 
-				<ScrollView contentContainerStyle={styles.buttonCategorie}>
+				<ScrollView contentContainerStyle={styles.buttonCategorie} keyboardShouldPersistTaps="handled">
 					{categories.map((category, index) => (
 						<TouchableOpacity key={index} style={styles.button} onPress={() => handleCategoryPress(category)}>
 							<Text style={styles.buttonText}>
@@ -148,21 +148,25 @@ export const WelcomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
 	buttonsContainer: {
+		backgroundColor:"#F1F1F1",
+		height:90,
 		position: 'absolute',
-		bottom: 5,
+		bottom: 35,
 		left: 0,
 		right: 0,
-		paddingBottom: 20,
+		paddingBottom: 0,
 		flexDirection: 'row',
 		justifyContent: 'center',
+		alignItems:"flex-end",
 	},
 
 	buttonOutlined: {
-		margin: 10,
+		
 		backgroundColor: '#FFCE52',
 		borderWidth: 1,
 		width: '40%',
-		margin: 12,
+		marginTop: 10,
+		marginHorizontal: 5,
 		bottom: '10%',
 		borderWidth: 0.25,
 		borderColor: '#E6E6E6',

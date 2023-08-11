@@ -187,7 +187,16 @@ export default App = () => {
 										})}
 									/>
 
-									<Stack.Screen name="ItemForm" component={ItemForm} />
+									<Stack.Screen name="ItemForm" component={ItemForm} options={({ navigation }) => ({
+											title: 'Nouvelle annonce',
+											headerLeft: () => (
+												<TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backButton}>
+													<Ionicons name="close" size={30} color="white" />
+												</TouchableOpacity>
+											),
+											headerRight: () => '',
+							
+										})}/>
 									<Stack.Screen
 										name="Search"
 										component={SearchScreen}
