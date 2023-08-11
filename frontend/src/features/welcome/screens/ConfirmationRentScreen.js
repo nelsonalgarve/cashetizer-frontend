@@ -30,11 +30,11 @@ export const ConfirmationRentScreen = () => {
 					<Text style={styles.emoji}>🥳</Text>
 					<Text style={styles.title}> Félicitations ! </Text>
 					<Text style={styles.text}>
-						Votre annonce est complète.{'\n'}
+						Votre demande a été envoyé au vendeur.{'\n'}
 						{'\n'}
-						Elle sera publiée d\'ici peu.{'\n'}
+						Vous recevrez une réponse d'ici peu.{'\n'}
 						{'\n'}
-						Vous recevrez une notification et un email une fois votre compte confirmé.{'\n'}
+						Une notification et un email vous parviendront.{'\n'}
 						{'\n'}
 						Pensez à vérifier votre adresse email.
 					</Text>
@@ -44,12 +44,13 @@ export const ConfirmationRentScreen = () => {
 				</Button>
 
 				<View style={styles.textContainer}>
-					<Text style={styles.text}>
-						Vous recevrez une notification et un email une fois votre compte confirmé.{'\n'}
-						{'\n'}
-						Pensez à vérifier votre adresse email.
-					</Text>
-				</View>
+							<Text style={styles.text}>
+								En attendant vous pouvez continuer à {'\n'}
+								en profiter pour louer à petits prix {'\n'}
+								ou à générer un revenu {'\n'}
+								en mettant des produits en location!!
+							</Text>
+						</View>
 				<Button style={styles.buttonOutlined} mode="outlined" onPress={WelcomeScreen}>
 					<Text style={styles.buttonText}>Je commence l'aventure</Text>
 				</Button>

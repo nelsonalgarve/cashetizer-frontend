@@ -57,7 +57,7 @@ export const ConfirmationAdvertScreen = () => {
 							</Text>
 						</View>
 
-						<Button style={styles.buttonOutlined} mode="outlined" onPress={WelcomeScreen}>
+						<Button style={styles.buttonOutlined} mode="outlined" onPress={() => navigation.navigate('TabNavigator')}>
 							<Text style={styles.buttonText}>J'y vais de suite!</Text>
 						</Button>
 					</View>

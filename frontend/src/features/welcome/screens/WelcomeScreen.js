@@ -108,6 +108,7 @@ export const WelcomeScreen = ({ navigation }) => {
 				</View>
 
 				<ScrollView contentContainerStyle={styles.buttonCategorie} keyboardShouldPersistTaps="handled">
+					
 					{categories.map((category, index) => (
 						<TouchableOpacity key={index} style={styles.button} onPress={() => handleCategoryPress(category)}>
 							<Text style={styles.buttonText}>
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
 		
 		backgroundColor: '#FFCE52',
 		borderWidth: 1,
-		width: '40%',
+		width: '45%',
 		marginTop: 10,
 		marginHorizontal: 5,
 		bottom: '10%',

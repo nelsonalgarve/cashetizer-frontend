@@ -21,9 +21,11 @@ import {
 	List,
 	MD3Colors,
 	Menu,
+	DefaultTheme,
 	Provider as PaperProvider,
 	Surface,
 	TextInput,
+	Portal,
 } from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
@@ -86,6 +88,13 @@ export const ItemForm = () => {
 	const [photos, setPhotos] = useState([]);
 	const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
 	const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+	const [isModalVisible3, setModalVisible3] = useState(false);
+	
+	
+	const toggleModal3 = () => {
+		console.log('Toggle modal called');
+		setModalVisible3(!isModalVisible3);
+	  };
 
 	// Filter out objects with undefined values
 
@@ -117,7 +126,7 @@ export const ItemForm = () => {
 				return;
 			}
 
-			const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+			const photo = await cameraRef.current.takePictureAsync({ quality: 0.2 });
 			setPhotos([...photos, photo.uri]);
 			if (photos.length === 3) {
 				await uploadPhotos();
@@ -322,6 +331,9 @@ export const ItemForm = () => {
 		setCurrentPhotoIndex((prevIndex) => (prevIndex === 0 ? photos.length - 1 : prevIndex - 1));
 	};
 
+	
+	
+
 	/* 	 const renderPhotos = () => {
     return photos.map((photo, index) => (
       <TouchableOpacity key={index} onPress={() => openPhotoViewer(index)}>
@@ -340,10 +352,44 @@ export const ItemForm = () => {
 		));
 	};
 
+	const customTheme = {
+		...DefaultTheme,
+		colors: {
+		  ...DefaultTheme.colors,
+		  primary: 'blue', 
+		},
+		fonts: {
+		  ...DefaultTheme.fonts,
+		  medium: {
+			...DefaultTheme.fonts.medium,
+			fontSize: 36, 
+		  },
+		},
+	  };
+
 	return (
 		<PaperProvider theme={formTheme}>
+			{/* <View><Portal>
+				<Modal visible={isModalVisible3} onDismiss={toggleModal3} contentContainerStyle={styles.modalContainer3}>
+					<Text style={styles.modalTitle3}>Protégez comme la prunelle de vos yeux </Text>
+					<Text style={styles.modalText3}>
+						Une usure normale est acceptable mais un dommage du bien d'autrui demande compensation. C'est pourquoi cette caution vous sera
+						restitué lors de l'inspection du retour de matériel, entre vous et le propriétaire.
+					</Text>
+
+					<TouchableOpacity
+						style={{ marginTop: 20, alignItems: 'center', backgroundColor: '#155263', color: 'white', borderRadius: 10, width: '20%' }}
+						mode="outlined"
+						onPress={toggleModal3}>
+						<Text style={{ fontWeight: 600, color: 'white' }}> Fermer</Text>
+					</TouchableOpacity>
+				</Modal>
+			</Portal></View> */}
+
+			
 			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<View style={styles.container}>
+				
 					<View style={{ width: '100%', alignSelf: 'center' }}>
 						<SelectList
 							setSelected={setSelectedCategory}
@@ -352,19 +398,24 @@ export const ItemForm = () => {
 							placeholder="Choisissez une catégorie"
 						/>
 					</View>
+					
 
 					{/* // CHAMP TITRE -------------------------------------------------------------------- */}
-					<Controller
+					
+						<Controller
 						control={control}
 						render={({ field: { onChange, onBlur, value } }) => (
-							<TextInput
+							
+								<TextInput
 								label="Titre"
 								mode="outlined"
 								onChangeText={(text) => onChange(text)}
 								onBlur={onBlur}
 								value={value}
 								error={errors.name ? true : false}
+								
 							/>
+							
 						)}
 						name="name"
 						rules={{ required: "Le titre de l/'annonce est obligatoire" }}
@@ -502,6 +553,7 @@ export const ItemForm = () => {
 								showDeleteIcon={true}
 							/>
 						</View>
+						
 						{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
 						<Surface style={styles.surface} elevation={1}>
 							{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
@@ -511,21 +563,34 @@ export const ItemForm = () => {
 									flex: 1,
 									marginTop: -10,
 									minWidth: '100%',
-									backgroundColor: '#FFCE52',
+									backgroundColor: 'transparent',
 									justifyContent: 'center',
 									alignItems: 'center',
 									paddingTop: 5,
 									borderRadius: 50,
 								}}>
+								
 								<Badge
 									size={30}
 									icon="calendar"
 									style={{
-										paddingHorizontal: 5,
-										alignSelf: 'center',
-										backgroundColor: '#FFCE52',
+										height: 40,
+									width: '100%',
+									alignSelf: 'center',
+									backgroundColor: '#FFCE52',
 										color: '#155263',
 										fontWeight: 500,
+										borderWidth: 1,
+										borderColor: '#E6E6E6', 
+								borderRadius: 20,
+										shadowColor: 'rgba(0, 0, 0, 0.4)', 
+										shadowOffset: {
+										  width: 0,
+										  height: 4,
+										},
+										shadowOpacity: 1,
+										shadowRadius: 3,
+										elevation: 4, 
 									}}
 									onPress={() => setDatePickerVisible(true)}>
 									<Icon name="calendar" size={20} /> Remplissez le calendrier de disponibilité
@@ -543,8 +608,6 @@ export const ItemForm = () => {
 										style={{
 											paddingHorizontal: 5,
 											alignSelf: 'center',
-											// backgroundColor: '#FFCE52',
-
 											fontSize: 12,
 											color: 'white',
 											minHeight: '100%',
@@ -555,7 +618,7 @@ export const ItemForm = () => {
 
 									<Button
 										icon="delete"
-										mode="oulined"
+										mode="outlined"
 										compact="false"
 										style={{ paddingHorizontal: 0 }}
 										onPress={() => deletePeriod(index)}></Button>
@@ -587,9 +650,20 @@ export const ItemForm = () => {
 									height: 40,
 									width: '100%',
 									alignSelf: 'center',
-									backgroundColor: '#FFCE52',
+									backgroundColor: 'transparent',
 									color: '#155263',
 									fontWeight: 500,
+									borderWidth: 1,
+									borderColor: '#E6E6E6', 
+							borderRadius: 20,
+									shadowColor: 'rgba(0, 0, 0, 0.4)', 
+									shadowOffset: {
+									  width: 0,
+									  height: 4,
+									},
+									shadowOpacity: 1,
+									shadowRadius: 3,
+									elevation: 4, 
 								}}
 								onPress={() => setMapVisible(true)}>
 								<Ionicons style={{ marginTop: 5 }} name="location" size={20} />
@@ -610,7 +684,7 @@ export const ItemForm = () => {
 				</View>
 
 				{/* // CHAMP MODE DE REMISE ---------------------------------------------------------------- */}
-				<View style={{ width: '90%', alignSelf: 'center' }}>
+				<View style={{ width: '85%', alignSelf: 'center', marginTop:-15 }}>
 					<SelectList
 						setSelected={setSelectedRemise}
 						data={dataModeRemise}
@@ -619,15 +693,15 @@ export const ItemForm = () => {
 					/>
 				</View>
 
-				<View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+				<View style={{ flexDirection: 'row', alignSelf: "flex-start", marginLeft:30, marginTop:15 }}>
 					<Text style={styles.checkboxLabelExpress}>
-						Mode Express <MaterialCommunityIcons name="help-circle-outline" size={16} />
-					</Text>
+						Mode Express <MaterialCommunityIcons name="help-circle-outline" size={16} color="blue" onPress={toggleModal3} />
+						</Text>
 					<View style={{ padding: 16 }}>
 						<Controller
 							control={control}
 							render={({ field: { onChange, value } }) => (
-								<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+								<View style={{ flexDirection: 'row', alignItems: 'flex-end', marginLeft:10 }}>
 									<CheckBox value={value} onValueChange={(newValue) => onChange(newValue)} />
 									<Text>Oui</Text>
 								</View>
@@ -640,7 +714,7 @@ export const ItemForm = () => {
 						<Controller
 							control={control}
 							render={({ field: { onChange, value } }) => (
-								<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+								<View style={{ flexDirection: 'row', alignItems: 'flex-end', marginRight: 10 }}>
 									<CheckBox value={value} onValueChange={(newValue) => onChange(newValue)} />
 
 									<Text>Non</Text>
@@ -715,9 +789,20 @@ const styles = StyleSheet.create({
 		backgroundColor: '#FFCE52',
 		fontColor: 'black',
 		borderWidth: 1,
-		width: '100%',
+		width: '90%',
 		alignSelf: 'center',
 		margin: 12,
+		borderWidth: 1,
+        borderColor: '#E6E6E6', 
+borderRadius: 20,
+        shadowColor: 'rgba(0, 0, 0, 0.4)', 
+        shadowOffset: {
+          width: 0,
+          height: 4,
+        },
+        shadowOpacity: 1,
+        shadowRadius: 3,
+        elevation: 4, 
 	},
 	buttonText: {
 		color: 'white',
@@ -728,19 +813,22 @@ const styles = StyleSheet.create({
 	textInput: {
 		paddingVertical: 1,
 		paddingHorizontal: 1,
-		fontSize: 12,
+		fontSize: 15,
 		height: 35,
-		backgroundColor: '#E8E8E8',
+		backgroundColor: 'white',
 	},
 	checkboxContainer: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		marginTop: 10,
-		marginBottom: -10,
+		margin: 10,
+		marginHorizontal: 30,
+		textAlign:"justify"
 	},
 	checkboxLabel: {
 		marginLeft: 8,
+		marginRight:20,
 		fontSize: 14,
+		textAlign:"justify"
 	},
 	surface: {
 		backgroundColor: 'transparent',
@@ -789,5 +877,22 @@ const styles = StyleSheet.create({
 	showButtonText: {
 		fontSize: 16,
 		color: 'blue',
+	},
+	modalTitle3: {
+		color: '#155263',
+		fontSize: 18,
+		fontWeight: 'bold',
+		marginBottom: 10,
+	},
+	modalText3: {
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	modalContainer3: {
+		backgroundColor: 'white',
+		borderRadius: 10,
+		padding: 20,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 });

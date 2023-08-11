@@ -15,6 +15,9 @@ export const ProductFormScreen = ({ route, item }) => {
 	const SignInScreen = () => {
 		navigation.navigate('SignIn');
 	};
+	const ConfirmRent = () => {
+		navigation.navigate('ConfirmRent');
+	};
 
 	const user = useSelector((state) => state.user.value);
 	console.log('__________________', user);
@@ -223,14 +226,16 @@ export const ProductFormScreen = ({ route, item }) => {
 							</Text>
 						</View>
 						<View style={styles.buttonContainer}>
-							<Button style={[styles.buttonOutlined, styles.paypalButton]} mode="outlined" onPress={SignInScreen}>
+							<Button style={[styles.buttonOutlined, styles.paypalButton]} mode="outlined" onPress={() => {
+    console.log("I'm fine")}}>
 								<Image source={require('../../../../assets/paypalLogo.png')} style={styles.paypalLogo} />
 							</Button>
-							<Button style={[styles.buttonOutlined, styles.cbButton]} mode="outlined" onPress={SignInScreen}>
+							<Button style={[styles.buttonOutlined, styles.cbButton]} mode="outlined" onPress={() => {
+    console.log("I'm fine")}}>
 								<Image source={require('../../../../assets/LogoCB.png')} style={styles.paypalLogo} />
 							</Button>
 						</View>
-						<Button style={styles.buttonOutlined} mode="outlined" onPress={SignInScreen}>
+						<Button style={styles.buttonOutlined} mode="outlined" onPress={ConfirmRent}>
 							<Text style={styles.buttonText}>Confirmer la location</Text>
 						</Button>
 					</ScrollView>
@@ -423,7 +428,7 @@ const styles = StyleSheet.create({
 	},
 
 	paypalLogo: {
-		width: 90,
+		width: 100,
 		height: 50,
 		// resizeMode: 'contain',
 	},
