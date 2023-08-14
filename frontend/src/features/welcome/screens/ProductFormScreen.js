@@ -11,6 +11,7 @@ moment.locale('fr');
 export const ProductFormScreen = ({ route, item }) => {
 	// const buyer = useSelector(() => state.user.value);
 	console.log(route.params.item.name);
+	console.log("To push");
 	const navigation = useNavigation();
 	const SignInScreen = () => {
 		navigation.navigate('SignIn');
