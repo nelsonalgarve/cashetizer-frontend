@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Badge, Button, Card, Chip, Divider, Text } from 'react-native-paper';
 import { calculateDistance } from '../../helpers/calculateDistance';
-import { SingleItem } from '../screens/SingleItem';
 
 function limitTextLength(text, maxLength) {
 	if (text.length <= maxLength) {
@@ -57,7 +56,8 @@ export const ItemCard = ({ item, userLatitude, userLongitude, navigation }) => {
 					onPress={() => console.log('Pressed')}
 					compact={true}
 					textStyle={{ fontSize: 10, color: '#155263', fontWeight: 'bold' }}
-					style={styles.chipStyle}>
+					style={styles.chipStyle}
+				>
 					Période {index + 1}: {moment(periode.start).format('L')} - {moment(periode.end).format('L')}
 				</Chip>
 			</View>

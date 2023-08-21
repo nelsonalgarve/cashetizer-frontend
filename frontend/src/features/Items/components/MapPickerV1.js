@@ -1,11 +1,13 @@
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
 import { Button, KeyboardAvoidingView, Modal, View } from 'react-native';
+import Geocoder from 'react-native-geocoding';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MapView, { Marker } from 'react-native-maps';
 import { TextInput } from 'react-native-paper';
-
 const GOOGLE_API_KEY = 'AIzaSyCKVV2S52hUifM6pOSiTVzj2MoAI4jccqw';
+
+Geocoder.init(GOOGLE_API_KEY);
 
 export const MapPicker = ({ onLocationSelected, isVisible, onClose }) => {
 	const [location, setLocation] = useState(null);
@@ -47,14 +49,10 @@ export const MapPicker = ({ onLocationSelected, isVisible, onClose }) => {
 	};
 
 	const getAddressFromCoordinates = (latitude, longitude) => {
-		// Fetching address using Google Places API
-		fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_API_KEY}`)
-			.then((response) => response.json())
+		Geocoder.from({ latitude, longitude })
 			.then((json) => {
-				if (json.results && json.results.length > 0) {
-					const addressComponent = json.results[0].formatted_address;
-					setAddress(addressComponent);
-				}
+				var addressComponent = json.results[0].formatted_address;
+				setAddress(addressComponent);
 			})
 			.catch((error) => console.warn(error));
 	};

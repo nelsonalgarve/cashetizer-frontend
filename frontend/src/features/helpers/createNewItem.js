@@ -4,16 +4,18 @@ const createNewItem = async (token, formData, payload, navigation) => {
 	};
 
 	const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
-	try { {ConfirmAdvert}
+	try {
+		{
+			ConfirmAdvert;
+		}
 		console.log('token from createNewItem handler', token);
 		// ('https://cashetizer-backend.vercel.app');
-		const response = await fetch(`http://172.20.10.4:3000/item/items`, {
+		const response = await fetch(`https://cashetizer-backend.vercel.app/item/items`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
 			body: formData,
-
 		});
 		console.log('response----------------------', response.status);
 		if (!response.ok) {

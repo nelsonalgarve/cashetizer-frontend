@@ -14,7 +14,7 @@ export const ResultScreen = ({ route }) => {
 	const [userLatitude, setUserLatitude] = useState(null);
 	const [userLongitude, setUserLongitude] = useState(null);
 	const categoryName = route.params.category.name;
-	// console.log(route.params);
+
 	const [items, setItems] = useState([]);
 
 	const [startDate, setStartDate] = useState(new Date());
@@ -121,7 +121,8 @@ export const ResultScreen = ({ route }) => {
 						textColor="#155263"
 						// rippleColor="green"
 						icon="calendar-range"
-						onPress={() => setCurrentPicker('start')}>
+						onPress={() => setCurrentPicker('start')}
+					>
 						{`Du: ${formatDate(startDate)}`}
 					</Button>
 
@@ -133,7 +134,8 @@ export const ResultScreen = ({ route }) => {
 						textColor="#155263"
 						// rippleColor="green"
 						icon="calendar-range"
-						onPress={() => setCurrentPicker('end')}>
+						onPress={() => setCurrentPicker('end')}
+					>
 						{`Au: ${formatDate(endDate)}`}
 					</Button>
 				</View>
@@ -146,7 +148,8 @@ export const ResultScreen = ({ route }) => {
 							textColor="#155263"
 							mode="outlined"
 							compact="true"
-							onPress={() => setDateTolerance((prev) => Math.max(0, prev - 1))}></Button>
+							onPress={() => setDateTolerance((prev) => Math.max(0, prev - 1))}
+						></Button>
 						<Text style={{ margin: 5 }}>
 							+/- {dateTolerance} jour{dateTolerance > 1 ? 's' : ''}
 						</Text>
@@ -156,7 +159,8 @@ export const ResultScreen = ({ route }) => {
 							style={{ minWidth: '20%', marginLeft: 0 }}
 							mode="outlined"
 							compact="true"
-							onPress={() => setDateTolerance((prev) => prev + 1)}></Button>
+							onPress={() => setDateTolerance((prev) => prev + 1)}
+						></Button>
 					</View>
 					<View>
 						<Button
@@ -164,7 +168,8 @@ export const ResultScreen = ({ route }) => {
 							icon="filter"
 							textColor="white"
 							mode="outlined"
-							onPress={() => fetchItemsByCategory(categoryName, true)}>
+							onPress={() => fetchItemsByCategory(categoryName, true)}
+						>
 							Filtrer
 						</Button>
 					</View>
@@ -177,7 +182,8 @@ export const ResultScreen = ({ route }) => {
 				visible={currentPicker !== null}
 				onRequestClose={() => {
 					setCurrentPicker(null);
-				}}>
+				}}
+			>
 				<View style={styles.centeredView}>
 					<View style={styles.modalView}>
 						{currentPicker === 'start' && (

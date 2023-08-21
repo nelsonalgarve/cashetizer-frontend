@@ -34,7 +34,6 @@ export const SignUpForm = () => {
 			alert("Veuillez accepter les termes d'utilisation avant de vous inscrire.");
 			return;
 		}
-
 		// Objet user à envoyer au backend
 		const requestData = {
 			username: data.username,
@@ -54,10 +53,8 @@ export const SignUpForm = () => {
 			isVendor: data.isVendor,
 			notifications: data.notifications,
 		};
-
 		// Adresse du backend pour Fetch POST signup
 		const signUpEndpoint = `https://cashetizer-backend.vercel.app/users`;
-
 		fetch(signUpEndpoint, {
 			method: 'POST',
 			headers: {
@@ -67,9 +64,6 @@ export const SignUpForm = () => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				// console.log('data', userData);
-
-				// Réponse du backend { user: {...}, token: "..." }
 				if (data.user && data.token) {
 					console.log('Succes loggedIn', data);
 					dispatch(setToken(data.token));

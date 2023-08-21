@@ -55,7 +55,7 @@ export const CheckIdScreen = () => {
 
 	const takePhoto = async () => {
 		if (cameraRef.current) {
-			const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+			const photo = await cameraRef.current.takePictureAsync({ quality: 0.1 });
 			setLivePhoto(photo.uri);
 			setShowCamera(false);
 			const formData = new FormData();
