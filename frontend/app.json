@@ -1,43 +1,42 @@
 {
-  "expo": {
-    "name": "Cashetizer",
-    "slug": "Cashetizer",
-    "version": "0.0.1",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#155263"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.nelsonalgarve.Cashetizer"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#155263"
-      },
-      "package": "com.nelsonalgarve.Cashetizer"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "3fbd4bba-e6c7-45c8-80c2-b8a3322bc4be"
-      }
-    },
-    "runtimeVersion": {
-      "policy": "sdkVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/3fbd4bba-e6c7-45c8-80c2-b8a3322bc4be"
-    }
-  }
+	"expo": {
+		"name": "Cashetizer",
+		"slug": "Cashetizer",
+		"version": "0.0.1",
+		"orientation": "portrait",
+		"icon": "./assets/icon.png",
+		"userInterfaceStyle": "light",
+		"splash": {
+			"image": "./assets/splash.png",
+			"resizeMode": "contain",
+			"backgroundColor": "#155263"
+		},
+		"assetBundlePatterns": ["**/*"],
+		"ios": {
+			"supportsTablet": true,
+			"bundleIdentifier": "com.nelsonalgarve.Cashetizer"
+		},
+		"android": {
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/adaptive-icon.png",
+				"backgroundColor": "#155263"
+			},
+			"permissions": ["CAMERA", "WRITE_EXTERNAL_STORAGE"],
+			"package": "com.nelsonalgarve.Cashetizer"
+		},
+		"web": {
+			"favicon": "./assets/favicon.png"
+		},
+		"extra": {
+			"eas": {
+				"projectId": "3fbd4bba-e6c7-45c8-80c2-b8a3322bc4be"
+			}
+		},
+		"runtimeVersion": {
+			"policy": "sdkVersion"
+		},
+		"updates": {
+			"url": "https://u.expo.dev/3fbd4bba-e6c7-45c8-80c2-b8a3322bc4be"
+		}
+	}
 }

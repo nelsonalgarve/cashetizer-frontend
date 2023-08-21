@@ -1,33 +1,27 @@
-import { Picker } from '@react-native-community/picker';
+import { Ionicons } from '@expo/vector-icons';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { Camera, CameraType, FlashMode } from 'expo-camera';
+import { Camera, CameraType } from 'expo-camera';
 import CheckBox from 'expo-checkbox';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
-import { Controller, useController, useForm } from 'react-hook-form';
-import { Image, KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import Autocomplete from 'react-native-autocomplete-input';
-import DropDownPicker from 'react-native-dropdown-picker';
+import { Controller, useForm } from 'react-hook-form';
+import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
-import { TextInputMask } from 'react-native-masked-text';
-
-import { Ionicons } from '@expo/vector-icons';
 import {
 	Badge,
 	Button,
+	DefaultTheme,
 	Divider,
 	HelperText,
 	IconButton,
 	List,
 	MD3Colors,
 	Menu,
-	DefaultTheme,
 	Provider as PaperProvider,
+	Portal,
 	Surface,
 	TextInput,
-	Portal,
 } from 'react-native-paper';
-import SelectDropdown from 'react-native-select-dropdown';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -43,7 +37,7 @@ const SERVER_URL = process.env.SERVER_URL;
 
 export const ItemForm = () => {
 	const navigation = useNavigation();
-	
+
 	// GOOGLE PLACES
 	const [isMapVisible, setMapVisible] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState(null);
@@ -89,12 +83,11 @@ export const ItemForm = () => {
 	const [photoViewerVisible, setPhotoViewerVisible] = useState(false);
 	const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 	const [isModalVisible3, setModalVisible3] = useState(false);
-	
-	
+
 	const toggleModal3 = () => {
 		console.log('Toggle modal called');
 		setModalVisible3(!isModalVisible3);
-	  };
+	};
 
 	// Filter out objects with undefined values
 
@@ -126,7 +119,7 @@ export const ItemForm = () => {
 				return;
 			}
 
-			const photo = await cameraRef.current.takePictureAsync({ quality: 0.2 });
+			const photo = await cameraRef.current.takePictureAsync({ quality: 0.1, height: 200 });
 			setPhotos([...photos, photo.uri]);
 			if (photos.length === 3) {
 				await uploadPhotos();
@@ -196,9 +189,7 @@ export const ItemForm = () => {
 	// A L'AIDE DU HELPER createNewItem.js--------------------------------------------
 
 	const onSubmit = async (data) => {
-		
 		try {
-			
 			const formData = new FormData();
 
 			// VERIFIE SI ARRAY PHOTOS EXISTE
@@ -209,7 +200,6 @@ export const ItemForm = () => {
 						name: `photo_${i}.jpg`,
 						type: 'image/jpeg',
 					});
-					
 				}
 			} else {
 				console.log('pas de photos:', photos);
@@ -249,7 +239,7 @@ export const ItemForm = () => {
 			createNewItem(token, formData)
 				.then((data) => {
 					console.log('New item created:', data);
-					navigation.navigate('ConfirmAdvert')
+					navigation.navigate('ConfirmAdvert');
 				})
 				.catch((error) => {
 					console.error('Error in createNewItem:', error);
@@ -331,9 +321,6 @@ export const ItemForm = () => {
 		setCurrentPhotoIndex((prevIndex) => (prevIndex === 0 ? photos.length - 1 : prevIndex - 1));
 	};
 
-	
-	
-
 	/* 	 const renderPhotos = () => {
     return photos.map((photo, index) => (
       <TouchableOpacity key={index} onPress={() => openPhotoViewer(index)}>
@@ -355,17 +342,17 @@ export const ItemForm = () => {
 	const customTheme = {
 		...DefaultTheme,
 		colors: {
-		  ...DefaultTheme.colors,
-		  primary: 'blue', 
+			...DefaultTheme.colors,
+			primary: 'blue',
 		},
 		fonts: {
-		  ...DefaultTheme.fonts,
-		  medium: {
-			...DefaultTheme.fonts.medium,
-			fontSize: 36, 
-		  },
+			...DefaultTheme.fonts,
+			medium: {
+				...DefaultTheme.fonts.medium,
+				fontSize: 36,
+			},
 		},
-	  };
+	};
 
 	return (
 		<PaperProvider theme={formTheme}>
@@ -386,10 +373,8 @@ export const ItemForm = () => {
 				</Modal>
 			</Portal></View> */}
 
-			
 			<ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
 				<View style={styles.container}>
-				
 					<View style={{ width: '100%', alignSelf: 'center' }}>
 						<SelectList
 							setSelected={setSelectedCategory}
@@ -398,24 +383,20 @@ export const ItemForm = () => {
 							placeholder="Choisissez une catégorie"
 						/>
 					</View>
-					
 
 					{/* // CHAMP TITRE -------------------------------------------------------------------- */}
-					
-						<Controller
+
+					<Controller
 						control={control}
 						render={({ field: { onChange, onBlur, value } }) => (
-							
-								<TextInput
+							<TextInput
 								label="Titre"
 								mode="outlined"
 								onChangeText={(text) => onChange(text)}
 								onBlur={onBlur}
 								value={value}
 								error={errors.name ? true : false}
-								
 							/>
-							
 						)}
 						name="name"
 						rules={{ required: "Le titre de l/'annonce est obligatoire" }}
@@ -553,7 +534,7 @@ export const ItemForm = () => {
 								showDeleteIcon={true}
 							/>
 						</View>
-						
+
 						{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
 						<Surface style={styles.surface} elevation={1}>
 							{/* // CHAMP CALENDRIER ------------------------------------------------------------------ */}
@@ -568,31 +549,32 @@ export const ItemForm = () => {
 									alignItems: 'center',
 									paddingTop: 5,
 									borderRadius: 50,
-								}}>
-								
+								}}
+							>
 								<Badge
 									size={30}
 									icon="calendar"
 									style={{
 										height: 40,
-									width: '100%',
-									alignSelf: 'center',
-									backgroundColor: '#FFCE52',
+										width: '100%',
+										alignSelf: 'center',
+										backgroundColor: '#FFCE52',
 										color: '#155263',
 										fontWeight: 500,
 										borderWidth: 1,
-										borderColor: '#E6E6E6', 
-								borderRadius: 20,
-										shadowColor: 'rgba(0, 0, 0, 0.4)', 
+										borderColor: '#E6E6E6',
+										borderRadius: 20,
+										shadowColor: 'rgba(0, 0, 0, 0.4)',
 										shadowOffset: {
-										  width: 0,
-										  height: 4,
+											width: 0,
+											height: 4,
 										},
 										shadowOpacity: 1,
 										shadowRadius: 3,
-										elevation: 4, 
+										elevation: 4,
 									}}
-									onPress={() => setDatePickerVisible(true)}>
+									onPress={() => setDatePickerVisible(true)}
+								>
 									<Icon name="calendar" size={20} /> Remplissez le calendrier de disponibilité
 								</Badge>
 
@@ -611,7 +593,8 @@ export const ItemForm = () => {
 											fontSize: 12,
 											color: 'white',
 											minHeight: '100%',
-										}}>
+										}}
+									>
 										Période {index + 1}: {moment(period.start).format('L')} - {moment(period.end).format('L')}
 									</Badge>
 									<Divider />
@@ -621,7 +604,8 @@ export const ItemForm = () => {
 										mode="outlined"
 										compact="false"
 										style={{ paddingHorizontal: 0 }}
-										onPress={() => deletePeriod(index)}></Button>
+										onPress={() => deletePeriod(index)}
+									></Button>
 								</View>
 							))}
 						</Surface>
@@ -654,18 +638,19 @@ export const ItemForm = () => {
 									color: '#155263',
 									fontWeight: 500,
 									borderWidth: 1,
-									borderColor: '#E6E6E6', 
-							borderRadius: 20,
-									shadowColor: 'rgba(0, 0, 0, 0.4)', 
+									borderColor: '#E6E6E6',
+									borderRadius: 20,
+									shadowColor: 'rgba(0, 0, 0, 0.4)',
 									shadowOffset: {
-									  width: 0,
-									  height: 4,
+										width: 0,
+										height: 4,
 									},
 									shadowOpacity: 1,
 									shadowRadius: 3,
-									elevation: 4, 
+									elevation: 4,
 								}}
-								onPress={() => setMapVisible(true)}>
+								onPress={() => setMapVisible(true)}
+							>
 								<Ionicons style={{ marginTop: 5 }} name="location" size={20} />
 								Cliquez ici pour géolocaliser votre objet
 							</Badge>
@@ -684,7 +669,7 @@ export const ItemForm = () => {
 				</View>
 
 				{/* // CHAMP MODE DE REMISE ---------------------------------------------------------------- */}
-				<View style={{ width: '85%', alignSelf: 'center', marginTop:-15 }}>
+				<View style={{ width: '85%', alignSelf: 'center', marginTop: -15 }}>
 					<SelectList
 						setSelected={setSelectedRemise}
 						data={dataModeRemise}
@@ -693,15 +678,15 @@ export const ItemForm = () => {
 					/>
 				</View>
 
-				<View style={{ flexDirection: 'row', alignSelf: "flex-start", marginLeft:30, marginTop:15 }}>
+				<View style={{ flexDirection: 'row', alignSelf: 'flex-start', marginLeft: 30, marginTop: 15 }}>
 					<Text style={styles.checkboxLabelExpress}>
 						Mode Express <MaterialCommunityIcons name="help-circle-outline" size={16} color="blue" onPress={toggleModal3} />
-						</Text>
+					</Text>
 					<View style={{ padding: 16 }}>
 						<Controller
 							control={control}
 							render={({ field: { onChange, value } }) => (
-								<View style={{ flexDirection: 'row', alignItems: 'flex-end', marginLeft:10 }}>
+								<View style={{ flexDirection: 'row', alignItems: 'flex-end', marginLeft: 10 }}>
 									<CheckBox value={value} onValueChange={(newValue) => onChange(newValue)} />
 									<Text>Oui</Text>
 								</View>
@@ -734,7 +719,7 @@ export const ItemForm = () => {
 				</View>
 				<View style={styles.buttonsContainer}>
 					<Button style={styles.buttonOutlined} mode="outlined" onPress={onSubmit}>
-						 <Text>Poster l'annonce </Text>
+						<Text>Poster l'annonce </Text>
 					</Button>
 
 					{/* <Button mode="outlined" onPress={onReset}>
@@ -793,16 +778,16 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 		margin: 12,
 		borderWidth: 1,
-        borderColor: '#E6E6E6', 
-borderRadius: 20,
-        shadowColor: 'rgba(0, 0, 0, 0.4)', 
-        shadowOffset: {
-          width: 0,
-          height: 4,
-        },
-        shadowOpacity: 1,
-        shadowRadius: 3,
-        elevation: 4, 
+		borderColor: '#E6E6E6',
+		borderRadius: 20,
+		shadowColor: 'rgba(0, 0, 0, 0.4)',
+		shadowOffset: {
+			width: 0,
+			height: 4,
+		},
+		shadowOpacity: 1,
+		shadowRadius: 3,
+		elevation: 4,
 	},
 	buttonText: {
 		color: 'white',
@@ -822,13 +807,13 @@ borderRadius: 20,
 		alignItems: 'center',
 		margin: 10,
 		marginHorizontal: 30,
-		textAlign:"justify"
+		textAlign: 'justify',
 	},
 	checkboxLabel: {
 		marginLeft: 8,
-		marginRight:20,
+		marginRight: 20,
 		fontSize: 14,
-		textAlign:"justify"
+		textAlign: 'justify',
 	},
 	surface: {
 		backgroundColor: 'transparent',
