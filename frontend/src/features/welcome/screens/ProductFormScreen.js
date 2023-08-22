@@ -10,8 +10,8 @@ moment.locale('fr');
 
 export const ProductFormScreen = ({ route, item }) => {
 	// const buyer = useSelector(() => state.user.value);
-	console.log(route.params.item.name);
-	console.log("To push");
+	// console.log(route.params.item.name);
+	// console.log("To push");
 	const navigation = useNavigation();
 	const SignInScreen = () => {
 		navigation.navigate('SignIn');
@@ -174,7 +174,8 @@ export const ProductFormScreen = ({ route, item }) => {
 											<Button
 												style={{ marginTop: 20, alignItems: 'center', backgroundColor: '#155263', color: 'white' }}
 												mode="outlined"
-												onPress={toggleModal}>
+												onPress={toggleModal}
+											>
 												<Text style={{ fontWeight: 600, color: 'white' }}> Fermer</Text>
 											</Button>
 										</Modal>
@@ -227,12 +228,22 @@ export const ProductFormScreen = ({ route, item }) => {
 							</Text>
 						</View>
 						<View style={styles.buttonContainer}>
-							<Button style={[styles.buttonOutlined, styles.paypalButton]} mode="outlined" onPress={() => {
-    console.log("I'm fine")}}>
+							<Button
+								style={[styles.buttonOutlined, styles.paypalButton]}
+								mode="outlined"
+								onPress={() => {
+									console.log("I'm fine");
+								}}
+							>
 								<Image source={require('../../../../assets/paypalLogo.png')} style={styles.paypalLogo} />
 							</Button>
-							<Button style={[styles.buttonOutlined, styles.cbButton]} mode="outlined" onPress={() => {
-    console.log("I'm fine")}}>
+							<Button
+								style={[styles.buttonOutlined, styles.cbButton]}
+								mode="outlined"
+								onPress={() => {
+									console.log("I'm fine");
+								}}
+							>
 								<Image source={require('../../../../assets/LogoCB.png')} style={styles.paypalLogo} />
 							</Button>
 						</View>

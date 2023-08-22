@@ -6,7 +6,6 @@ import { Button, Provider as PaperProvider, Searchbar, TextInput } from 'react-n
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUser, selectUserData, setToken, setUser } from '../../../../reducers/user';
 import formTheme from '../themes/FormTheme';
-
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const WelcomeScreen = ({ navigation }) => {
@@ -25,7 +24,7 @@ export const WelcomeScreen = ({ navigation }) => {
 		navigation.navigate('SignIn');
 	};
 
-	// RECUPERERE LA POSITION ET L'AUTHORISATION d'utilisateur
+	// RECUPERERE LA POSITION ET L'AUTORISATION d'utilisateur
 
 	useEffect(() => {
 		(async () => {
@@ -44,7 +43,7 @@ export const WelcomeScreen = ({ navigation }) => {
 	// FETCH CATEGORIES SORTED BY ITEMS COUNT
 	const fetchCategories = async () => {
 		try {
-			const response = await fetch(`https://cashetizer-backend.vercel.app/category/categories/sorted-by-items`);
+			const response = await fetch(`${SERVER_URL}/category/categories/sorted-by-items`);
 			const data = await response.json();
 			setCategories(data);
 		} catch (error) {
@@ -65,7 +64,7 @@ export const WelcomeScreen = ({ navigation }) => {
 	const onSubmitLogout = () => {
 		dispatch(clearUser());
 		// Adresse du backend pour Fetch POST logout
-		const logout = `https://cashetizer-backend.vercel.app/users/logoutAll`;
+		const logout = `${SERVER_URL}/users/logoutAll`;
 
 		// Token récupéré depuis le reducer user
 		const bearerToken = token;
@@ -108,7 +107,6 @@ export const WelcomeScreen = ({ navigation }) => {
 				</View>
 
 				<ScrollView contentContainerStyle={styles.buttonCategorie} keyboardShouldPersistTaps="handled">
-					
 					{categories.map((category, index) => (
 						<TouchableOpacity key={index} style={styles.button} onPress={() => handleCategoryPress(category)}>
 							<Text style={styles.buttonText}>
@@ -149,8 +147,8 @@ export const WelcomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
 	buttonsContainer: {
-		backgroundColor:"#F1F1F1",
-		height:90,
+		backgroundColor: '#F1F1F1',
+		height: 90,
 		position: 'absolute',
 		bottom: 35,
 		left: 0,
@@ -158,11 +156,10 @@ const styles = StyleSheet.create({
 		paddingBottom: 0,
 		flexDirection: 'row',
 		justifyContent: 'center',
-		alignItems:"flex-end",
+		alignItems: 'flex-end',
 	},
 
 	buttonOutlined: {
-		
 		backgroundColor: '#FFCE52',
 		borderWidth: 1,
 		width: '45%',

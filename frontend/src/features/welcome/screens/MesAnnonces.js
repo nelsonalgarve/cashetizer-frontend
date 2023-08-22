@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import formTheme from '../themes/FormTheme';
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const MesAnnonces = () => {
 	// const navigation = useNavigation();
@@ -11,7 +12,7 @@ export const MesAnnonces = () => {
 	const fetchItems = async () => {
 		try {
 			const ownerId = '64cecf1481292cebde9164ec'; // Replace with the actual ownerId or get it dynamically
-			const response = await fetch(`https://cashetizer-backend.vercel.app/item/items/by-owner/${ownerId}`);
+			const response = await fetch(`${SERVER_URL}/item/items/by-owner/${ownerId}`);
 			const data = await response.json();
 
 			setItems(data);

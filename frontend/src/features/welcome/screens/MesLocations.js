@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Provider as PaperProvider, TextInput } from 'react-native-paper';
 import formTheme from '../themes/FormTheme';
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const MesLocations = () => {
 	const navigation = useNavigation();

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const CategoriesAutocomplete = ({ handleSelectCategories }) => {
 	const [input, setInput] = useState('');
@@ -10,9 +11,7 @@ export const CategoriesAutocomplete = ({ handleSelectCategories }) => {
 		if (text === '') {
 			setSuggestions([]);
 		} else {
-			fetch(`https://cashetizer-backend.vercel.app/category/autocomplete?q=${encodeURIComponent(text)}`)
-				// fetch(`https://cashetizer-backend-git-main-nelsonalgarve.vercel.app/category/autocomplete?q=${text}`)
-				// fetch(`https://cashetizer-backend-3h3irl1p3-nelsonalgarve.vercel.app/autocomplete?q=${text}`)
+			fetch(`${SERVER_URL}/category/autocomplete?q=${encodeURIComponent(text)}`)
 				.then((response) => response.json())
 				.then((data) => {
 					if (Array.isArray(data)) {

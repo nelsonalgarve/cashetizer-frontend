@@ -11,6 +11,7 @@ import { selectUserData, setToken, setUser } from '../../../../reducers/user';
 import GooglePlacesInput from '../../Items/components/GooglePlacesInput';
 import { CustomTextInput } from '../components/CustomTextInput';
 import formTheme from '../themes/FormTheme';
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const SignUpForm = () => {
 	const navigation = useNavigation();
@@ -54,7 +55,7 @@ export const SignUpForm = () => {
 			notifications: data.notifications,
 		};
 		// Adresse du backend pour Fetch POST signup
-		const signUpEndpoint = `https://cashetizer-backend.vercel.app/users`;
+		const signUpEndpoint = `${SERVER_URL}/users`;
 		fetch(signUpEndpoint, {
 			method: 'POST',
 			headers: {

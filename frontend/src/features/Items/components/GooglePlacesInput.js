@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
 
 export const GooglePlacesInput = () => {
 	const ref = useRef();
@@ -18,7 +19,7 @@ export const GooglePlacesInput = () => {
 				console.log(data, details);
 			}}
 			query={{
-				key: 'AIzaSyCKVV2S52hUifM6pOSiTVzj2MoAI4jccqw',
+				key: GOOGLE_API_KEY,
 				language: 'en',
 			}}
 		/>

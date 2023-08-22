@@ -7,7 +7,7 @@ import { Button, Card, PaperProvider } from 'react-native-paper';
 import { formTheme } from '../../../../src/infrastructure/theme/themePaper';
 import { ItemCard } from '../components/ItemCard';
 
-const EXPO_PUBLIC_SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const ResultScreen = ({ route }) => {
 	const navigation = useNavigation();
@@ -63,7 +63,7 @@ export const ResultScreen = ({ route }) => {
 	const fetchItemsByCategory = async (categoryName, applyDateFilter = false) => {
 		try {
 			const encodedCategoryName = encodeURIComponent(categoryName);
-			const response = await fetch(`https://cashetizer-backend.vercel.app/item/items/categoryname/${encodedCategoryName}`);
+			const response = await fetch(`${SERVER_URL}/item/items/categoryname/${encodedCategoryName}`);
 			let data = await response.json();
 
 			// If applyDateFilter is true, filter items based on the date range

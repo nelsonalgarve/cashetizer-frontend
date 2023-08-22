@@ -5,7 +5,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import MapView, { Marker } from 'react-native-maps';
 import { TextInput } from 'react-native-paper';
 
-const GOOGLE_API_KEY = 'AIzaSyCKVV2S52hUifM6pOSiTVzj2MoAI4jccqw';
+const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
 
 export const MapPicker = ({ onLocationSelected, isVisible, onClose }) => {
 	const [location, setLocation] = useState(null);
@@ -86,7 +86,7 @@ export const MapPicker = ({ onLocationSelected, isVisible, onClose }) => {
 								setAddress(details.formatted_address);
 							}}
 							query={{
-								key: 'AIzaSyCKVV2S52hUifM6pOSiTVzj2MoAI4jccqw',
+								key: GOOGLE_API_KEY,
 								language: 'en',
 							}}
 							styles={{

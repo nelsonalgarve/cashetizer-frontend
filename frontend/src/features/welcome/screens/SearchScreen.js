@@ -19,7 +19,7 @@ export const SearchScreen = ({ navigation }) => {
 	// FETCH CATEGORIES SORTED BY ITEMS COUNT
 	const fetchCategories = async () => {
 		try {
-			const response = await fetch(`https://cashetizer-backend.vercel.app/category/categories/sorted-by-items`);
+			const response = await fetch(`${SERVER_URL}/category/categories/sorted-by-items`);
 			const data = await response.json();
 			setCategories(data);
 		} catch (error) {

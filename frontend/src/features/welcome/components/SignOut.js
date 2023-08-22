@@ -16,7 +16,7 @@ export const SignOut = () => {
 
 	const onSubmitLogout = () => {
 		// Adresse du backend pour Fetch POST logout
-		const logout = `https://cashetizer-backend.vercel.app/user/users/logoutAll`;
+		const logout = `${SERVER_URL}/user/users/logoutAll`;
 
 		// Token récupéré depuis le reducer user
 		const bearerToken = token;
