@@ -6,7 +6,7 @@ import { Button, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } f
 import MapView, { Marker } from 'react-native-maps';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { IconButton, Modal, Portal } from 'react-native-paper';
-import { PeriodsPicker } from '../components/PeriodsPicker';
+const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
 
 function formatDateInFrench(dateString) {
 	const date = new Date(dateString);
@@ -221,8 +221,6 @@ export const SingleProductScreen = ({ route }) => {
 		const date = new Date(isoString);
 		return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 	};
-
-	const GOOGLE_API_KEY = 'AIzaSyCKVV2S52hUifM6pOSiTVzj2MoAI4jccqw';
 
 	const fetchAddress = async (latitude, longitude) => {
 		try {
